@@ -21,7 +21,6 @@
 | dataplane | docker-compose | `10.1.4.0/24` | `fd00:0:0:0:3::/80` | (N3 + N9) Dataplane backbone                  |
 | edge      | docker-compose | `10.1.5.0/24` | disabled            | (N6) Edges instances                          |
 | slice0    | free5gc        | `10.2.0.0/24` | disabled            | Slice 0                                       |
-| slice1    | free5gc        | `10.2.1.0/24` | disabled            | Slice 1                                       |
 | srgw0     | nextmn/srgw0   | `10.3.0.1/32` | `fc00:1::/32`       | srgw0 locators                                |
 | r0        | nextmn/r0      | disabled      | `fc00:2::/32`       | r0 locator                                    |
 | r1        | nextmn/r1      | disabled      | `fc00:3::/32`       | r1 locator                                    |
@@ -36,10 +35,13 @@
 | ue1       | `louisroyer/ueransim-ue`      | ran       | auto            | auto                    |                                             |
 | ue1       | `louisroyer/ueransim-ue`      | slice0    | `10.2.0.1`      | disabled                |                                             |
 | ue2       | `louisroyer/ueransim-ue`      | ran       | auto            | auto                    |                                             |
-| ue2       | `louisroyer/ueransim-ue`      | slice1    | `10.2.1.1`      | disabled                |                                             |
+| ue2       | `louisroyer/ueransim-ue`      | slice0    | `10.2.0.2`      | disabled                |                                             |
 | gnb1      | `louisroyer/ueransim-gnb`     | ran       | `10.1.0.1`      | `fd00:0:0:0:1:8000:0:2` |                                             |
 | gnb1      | `louisroyer/ueransim-gnb`     | control   | `10.1.3.1`      | auto                    |                                             |
 | gnb1      | `louisroyer/ueransim-gnb`     | dataplane | `10.1.4.1`      | auto (not used)         | Route to srgw0                              |
+| gnb2      | `louisroyer/ueransim-gnb`     | ran       | `10.1.0.2`      | `fd00:0:0:0:1:8000:0:3` |                                             |
+| gnb2      | `louisroyer/ueransim-gnb`     | control   | `10.1.3.2`      | auto                    |                                             |
+| gnb2      | `louisroyer/ueransim-gnb`     | dataplane | `10.1.4.2`      | auto (not used)         | Route to srgw0                              |
 | srgw0     | `nextmn-srv6`                 | control   | `10.1.3.2`      | auto                    |                                             |
 | srgw0     | `nextmn-srv6`                 | dataplane | `10.1.4.2`      | `fd00:0:0:0:3:8000:0:2` | IPv6 routes to SR domain (rr)               |
 | srgw0     | `nextmn-srv6`                 | srgw0     | `10.3.0.1`      | disabled                | H.M.GTP4.D                                  |
@@ -59,10 +61,10 @@
 | s0        | `ngnix`                       | service   | `10.4.0.1`      | disabled                |                                             |
 | s1        | `nginx`                       | edge      | `10.1.5.4`      | disabled                | Route to slice0 via r1                      |
 | s1        | `ngnix`                       | service   | `10.4.0.1`      | disabled                |                                             |
-| srv6-ctrl | `nextmn-srv6-ctrl`            | control   | `10.1.3.2`      | auto                    |                                             |
-| amf       | `free5gc-amf`                 | control   | `10.1.3.3`      | auto                    |                                             |
+| srv6-ctrl | `nextmn-srv6-ctrl`            | control   | `10.1.3.3`      | auto                    |                                             |
+| amf       | `free5gc-amf`                 | control   | `10.1.3.4`      | auto                    |                                             |
 | amf       | `free5gc-amf`                 | sbi       | `10.1.1.1`      | disabled                |                                             |
-| smf       | `free5gc-smf`                 | control   | `10.1.3.4`      | auto                    |                                             |
+| smf       | `free5gc-smf`                 | control   | `10.1.3.5`      | auto                    |                                             |
 | smf       | `free5gc-smf`                 | sbi       | `10.1.1.2`      | disabled                |                                             |
 | nrf       | `free5gc-nrf`                 | sbi       | `10.1.1.3`      | disabled                |                                             |
 | nrf       | `free5gc-nrf`                 | db        | auto            | disabled                |                                             |
