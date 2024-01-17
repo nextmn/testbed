@@ -145,6 +145,7 @@ services:
       N2: "10.1.3.4" # amf/control
       SBI_REGISTER_IP: "amf.sbi"
       SBI_BINDING_IP: "10.1.1.1" # amf/sbi
+      SBI_BINDING_PORT: "8000"
       MCC: "001"
       MNC: "01"
       AMF_ID: "000001"
@@ -166,6 +167,33 @@ services:
         ipv4_address: "10.1.3.4"
       sbi:
         ipv4_address: "10.1.1.1"
+
+  mongodb:
+    container_name: mongodb
+    hostname: mongodb
+    image: mongo
+    command: "mongod --port 27017 --bind_ip_all"
+    restart: always
+    networks:
+      db:
+
+  nrf:
+    container_name: nrf
+    hostname: nrf
+    restart: always
+    environment:
+      MONGO_HOST: "mongodb.db"
+      SBI_REGISTER_IP: "nrf.sbi"
+      SBI_BINDING_IP: "10.1.1.3" # nrf/sbi
+      SBI_BINDING_PORT: "8000"
+      MCC: "001"
+      MNC: "01"
+    image: "louisroyer/dev-free5gc-nrf"
+    command: [" "]
+    networks:
+      db:
+      sbi:
+        ipv4_address: "10.1.1.3"
 
 networks:
   ran:
