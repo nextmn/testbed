@@ -148,8 +148,6 @@ services:
       SBI_BINDING_PORT: "8000"
       MCC: "001"
       MNC: "01"
-      AMF_ID: "000001"
-      AMF_NAME: "AMF"
       NRF: "nrf.sbi:8000"
       SUPPORT_DNN_LIST: |-
         - srv6
@@ -157,7 +155,6 @@ services:
         - sst: 1
           sd: 000001
       TAC: "000001"
-      LOCALITY: "area1"
     image: louisroyer/dev-free5gc-amf
     command: [" "]
     cap_add:
@@ -243,6 +240,23 @@ services:
       db:
       sbi:
         ipv4_address: "10.1.1.8"
+
+  pcf:
+    container_name: pcf
+    hostname: pcf
+    restart: always
+    environment:
+      MONGO_HOST: "mongodb.db"
+      SBI_REGISTER_IP: "pcf.sbi"
+      SBI_BINDING_IP: "10.1.1.6" # pcf/sbi
+      SBI_BINDING_PORT: "8000"
+      NRF: "nrf.sbi:8000"
+    image: "louisroyer/dev-free5gc-pcf"
+    command: [" "]
+    networks:
+      db:
+      sbi:
+        ipv4_address: "10.1.1.6"
 
 networks:
   ran:
