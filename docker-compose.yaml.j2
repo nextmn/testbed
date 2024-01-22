@@ -104,7 +104,7 @@ services:
     hostname: gnb2
     restart: always
     environment:
-      NCI: 000000001
+      NCI: 000000002
       RLS_IP: "fd00:0:0:0:1:8000:0:3" # gnb2/ran
       N2_IP: "10.1.3.2" # gnb2/control
       N3_IP: "10.1.4.2" # gnb2/dataplane
@@ -257,6 +257,96 @@ services:
       db:
       sbi:
         ipv4_address: "10.1.1.6"
+  smf:
+    container_name: smf
+    hostname: smf
+    restart: always
+    environment:
+      SBI_REGISTER_IP: "smf.sbi"
+      SBI_BINDING_IP: "10.1.1.2" # smf/sbi
+      SBI_BINDING_PORT: "8000"
+      NRF: "nrf.sbi:8000"
+      N4: "10.1.3.5" # smf/control
+      MCC: "001"
+      MNC: "01"
+      SNSSAI_INFOS: |-
+        - sNssai:
+            sst: 1
+            sd: 000001
+          dnnInfos:
+            - dnn: srv6
+              dns:
+                ipv4: 9.9.9.9 # TODO: replace with local dns
+                ipv6: 2620:fe::fe
+      UP_NODES: |-
+        gnb1:
+          type: AN
+        gnb2:
+          type: AN
+        UPF:
+          type: UPF
+          nodeID: "10.1.3.2" # srgw0/control
+          addr: "10.1.3.2" # srgw0/control
+          sNssaiUpfInfos:
+            - sNssai:
+                sst: 1
+                sd: 000001
+              dnnUpfInfoList:
+                - dnn: srv6
+                  pool: 10.2.0.0/24 # slice0
+          interfaces:
+            - interfaceType: N3
+              endpoints:
+                - 10.3.0.1 # srgw0/srgw0
+              networkInstances:
+                - srv6
+      ULCL: "true"
+      LINKS: |-
+        - A: gNB1
+          B: UPF
+        - A: gNB2
+          B: UPF
+      UEROUTING_INFO: |-
+        none1:
+          members:
+            - imsi-001010000000001
+          topology:
+            - A: gNB1
+              B: UPF
+        none2:
+          members:
+            - imsi-001010000000002
+          topology:
+            - A: gNB2
+              B: UPF
+
+    image: "louisroyer/dev-free5gc-smf"
+    command: [" "]
+    networks:
+      control:
+        ipv4_address: "10.1.3.5"
+      sbi:
+        ipv4_address: "10.1.1.2"
+  populate:
+    container_name: populate
+    hostname: populate
+    restart: "no" # oneshot 
+    environment:
+      MONGO_HOST: "mongodb.db"
+      SLICES: |-
+        - sst: 1
+          sd: 000001
+          varqi: 9
+          dnn: srv6
+      IMSI: |-
+        - imsi-001010000000001
+        - imsi-001010000000002
+    image: "louisroyer/free5gc-populate"
+    command: [" "]
+    networks:
+      db:
+
+
 
 networks:
   ran:
