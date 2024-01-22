@@ -319,7 +319,6 @@ services:
           topology:
             - A: gNB2
               B: UPF
-
     image: "louisroyer/dev-free5gc-smf"
     command: [" "]
     networks:
@@ -327,6 +326,7 @@ services:
         ipv4_address: "10.1.3.5"
       sbi:
         ipv4_address: "10.1.1.2"
+
   populate:
     container_name: populate
     hostname: populate
@@ -346,7 +346,60 @@ services:
     networks:
       db:
 
-
+  nssf:
+    container_name: nssf
+    hostname: nssf
+    restart: always
+    environment:
+      SBI_REGISTER_IP: "nssf.sbi"
+      SBI_BINDING_IP: "10.1.1.5" # nssf/control
+      SBI_BINDING_PORT: "8000"
+      NRF: "nrf.sbi:8000"
+      MCC: "001"
+      MNC: "01"
+      NSSF_NAME: "NSSF"
+      SUPPORTED_NSSAI_IN_PLMN_LIST: |-
+          - plmnId:
+            mcc: 001
+            mnc: 01
+          supportedSnssaiList:
+            - sst: 1
+              sd: 000001
+      NSI_LIST: |-
+        - snssai:
+            sst: 1
+          nsiInformationList:
+            - nrfId: http://nrf.sbi:8000/nnrf-nfm/v1/nf-instances
+              nsiId: 10
+      AMF_SET_LIST: |-
+        - amfSetId: 1
+          amfList:
+            - ffa2e8d7-3275-49c7-8631-6af1df1d9d26
+          nrfAmfSet: http://nrf.sbi:8000/nnrf-nfm/v1/nf-instances
+          supportedNssaiAvailabilityData:
+            - tai:
+                plmnId:
+                  mcc: 001
+                  mnc: 01
+                tac: 00001
+              supportedSnssaiList:
+                - sst: 1
+                  sd: 000001
+      TA_LIST: |-
+        - tai:
+            plmnId:
+              mcc: 001
+              mnc: 01
+            tac: 00001
+          accessType: 3GPP_ACCESS
+          supportedSnssaiList:
+            - sst: 1
+              sd: 000001
+    image: "louisroyer/dev-free5gc-nssf"
+    command: [" "]
+    networks:
+      sbi:
+        ipv4_address: "10.1.1.5"
 
 networks:
   ran:
