@@ -195,6 +195,55 @@ services:
       sbi:
         ipv4_address: "10.1.1.3"
 
+  ausf:
+    container_name: ausf
+    hostname: ausf
+    restart: always
+    environment:
+      SBI_REGISTER_IP: "ausf.sbi"
+      SBI_BINDING_IP: "10.1.1.4" # ausf/sbi
+      SBI_BINDING_PORT: "8000"
+      MCC: "001"
+      MNC: "01"
+      NRF: "nrf.sbi:8000"
+    image: "louisroyer/dev-free5gc-ausf"
+    command: [" "]
+    networks:
+      sbi:
+        ipv4_address: "10.1.1.4"
+
+  udm:
+    container_name: udm
+    hostname: udm
+    restart: always
+    environment:
+      SBI_REGISTER_IP: "udm.sbi"
+      SBI_BINDING_IP: "10.1.1.7" # udm/sbi
+      SBI_BINDING_PORT: "8000"
+      NRF: "nrf.sbi:8000"
+    image: "louisroyer/dev-free5gc-udm"
+    command: [" "]
+    networks:
+      sbi:
+        ipv4_address: "10.1.1.7"
+
+  udr:
+    container_name: udr
+    hostname: udr
+    restart: always
+    environment:
+      MONGO_HOST: "mongodb.db"
+      SBI_REGISTER_IP: "udr.sbi"
+      SBI_BINDING_IP: "10.1.1.8" # udr/sbi
+      SBI_BINDING_PORT: "8000"
+      NRF: "nrf.sbi:8000"
+    image: "louisroyer/dev-free5gc-udr"
+    command: [" "]
+    networks:
+      db:
+      sbi:
+        ipv4_address: "10.1.1.8"
+
 networks:
   ran:
     name: ran
