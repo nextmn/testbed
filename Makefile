@@ -1,14 +1,17 @@
 .PHONY: default u d t j
-compose.yaml: compose.yaml.j2 scripts/jinja/customize.py config.yaml
-	j2 --customize scripts/jinja/customize.py -o compose.yaml compose.yaml.j2 config.yaml
+build:
+	mkdir build
 
-j: compose.yaml
+build/compose.yaml: build compose.yaml.j2 scripts/jinja/customize.py config.yaml
+	j2 --customize scripts/jinja/customize.py -o build/compose.yaml compose.yaml.j2 config.yaml
 
-pull: compose.yaml
-	docker compose pull
+j: build/compose.yaml
 
-u: compose.yaml
-	docker compose up
+pull: build/compose.yaml
+	docker compose --project-directory build pull
+
+u: build/compose.yaml
+	docker compose --project-directory build up
 d:
 	# don't depends on docker-compose.yaml because we need the old version to delete all
-	docker compose down
+	docker compose --project-directory build down
