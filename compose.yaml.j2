@@ -361,11 +361,11 @@ services:
       NSSF_NAME: "NSSF"
       SUPPORTED_NSSAI_IN_PLMN_LIST: |-
           - plmnId:
-            mcc: 001
-            mnc: 01
-          supportedSnssaiList:
-            - sst: 1
-              sd: 000001
+              mcc: 001
+              mnc: 01
+            supportedSnssaiList:
+              - sst: 1
+                sd: 000001
       NSI_LIST: |-
         - snssai:
             sst: 1
@@ -386,6 +386,17 @@ services:
               supportedSnssaiList:
                 - sst: 1
                   sd: 000001
+      AMF_LIST: |-
+        - nfId: 469de254-2fe5-4ca0-8381-af3f500af77c
+          supportedNssaiAvailabilityData:
+            - tai:
+                plmnId:
+                  mcc: 001
+                  mnc: 01
+                tac: 1
+              supportedSnssaiList:
+                - sst: 1
+                  sd: 000001
       TA_LIST: |-
         - tai:
             plmnId:
@@ -396,6 +407,18 @@ services:
           supportedSnssaiList:
             - sst: 1
               sd: 000001
+      MAPPING_LIST_FROM_PLMN: |-
+        - operatorName: dummyoperator
+          homePlmnId:
+            mcc: 001
+            mnc: 02
+          mappingOfSnssai:
+            - servingSnssai:
+                sst: 1
+                sd: 00001
+              homeSnssai:
+                sst: 1
+                sd: 00001
     image: "louisroyer/dev-free5gc-nssf"
     command: [" "]
     networks:
