@@ -44,7 +44,7 @@
 | gnb2      | `louisroyer/ueransim-gnb`     | dataplane | `10.1.4.130`    | auto (not used)         | Route to srgw0                              |
 | srgw0     | `nextmn-srv6`                 | control   | `10.1.3.130`    | auto                    |                                             |
 | srgw0     | `nextmn-srv6`                 | dataplane | `10.1.4.130`    | `fd00:0:0:0:3:8000:0:2` | IPv6 routes to SR domain (rr)               |
-| srgw0     | `nextmn-srv6`                 | srgw0     | `10.3.0.129`    | disabled                | H.M.GTP4.D                                  |
+| srgw0     | `nextmn-srv6`                 | srgw0     | `10.3.0.1`      | disabled                | H.M.GTP4.D                                  |
 | srgw0     | `nextmn-srv6`                 | srgw0     | disabled        | `fc00:1:1::/48`         | End.M.GTP4.E                                |
 | r0        | `nextmn-srv6`                 | control   | auto            | auto                    |                                             |
 | r0        | `nextmn-srv6`                 | dataplane | auto (not used) | `fd00:0:0:0:3:8000:0:3` | IPv6 routes to SR domain (r1, rr)           |
