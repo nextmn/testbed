@@ -1,5 +1,5 @@
 # Testbed
-![CI](https://github.com/github/docs/actions/workflows/main.yml/badge.svg)
+![CI](https://github.com/nextmn/testbed/actions/workflows/main.yml/badge.svg)
 
 Warning: __WORK IN PROGRESS__
 ## Getting started
