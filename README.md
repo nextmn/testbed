@@ -1,4 +1,6 @@
 # Testbed
+![CI](https://github.com/github/docs/actions/workflows/main.yml/badge.svg)
+
 Warning: __WORK IN PROGRESS__
 ## Getting started
 ### Dependencies
