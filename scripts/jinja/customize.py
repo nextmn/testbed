@@ -32,7 +32,7 @@ class _JinjaDecorator:
 class filter(_JinjaDecorator):
     '''Decorator to create filters'''
     _storage = _Storage()
-    
+
     global extra_filters
     @staticmethod
     def extra_filters(__storage=_storage) -> dict:
@@ -67,4 +67,3 @@ def indent(s: str, width: typing.Union[int, str] = 4, first: bool = True, blank:
 def json_to_yaml(s: str) -> str:
     args = json.loads(s)
     return yaml.dump(args, sort_keys=False, default_flow_style=False)
-

@@ -3,7 +3,7 @@
 ### Dependencies
 - `docker-ce`
 - `docker-compose-plugin`
-- `j2cli` 
+- `j2cli`
 - `make`
 
 ### Known issues

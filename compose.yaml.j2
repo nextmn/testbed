@@ -331,7 +331,7 @@ services:
   populate:
     container_name: populate
     hostname: populate
-    restart: "no" # oneshot 
+    restart: "no" # oneshot
     environment:
       MONGO_HOST: "mongodb.db"
       SLICES: |-

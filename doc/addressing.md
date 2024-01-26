@@ -77,5 +77,3 @@
 | udr       | `free5gc-udr`                 | db        | auto            | disabled                |                                             |
 | populate  | `louisroyer/free5gc-populate` | db        | auto            | disabled                |                                             |
 | mongodb   | `mongodb`                     | db        | auto            | disabled                |                                             |
-
-
