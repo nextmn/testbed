@@ -85,17 +85,28 @@ def j2_environment_params():
             trim_blocks=True,
             lstrip_blocks=True,
             line_statement_prefix='#~',
+            keep_trailing_newline=False,
         )
 
 @filter
-def indent(s: str, width: typing.Union[int, str] = 4, first: bool = True, blank: bool = True) -> str:
+def indent(s: str, width: typing.Union[int, str] = 2, first: bool = False, blank: bool = False) -> str:
     '''Replace default indent function with sane default values'''
-    return jinja2.filters.do_indent(s=s, first=first, blank=blank)
+    return jinja2.filters.do_indent(s=s, width=width, first=first, blank=blank)
+
+class _Dumper(yaml.Dumper):
+    '''Indent yaml list correctly'''
+    def increase_indent(self, flow=False, *args, **kwargs):
+        return super().increase_indent(flow=flow, indentless=False)
 
 @filter
 def json_to_yaml(s: str) -> str:
     args = json.loads(s)
-    return yaml.dump(args, sort_keys=False, default_flow_style=False)
+    return yaml.dump(args, sort_keys=False, default_flow_style=False, Dumper=_Dumper).rstrip()
+
+@filter
+def s(s: str) -> str:
+    '''Convert json to indented yaml'''
+    return indent(json_to_yaml(s))
 
 @functools.cache # parsing is only required once
 def build_and_template_dir():
@@ -124,7 +135,7 @@ def volume_ro(s: str, s2: str) -> str:
     return f'- ./{template}:{s2}:ro'
 
 @function
-def ipv4(host: str, subnet: str, context: _Context):
+def ipv4(host: str, subnet: str, context: _Context) -> str:
     try:
         addr = context.dict['subnets'][subnet][host]['ipv4_address']
     except:
@@ -132,9 +143,47 @@ def ipv4(host: str, subnet: str, context: _Context):
     return addr
 
 @function
-def ipv6(host: str, subnet: str, context: _Context):
+def ipv6(host: str, subnet: str, context: _Context) -> str:
     try:
        addr = context.dict['subnets'][subnet][host]['ipv6_address']
     except:
         raise('Unknown ip address')
     return addr
+
+@function
+def container(name: str, image: str, ipv6: typing.Optional[bool] = False, iface_tun: typing.Optional[bool] = False,
+              command: typing.Optional[str|bool] = None,
+              cap_net_admin: typing.Optional[bool] = False, restart: typing.Optional[str] = None, debug: typing.Optional[bool] = False) -> str:
+    containers = {}
+    if debug:
+        containers[f'{name}-debug'] = {
+            "container_name": f'{name}-debug',
+            "network_mode": f'service:{name}',
+            "image": 'louisroyer/network-debug',
+            "cap_add": ['NET_ADMIN',],
+            "profiles": ['debug',],
+        }
+    containers[name] = {
+        "container_name": name,
+        "hostname": name,
+        "image": image,
+    }
+    if command:
+        containers[name]['command'] = command
+    elif command is None:
+        containers[name]['command'] = [' ']
+    if restart is not None:
+        containers[name]['restart'] = restart
+    if ipv6:
+        containers[name]['sysctls'] = {
+            'net.ipv6.conf.all.disable_ipv6': 0,
+        }
+    if cap_net_admin:
+        containers[name]['cap_add'] = ["NET_ADMIN"]
+    if iface_tun:
+        containers[name]['devices'] = ["/dev/net/tun:/dev/net/tun"]
+    return json.dumps(containers)
+
+@function
+def container_s(*args, **kwargs) -> str:
+    return s(container(*args, **kwargs))

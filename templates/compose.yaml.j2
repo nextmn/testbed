@@ -1,9 +1,6 @@
 name: "nextmn-testbed"
 services:
-  ue1:
-    container_name: ue1
-    hostname: ue1
-    restart: always
+  {{ container_s(name='ue1', image='louisroyer/ueransim-ue', ipv6=True, debug=True, iface_tun=True, cap_net_admin=True) }}
     environment:
       MSISDN: "0000000001"
       GNBS: |-
@@ -20,21 +17,10 @@ services:
           slice:
             sst: 1
             sd: 000001
-    image: louisroyer/ueransim-ue
-    cap_add:
-      - NET_ADMIN
-    devices:
-      - "/dev/net/tun:/dev/net/tun"
-    sysctls:
-      net.ipv6.conf.all.disable_ipv6: 0
-    command: [" "]
     networks:
       ran: # automatic allocation by docker compose
 
-  ue2:
-    container_name: ue2
-    hostname: ue2
-    restart: always
+  {{ container_s(name='ue2', image='louisroyer/ueransim-ue', ipv6=True, debug=True, iface_tun=True, cap_net_admin=True) }}
     environment:
       MSISDN: "0000000002"
       GNBS: |-
@@ -51,21 +37,10 @@ services:
           slice:
             sst: 1
             sd: 000001
-    image: louisroyer/ueransim-ue
-    cap_add:
-      - NET_ADMIN
-    devices:
-      - "/dev/net/tun:/dev/net/tun"
-    sysctls:
-      net.ipv6.conf.all.disable_ipv6: 0
-    command: [" "]
     networks:
       ran: # automatic allocation by docker compose
 
-  gnb1:
-    container_name: gnb1
-    hostname: gnb1
-    restart: always
+  {{ container_s(name='gnb1', image='louisroyer/ueransim-gnb', ipv6=True, restart='always', iface_tun=True, cap_net_admin=True) }}
     environment:
       NCI: 000000001
       RLS_IP: "{{ ipv6('gnb1', 'ran') }}"
@@ -83,14 +58,6 @@ services:
           port: 38412
       ROUTES_INIT: |-
         - add {{ ipv4('srgw0', 'srgw0') }} via {{ ipv4('srgw0', 'dataplane') }}
-    image: louisroyer/ueransim-gnb
-    command: [" "]
-    cap_add:
-      - NET_ADMIN
-    devices:
-      - "/dev/net/tun:/dev/net/tun"
-    sysctls:
-      net.ipv6.conf.all.disable_ipv6: 0
     networks:
       ran:
         ipv4_address: "{{ ipv4('gnb1', 'ran') }}"
@@ -100,10 +67,7 @@ services:
       dataplane:
         ipv4_address: "{{ ipv4('gnb1', 'dataplane') }}"
 
-  gnb2:
-    container_name: gnb2
-    hostname: gnb2
-    restart: always
+  {{ container_s(name='gnb2', image='louisroyer/ueransim-gnb', ipv6=True, restart='always', iface_tun=True, cap_net_admin=True) }}
     environment:
       NCI: 000000002
       RLS_IP: "{{ ipv6('gnb2', 'ran') }}"
@@ -121,14 +85,6 @@ services:
           port: 38412
       ROUTES_INIT: |-
         - add {{ ipv4('srgw0', 'srgw0') }} via {{ ipv4('srgw0', 'dataplane') }}
-    image: louisroyer/ueransim-gnb
-    command: [" "]
-    cap_add:
-      - NET_ADMIN
-    devices:
-      - "/dev/net/tun:/dev/net/tun"
-    sysctls:
-      net.ipv6.conf.all.disable_ipv6: 0
     networks:
       ran:
         ipv4_address: "{{ ipv4('gnb2', 'ran') }}"
@@ -138,10 +94,7 @@ services:
       dataplane:
         ipv4_address: "{{ ipv4('gnb2', 'dataplane') }}"
 
-  amf:
-    container_name: amf
-    hostname: amf
-    restart: always
+  {{ container_s(name='amf', image='louisroyer/dev-free5gc-amf', restart='always') }}
     environment:
       N2: "{{ ipv4('amf', 'control') }}"
       SBI_REGISTER_IP: "amf.sbi"
@@ -156,29 +109,17 @@ services:
         - sst: 1
           sd: 000001
       TAC: "000001"
-    image: louisroyer/dev-free5gc-amf
-    command: [" "]
-    cap_add:
-      - NET_ADMIN
     networks:
       control:
         ipv4_address: "{{ ipv4('amf', 'control') }}"
       sbi:
         ipv4_address: "{{ ipv4('amf', 'sbi') }}"
 
-  mongodb:
-    container_name: mongodb
-    hostname: mongodb
-    image: mongo
-    command: "mongod --port 27017 --bind_ip_all"
-    restart: always
+  {{ container_s(name='mongodb', image='mongo', restart='always', command='mongod --port 27017 --bind_ip_all') }}
     networks:
       db:
 
-  nrf:
-    container_name: nrf
-    hostname: nrf
-    restart: always
+  {{ container_s(name='nrf', image='louisroyer/dev-free5gc-nrf', restart='always') }}
     environment:
       MONGO_HOST: "mongodb.db"
       SBI_REGISTER_IP: "nrf.sbi"
@@ -186,17 +127,12 @@ services:
       SBI_BINDING_PORT: "8000"
       MCC: "001"
       MNC: "01"
-    image: "louisroyer/dev-free5gc-nrf"
-    command: [" "]
     networks:
       db:
       sbi:
         ipv4_address: "{{ ipv4('nrf', 'sbi') }}"
 
-  ausf:
-    container_name: ausf
-    hostname: ausf
-    restart: always
+  {{ container_s(name='ausf', image='louisroyer/dev-free5gc-ausf', restart='always') }}
     environment:
       SBI_REGISTER_IP: "ausf.sbi"
       SBI_BINDING_IP: "{{ ipv4('ausf', 'sbi') }}"
@@ -204,48 +140,33 @@ services:
       MCC: "001"
       MNC: "01"
       NRF: "nrf.sbi:8000"
-    image: "louisroyer/dev-free5gc-ausf"
-    command: [" "]
     networks:
       sbi:
         ipv4_address: "{{ ipv4('ausf', 'sbi') }}"
 
-  udm:
-    container_name: udm
-    hostname: udm
-    restart: always
+  {{ container_s(name='udm', image='louisroyer/dev-free5gc-udm', restart='always') }}
     environment:
       SBI_REGISTER_IP: "udm.sbi"
       SBI_BINDING_IP: "{{ ipv4('udm', 'sbi') }}"
       SBI_BINDING_PORT: "8000"
       NRF: "nrf.sbi:8000"
-    image: "louisroyer/dev-free5gc-udm"
-    command: [" "]
     networks:
       sbi:
         ipv4_address: "{{ ipv4('udm', 'sbi') }}"
 
-  udr:
-    container_name: udr
-    hostname: udr
-    restart: always
+  {{ container_s(name='udr', image='louisroyer/dev-free5gc-udr', restart='always') }}
     environment:
       MONGO_HOST: "mongodb.db"
       SBI_REGISTER_IP: "udr.sbi"
       SBI_BINDING_IP: "{{ ipv4('udr', 'sbi') }}"
       SBI_BINDING_PORT: "8000"
       NRF: "nrf.sbi:8000"
-    image: "louisroyer/dev-free5gc-udr"
-    command: [" "]
     networks:
       db:
       sbi:
         ipv4_address: "{{ ipv4('udr', 'sbi') }}"
 
-  pcf:
-    container_name: pcf
-    hostname: pcf
-    restart: always
+  {{ container_s(name='pcf', image='louisroyer/dev-free5gc-pcf', restart='always') }}
     environment:
       MONGO_HOST: "mongodb.db"
       SBI_REGISTER_IP: "pcf.sbi"
@@ -258,10 +179,8 @@ services:
       db:
       sbi:
         ipv4_address: "{{ ipv4('pcf', 'sbi') }}"
-  smf:
-    container_name: smf
-    hostname: smf
-    restart: always
+
+  {{ container_s(name='smf', image='louisroyer/dev-free5gc-smf', restart='always') }}
     environment:
       SBI_REGISTER_IP: "smf.sbi"
       SBI_BINDING_IP: "{{ ipv4('smf', 'sbi') }}"
@@ -320,18 +239,13 @@ services:
           topology:
             - A: gNB2
               B: UPF
-    image: "louisroyer/dev-free5gc-smf"
-    command: [" "]
     networks:
       control:
         ipv4_address: "{{ ipv4('smf', 'control') }}"
       sbi:
         ipv4_address: "{{ ipv4('smf', 'sbi') }}"
 
-  populate:
-    container_name: populate
-    hostname: populate
-    restart: "no" # oneshot
+  {{ container_s(name='populate', image='louisroyer/free5gc-populate', restart='no') }}
     environment:
       MONGO_HOST: "mongodb.db"
       SLICES: |-
@@ -342,15 +256,10 @@ services:
       IMSI: |-
         - imsi-001010000000001
         - imsi-001010000000002
-    image: "louisroyer/free5gc-populate"
-    command: [" "]
     networks:
       db:
 
-  nssf:
-    container_name: nssf
-    hostname: nssf
-    restart: always
+  {{ container_s(name='nssf', image='louisroyer/dev-free5gc-nssf', restart='always') }}
     environment:
       SBI_REGISTER_IP: "nssf.sbi"
       SBI_BINDING_IP: "{{ ipv4('nssf', 'sbi') }}"
@@ -419,8 +328,6 @@ services:
               homeSnssai:
                 sst: 1
                 sd: 00001
-    image: "louisroyer/dev-free5gc-nssf"
-    command: [" "]
     networks:
       sbi:
         ipv4_address: "{{ ipv4('nssf', 'sbi') }}"
@@ -431,10 +338,7 @@ services:
 
 
   # TODO: s1 docker-setup
-  s1:
-    container_name: "s1"
-    hostname: "s1"
-    image: nginx
+  {{ container_s(name='s1', image='nginx', command=False) }}
     volumes:
       {{ volume_ro('nginx/instance.conf.template', '/etc/nginx/templates/instance.conf') }}
     environment:
@@ -446,10 +350,7 @@ services:
         ipv4_address: "{{ ipv4('s1', 'edge') }}"
 
   # TODO: s2 docker-setup
-  s2:
-    container_name: "s2"
-    hostname: "s2"
-    image: nginx
+  {{ container_s(name='s2', image='nginx', command=False) }}
     volumes:
       {{ volume_ro('nginx/instance.conf.template', '/etc/nginx/templates/instance.conf') }}
     environment:
