@@ -24,28 +24,44 @@ class _Context:
 
 class _Storage:
     def __init__(self):
-        self.items = {}
+        self._items = {}
 
     def set(self, f):
         '''Add (or replace) function into storage'''
-        self.items[f.__name__] = f
+        self._items[f.__name__] = f
 
     @property
     def dict(self) -> dict:
-        return dict(self.items)
+        return dict(self._items)
 
 class _JinjaDecorator:
     '''Jinja decorator'''
-    def __init__(self, func):
-        self.func = func
-        self._storage.set(self)
+    def __init__(self, *args, **kwargs):
+        self.output = 'str'
         self._context = _Context()
+        if len(args) and callable(args[0]):
+            self.func = args[0]
+            self._storage.set(self)
+        elif 'output' in kwargs.keys():
+            self.output = kwargs['output']
 
     @property
     def __name__(self) -> str:
         return self.func.__name__
 
     def __call__(self, *args, **kwargs):
+        if len(args) and callable(args[0]):
+            self.func = args[0]
+            self._storage.set(self)
+            if self.output == 'json':
+                def with_s(*args, **kwargs):
+                    return s(self._call_with_context(*args, **kwargs))
+                with_s.__name__ = f'{self.__name__}_s'
+                self._storage.set(with_s)
+            return self._call_with_context
+        return self._call_with_context(*args, **kwargs)
+
+    def _call_with_context(self, *args, **kwargs):
         try:
             if 'context' in self.func.__code__.co_varnames:
                 return self.func(*args, context=self._context, **kwargs)
@@ -150,7 +166,7 @@ def ipv6(host: str, subnet: str, context: _Context) -> str:
         raise('Unknown ip address')
     return addr
 
-@function
+@function(output='json')
 def container(name: str, image: str, ipv6: typing.Optional[bool] = False, iface_tun: typing.Optional[bool] = False,
               command: typing.Optional[str|bool] = None,
               cap_net_admin: typing.Optional[bool] = False, restart: typing.Optional[str] = None, debug: typing.Optional[bool] = False) -> str:
@@ -183,7 +199,3 @@ def container(name: str, image: str, ipv6: typing.Optional[bool] = False, iface_
     if iface_tun:
         containers[name]['devices'] = ["/dev/net/tun:/dev/net/tun"]
     return json.dumps(containers)
-
-@function
-def container_s(*args, **kwargs) -> str:
-    return s(container(*args, **kwargs))
