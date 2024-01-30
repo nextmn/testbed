@@ -8,6 +8,20 @@ import os.path
 import functools
 import shutil
 
+class _Context:
+    _context = {}
+
+    global alter_context
+    @staticmethod
+    def alter_context(c: dict, __context=_context) -> dict:
+        '''Overrides alter_context'''
+        __context.update(c)
+        return c
+
+    @property
+    def dict(self) -> dict:
+        return dict(self._context)
+
 class _Storage:
     def __init__(self):
         self.items = {}
@@ -25,12 +39,23 @@ class _JinjaDecorator:
     def __init__(self, func):
         self.func = func
         self._storage.set(self)
+        self._context = _Context()
 
     @property
     def __name__(self) -> str:
         return self.func.__name__
 
     def __call__(self, *args, **kwargs):
+        try:
+            if 'context' in self.func.__code__.co_varnames:
+                return self.func(*args, context=self._context, **kwargs)
+        except AttributeError:
+            pass
+        try:
+            if 'context' in self.func.__wrapped__.__code__.co_varnames:
+                return self.func(*args, context=self._context, **kwargs)
+        except AttributeError:
+            pass
         return self.func(*args, **kwargs)
 
 class filter(_JinjaDecorator):
@@ -97,3 +122,19 @@ def volume_ro(s: str, s2: str) -> str:
     os.makedirs(os.path.dirname(build), exist_ok=True)
     shutil.copy2(src=template, dst=build)
     return f'- ./{template}:{s2}:ro'
+
+@function
+def ipv4(host: str, subnet: str, context: _Context):
+    try:
+        addr = context.dict['subnets'][subnet][host]['ipv4_address']
+    except:
+        raise('Unknown ip address')
+    return addr
+
+@function
+def ipv6(host: str, subnet: str, context: _Context):
+    try:
+       addr = context.dict['subnets'][subnet][host]['ipv6_address']
+    except:
+        raise('Unknown ip address')
+    return addr
