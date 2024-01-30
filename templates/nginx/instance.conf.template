@@ -1,0 +1,9 @@
+server {
+	listen 80;
+	listen [::]:${NGINX_PORT};
+	server_name ${NGINX_SERVICE_ID};
+	location / {
+		return 200 'Service ID: ${NGINX_SERVICE_ID}\nInstance ID: ${NGINX_INSTANCE_ID}\n';
+		add_header Content-Type text/plain;
+	}
+}

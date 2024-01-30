@@ -3,6 +3,10 @@ import yaml
 import json
 import jinja2
 import typing
+import sys
+import os.path
+import functools
+import shutil
 
 class _Storage:
     def __init__(self):
@@ -67,3 +71,25 @@ def indent(s: str, width: typing.Union[int, str] = 4, first: bool = True, blank:
 def json_to_yaml(s: str) -> str:
     args = json.loads(s)
     return yaml.dump(args, sort_keys=False, default_flow_style=False)
+
+@functools.cache
+def build_and_template_dir():
+    pos = None
+    for i, j in enumerate(sys.argv[1:]):
+        if j == '-o':
+            pos = i + 1
+            break
+    if pos is None:
+        return (None, None)
+    build, template = sys.argv[1+pos], sys.argv[1+pos+1]
+    return os.path.dirname(build), os.path.dirname(template)
+
+@function
+@functools.cache
+def volume_ro(s: str, s2: str) -> str:
+    build, template = build_and_template_dir()
+    build, template = os.path.join(build, s), os.path.join(template, s)
+    print(f'Copying {template} into {build}.')
+    os.makedirs(os.path.dirname(build), exist_ok=True)
+    shutil.copy2(src=template, dst=build)
+    return f'- ./{template}:{s2}:ro'

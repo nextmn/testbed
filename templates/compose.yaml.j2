@@ -424,6 +424,41 @@ services:
     networks:
       sbi:
         ipv4_address: "10.1.1.133"
+  # r0:
+  # r1:
+  # rr:
+  # srgw0:
+
+  # TODO: s0 docker-setup
+  s0:
+    container_name: "s0"
+    hostname: "s0"
+    image: nginx
+    volumes:
+      {{ volume_ro('nginx/instance.conf.template', '/etc/nginx/templates/instance.conf') }}
+    environment:
+      NGINX_PORT: "80"
+      NGINX_SERVICE_ID: "10.4.0.1" # s0/service
+      NGINX_INSTANCE_ID: "10.1.5.131" # s0/edge
+    networks:
+      edge:
+        ipv4_address: "10.1.5.131"
+
+
+  # TODO: s1 docker-setup
+  s1:
+    container_name: "s1"
+    hostname: "s1"
+    image: nginx
+    volumes:
+      {{ volume_ro('nginx/instance.conf.template', '/etc/nginx/templates/instance.conf') }}
+    environment:
+      NGINX_PORT: "80"
+      NGINX_SERVICE_ID: "10.4.0.1" # s0/service
+      NGINX_INSTANCE_ID: "10.1.5.132" # s0/edge
+    networks:
+      edge:
+        ipv4_address: "10.1.5.132"
 
 networks:
   ran:

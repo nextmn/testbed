@@ -1,0 +1,20 @@
+geo $edge {
+	# Example:
+	# 10.0.1.0/24 site1.mec.test;
+
+	${NGINX_EDGE_MAP}
+}
+
+
+server {
+	listen 80;
+	listen [::]:${NGINX_PORT};
+	server_name ${NGINX_SERVICE_ID};
+	location / {
+		if ($edge) {
+			return 307 $scheme://$edge$request_uri;
+		}
+		return 200 'Service ID: ${NGINX_SERVICE_ID}\nInstance ID: ${NGINX_INSTANCE_ID}\n';
+		add_header Content-Type text/plain;
+	}
+}

@@ -1,20 +1,26 @@
-.PHONY: default u d t j test
-build:
-	mkdir build
+.PHONY: default u d t j test clean build
+build: build/compose.yaml
 
-build/compose.yaml: build compose.yaml.j2 scripts/jinja/customize.py config.yaml
-	j2 --customize scripts/jinja/customize.py -o build/compose.yaml compose.yaml.j2 config.yaml
+clean:
+	@rm -rf build
 
-test: build/compose.yaml
-	yamllint build
+build/compose.yaml: templates/compose.yaml.j2 scripts/jinja/customize.py config.yaml
+	@echo Building compose.yaml from jinja template
+	@mkdir -p build
+	@j2 --customize scripts/jinja/customize.py -o build/compose.yaml templates/compose.yaml.j2 config.yaml
 
-j: build/compose.yaml
+test: build
+	@echo Running yamllint
+	@yamllint build
 
-pull: build/compose.yaml
-	docker compose --project-directory build pull
+j: build
 
-u: build/compose.yaml
+pull: build/*
+	@echo Pulling Docker images
+	@docker compose --project-directory build pull
+
+u: build/*
 	docker compose --project-directory build up
 d:
-	# don't depends on docker-compose.yaml because we need the old version to delete all
+	@# don't depends on build-all because we need the old version to delete all
 	docker compose --project-directory build down
