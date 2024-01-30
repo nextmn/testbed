@@ -85,7 +85,7 @@ def j2_environment_params():
             trim_blocks=True,
             lstrip_blocks=True,
             line_statement_prefix='#~',
-            keep_trailing_newline=False,
+            keep_trailing_newline=True,
         )
 
 @filter

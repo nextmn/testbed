@@ -173,8 +173,6 @@ services:
       SBI_BINDING_IP: "{{ ipv4('pcf', 'sbi') }}"
       SBI_BINDING_PORT: "8000"
       NRF: "nrf.sbi:8000"
-    image: "louisroyer/dev-free5gc-pcf"
-    command: [" "]
     networks:
       db:
       sbi:
