@@ -72,7 +72,7 @@ def json_to_yaml(s: str) -> str:
     args = json.loads(s)
     return yaml.dump(args, sort_keys=False, default_flow_style=False)
 
-@functools.cache
+@functools.cache # parsing is only required once
 def build_and_template_dir():
     pos = None
     for i, j in enumerate(sys.argv[1:]):
@@ -80,12 +80,16 @@ def build_and_template_dir():
             pos = i + 1
             break
     if pos is None:
+        raise Exception('`outfile` (`-o`) option is mandatory with functions used by this template.')
         return (None, None)
-    build, template = sys.argv[1+pos], sys.argv[1+pos+1]
-    return os.path.dirname(build), os.path.dirname(template)
+    try:
+        build, template = sys.argv[1+pos], sys.argv[1+pos+1]
+        return os.path.dirname(build), os.path.dirname(template)
+    except:
+        raise Exception('Error while parsing j2cli options to find the outfile and template file.')
 
 @function
-@functools.cache
+@functools.cache # we don't want to copy more than once
 def volume_ro(s: str, s2: str) -> str:
     build, template = build_and_template_dir()
     build, template = os.path.join(build, s), os.path.join(template, s)
