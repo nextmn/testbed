@@ -18,7 +18,7 @@ build/compose.yaml: templates/compose.yaml.j2 scripts/jinja/customize.py config.
 
 test: build
 	@echo Running yamllint
-	@yamllint build
+	@yamllint build config.yaml
 
 j: build
 
