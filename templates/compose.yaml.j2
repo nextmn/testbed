@@ -344,6 +344,9 @@ services:
       DEBUG: "false"
       NEI_ADDR: "{{ ipv6_subnet('r1') }} {{ ipv6_subnet('rr') }} {{ ipv6_subnet('srgw0') }}"
       NEI_NH: "{{ ipv6('r1', 'dataplane') }} {{ ipv6('rr', 'dataplane') }} {{ ipv6('srgw0', 'dataplane') }}"
+      HOOKS: |-
+        pre-init-hook: remove-default-routes.sh
+        post-init-hook: routes-to-nei.sh
       LOCATOR: "{{ ipv6_subnet('r0') }}"
       ENDPOINTS: |-
         - prefix: "{{ ipv6_prefix('end-dx4', 'r0') }}"
@@ -373,6 +376,9 @@ services:
       DEBUG: "false"
       NEI_ADDR: "{{ ipv6_subnet('r0') }} {{ ipv6_subnet('rr') }} {{ ipv6_subnet('srgw0') }}"
       NEI_NH: "{{ ipv6('r0', 'dataplane') }} {{ ipv6('rr', 'dataplane') }} {{ ipv6('srgw0', 'dataplane') }}"
+      HOOKS: |-
+        pre-init-hook: remove-default-routes.sh
+        post-init-hook: routes-to-nei.sh
       LOCATOR: "{{ ipv6_subnet('r1') }}"
       ENDPOINTS: |-
         - prefix: "{{ ipv6_prefix('end-dx4', 'r1') }}"
