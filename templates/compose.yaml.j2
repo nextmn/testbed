@@ -338,6 +338,12 @@ services:
   # r1:
   # rr:
   # srgw0:
+  {{ container_s(name='srv6-ctrl', image='louisroyer/dev-nextmn-srv6-ctrl', restart='always') }}
+    environment:
+      N6: "{{ ipv4('srv6-ctrl', 'control') }}"
+    networks:
+      control:
+        ipv4_address: "{{ ipv4('srv6-ctrl', 'control') }}"
 
 
   {{ container_setup_s(name='s0') }}
