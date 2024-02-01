@@ -19,9 +19,7 @@ build/compose.yaml: templates/compose.yaml.j2 scripts/jinja/customize.py config.
 test: build
 	@echo Running yamllint
 	@yamllint build config.yaml
-
-full-test: test
-	@docker compose --project-directory build config
+	@docker compose --project-directory build config >/dev/null
 
 j: build
 
