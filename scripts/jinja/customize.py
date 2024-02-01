@@ -153,7 +153,7 @@ def volume_ro(s: str, s2: str) -> str:
     print(f'Copying {template} into {build}.')
     os.makedirs(os.path.dirname(build), exist_ok=True)
     shutil.copy2(src=template, dst=build)
-    return f'- ./{template}:{s2}:ro'
+    return f'- ./{s}:{s2}:ro'
 
 @function
 def ipv4(host: str, subnet: str, _context: _Context) -> str:
