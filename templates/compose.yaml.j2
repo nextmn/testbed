@@ -340,7 +340,27 @@ services:
   # srgw0:
 
 
-  # TODO: s1 docker-setup
+  {{ container_setup_s(name='s0') }}
+    environment:
+      ONESHOT: "true"
+      ROUTES_INIT: |-
+        - add {{ ipv4_subnet('slice0') }} via {{ ipv4('r0', 'edge') }}
+  {{ container_s(name='s0', image='nginx', command=False) }}
+    volumes:
+      {{ volume_ro('nginx/instance.conf.template', '/etc/nginx/templates/instance.conf') }}
+    environment:
+      NGINX_PORT: "80"
+      NGINX_SERVICE_ID: "{{ ipv4('s', 'service') }}"
+      NGINX_INSTANCE_ID: "{{ ipv4('s0', 'edge') }}"
+    networks:
+      edge:
+        ipv4_address: "{{ ipv4('s0', 'edge') }}"
+
+  {{ container_setup_s(name='s1') }}
+    environment:
+      ONESHOT: "true"
+      ROUTES_INIT: |-
+        - add {{ ipv4_subnet('slice0') }} via {{ ipv4('r1', 'edge') }}
   {{ container_s(name='s1', image='nginx', command=False) }}
     volumes:
       {{ volume_ro('nginx/instance.conf.template', '/etc/nginx/templates/instance.conf') }}
@@ -351,18 +371,6 @@ services:
     networks:
       edge:
         ipv4_address: "{{ ipv4('s1', 'edge') }}"
-
-  # TODO: s2 docker-setup
-  {{ container_s(name='s2', image='nginx', command=False) }}
-    volumes:
-      {{ volume_ro('nginx/instance.conf.template', '/etc/nginx/templates/instance.conf') }}
-    environment:
-      NGINX_PORT: "80"
-      NGINX_SERVICE_ID: "{{ ipv4('s', 'service') }}"
-      NGINX_INSTANCE_ID: "{{ ipv4('s2', 'edge') }}"
-    networks:
-      edge:
-        ipv4_address: "{{ ipv4('s2', 'edge') }}"
 
 networks:
   ran:

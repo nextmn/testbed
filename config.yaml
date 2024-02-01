@@ -59,9 +59,9 @@ subnets:
       ipv4_address: 10.1.5.129
     r1:
       ipv4_address: 10.1.5.130
-    s1:
+    s0:
       ipv4_address: 10.1.5.131
-    s2:
+    s1:
       ipv4_address: 10.1.5.132
   srgw0:
     srgw0:
@@ -69,3 +69,6 @@ subnets:
   service:
     s:
       ipv4_address: 10.4.0.1
+  slice0:
+    subnet:
+      ipv4_address: 10.2.0.0/24

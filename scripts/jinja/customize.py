@@ -170,6 +170,22 @@ def ipv6(host: str, subnet: str, context: _Context) -> str:
         raise('Unknown ip address')
     return addr
 
+@function
+def ipv4_subnet(subnet: str, context: _Context) -> str:
+    try:
+        addr = context.dict['subnets'][subnet]['subnet']['ipv4_address']
+    except:
+        raise('Unknown ip subnet')
+    return addr
+
+@function
+def ipv6_subnet(subnet: str, context: _Context) -> str:
+    try:
+       addr = context.dict['subnets'][subnet]['subnet']['ipv6_address']
+    except:
+        raise('Unknown ip subnet')
+    return addr
+
 @function(output='json')
 def container(name: str, image: str, ipv6: typing.Optional[bool] = False, iface_tun: typing.Optional[bool] = False,
               command: typing.Optional[str|bool] = None,
@@ -202,4 +218,16 @@ def container(name: str, image: str, ipv6: typing.Optional[bool] = False, iface_
         containers[name]['cap_add'] = ["NET_ADMIN"]
     if iface_tun:
         containers[name]['devices'] = ["/dev/net/tun:/dev/net/tun"]
+    return json.dumps(containers)
+
+@function(output='json')
+def container_setup(name: str) -> str:
+    containers = {}
+    containers[f'{name}-setup'] = {
+        "container_name": f'{name}-setup',
+        "network_mode": f'service{name}',
+        "image": 'louisroyer/docker-setup',
+        "cap_add": ['NET_ADMIN',],
+        "restart": "no",
+    }
     return json.dumps(containers)
