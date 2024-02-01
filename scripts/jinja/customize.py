@@ -66,14 +66,15 @@ class _JinjaDecorator:
         return self._call_with_context(*args, **kwargs)
 
     def _call_with_context(self, *args, **kwargs):
+        # TODO: if len(args) >  positional argument max num: raise TypeError(f'{self.func.__name__} takes {x} positional arguments but {n} were given')
         try:
-            if 'context' in self.func.__code__.co_varnames:
-                return self.func(*args, context=self._context, **kwargs)
+            if '_context' in self.func.__code__.co_varnames:
+                return self.func(*args, _context=self._context, **kwargs)
         except AttributeError:
             pass
         try:
-            if 'context' in self.func.__wrapped__.__code__.co_varnames:
-                return self.func(*args, context=self._context, **kwargs)
+            if '_context' in self.func.__wrapped__.__code__.co_varnames:
+                return self.func(*args, _context=self._context, **kwargs)
         except AttributeError:
             pass
         return self.func(*args, **kwargs)
@@ -155,35 +156,43 @@ def volume_ro(s: str, s2: str) -> str:
     return f'- ./{template}:{s2}:ro'
 
 @function
-def ipv4(host: str, subnet: str, context: _Context) -> str:
+def ipv4(host: str, subnet: str, _context: _Context) -> str:
     try:
-        addr = context.dict['subnets'][subnet][host]['ipv4_address']
+        addr = _context.dict['subnets'][subnet][host]['ipv4_address']
     except:
         raise('Unknown ip address')
     return addr
 
 @function
-def ipv6(host: str, subnet: str, context: _Context) -> str:
+def ipv6(host: str, subnet: str, _context: _Context) -> str:
     try:
-       addr = context.dict['subnets'][subnet][host]['ipv6_address']
+       addr = _context.dict['subnets'][subnet][host]['ipv6_address']
     except:
         raise('Unknown ip address')
     return addr
 
 @function
-def ipv4_subnet(subnet: str, context: _Context) -> str:
+def ipv4_subnet(subnet: str, _context: _Context) -> str:
     try:
-        addr = context.dict['subnets'][subnet]['subnet']['ipv4_address']
+        addr = _context.dict['subnets'][subnet]['subnet']['ipv4_address']
     except:
         raise('Unknown ip subnet')
     return addr
 
 @function
-def ipv6_subnet(subnet: str, context: _Context) -> str:
+def ipv6_subnet(subnet: str, _context: _Context) -> str:
     try:
-       addr = context.dict['subnets'][subnet]['subnet']['ipv6_address']
+       addr = _context.dict['subnets'][subnet]['subnet']['ipv6_address']
     except:
         raise('Unknown ip subnet')
+    return addr
+
+@function
+def ipv6_prefix(name: str, subnet: str, _context: _Context) -> str:
+    try:
+       addr = _context.dict['subnets'][subnet][name]['ipv6_prefix']
+    except:
+        raise('Unknown ip address')
     return addr
 
 @function(output='json')

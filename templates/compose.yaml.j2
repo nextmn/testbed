@@ -338,6 +338,27 @@ services:
         ipv4_address: "{{ ipv4('nssf', 'sbi') }}"
 
   {{ container_s(name='r0', image='louisroyer/dev-nextmn-srv6', restart='always', srv6=True  ) }}
+    volumes:
+      {{ volume_ro('nextmn/routes-to-nei.sh', '/usr/local/bin/routes-to-nei.sh') }}
+    environment:
+      DEBUG: "false"
+      NEI_ADDR: "{{ ipv6_subnet('r1') }} {{ ipv6_subnet('rr') }} {{ ipv6_subnet('srgw0') }}"
+      NEI_NH: "{{ ipv6('r1', 'dataplane') }} {{ ipv6('rr', 'dataplane') }} {{ ipv6('srgw0', 'dataplane') }}"
+      LOCATOR: "{{ ipv6_subnet('r0') }}"
+      ENDPOINTS: |-
+        - prefix: "{{ ipv6_prefix('end-dx4', 'r0') }}"
+          provider: "Linux"
+          behavior: "End.DX4"
+      HEADENDS: |-
+        - name: "downlink"
+          to: "{{ ipv4_subnet('slice0') }}"
+          provider: "Linux"
+          behavior: "H.Encaps"
+          policy:
+            - bsid:
+              segments-list:
+                - "{{ ipv6_prefix('end', 'rr') }}"
+                - #TODO
     networks:
       control:
       dataplane:
@@ -346,6 +367,27 @@ services:
         ipv4_address: "{{ ipv4('r0', 'edge') }}"
 
   {{ container_s(name='r1', image='louisroyer/dev-nextmn-srv6', restart='always', srv6=True ) }}
+    volumes:
+      {{ volume_ro('nextmn/routes-to-nei.sh', '/usr/local/bin/routes-to-nei.sh') }}
+    environment:
+      DEBUG: "false"
+      NEI_ADDR: "{{ ipv6_subnet('r0') }} {{ ipv6_subnet('rr') }} {{ ipv6_subnet('srgw0') }}"
+      NEI_NH: "{{ ipv6('r0', 'dataplane') }} {{ ipv6('rr', 'dataplane') }} {{ ipv6('srgw0', 'dataplane') }}"
+      LOCATOR: "{{ ipv6_subnet('r1') }}"
+      ENDPOINTS: |-
+        - prefix: "{{ ipv6_prefix('end-dx4', 'r1') }}"
+          provider: "Linux"
+          behavior: "End.DX4"
+      HEADENDS: |-
+        - name: "downlink"
+          to: "{{ ipv4_subnet('slice0') }}"
+          provider: "Linux"
+          behavior: "H.Encaps"
+          policy:
+            - bsid:
+              segments-list:
+                - "{{ ipv6_prefix('end', 'rr') }}"
+                - #TODO
     networks:
       control:
       dataplane:
@@ -354,12 +396,60 @@ services:
         ipv4_address: "{{ ipv4('r1', 'edge') }}"
 
   {{ container_s(name='rr', image='louisroyer/dev-nextmn-srv6', restart='always', srv6=True ) }}
+    volumes:
+      {{ volume_ro('nextmn/routes-to-nei.sh', '/usr/local/bin/routes-to-nei.sh') }}
+    environment:
+      DEBUG: "false"
+      NEI_ADDR: "{{ ipv6_subnet('r0') }} {{ ipv6_subnet('r1') }} {{ ipv6_subnet('srgw0') }}"
+      NEI_NH: "{{ ipv6('r0', 'dataplane') }} {{ ipv6('r1', 'dataplane') }} {{ ipv6('srgw0', 'dataplane') }}"
+      HOOKS: |-
+        pre-init-hook: remove-default-routes.sh
+        post-init-hook: routes-to-nei.sh
+      LOCATOR: "{{ ipv6_subnet('rr') }}"
+      ENDPOINTS: |-
+        - prefix: "{{ ipv6_prefix('end', 'rr') }}"
+          provider: "Linux"
+          behavior: "End"
     networks:
       control:
       dataplane:
         ipv6_address: "{{ ipv6('rr', 'dataplane') }}"
 
   {{ container_s(name='srgw0', image='louisroyer/dev-nextmn-srv6', restart='always', srv6=True ) }}
+    volumes:
+      {{ volume_ro('nextmn/routes-to-nei.sh', '/usr/local/bin/routes-to-nei.sh') }}
+    environment:
+      DEBUG: "false"
+      NEI_ADDR: "{{ ipv6_subnet('r0') }} {{ ipv6_subnet('r1') }} {{ ipv6_subnet('rr') }}"
+      NEI_NH: "{{ ipv6('r0', 'dataplane') }} {{ ipv6('r1', 'dataplane') }} {{ ipv6('rr', 'dataplane') }}"
+      HOOKS: |-
+        pre-init-hook: remove-default-routes.sh
+        post-init-hook: routes-to-nei.sh
+      LOCATOR: "{{ ipv6_subnet('srgw0') }}"
+      IPV4_HEADEND_PREFIX: "{{ ipv4('srgw0', 'srgw0') }}/32"
+      HEADENDS: |-
+        - name: "srgw0 uplink"
+          to: "{{ ipv4('srgw0', 'srgw0') }}/32"
+          provider: "NextMN"
+          behavior: "H.M.GTP4.D"
+          source-address-prefix: "{{ ipv6_prefix('end-m-gtp4-e', 'srgw0') }}"
+          policy:
+            - match:
+                teid: 0x01
+              bsid:
+                bsid-prefix: "{{ ipv6_prefix('end-dx4', 'r0') }}"
+                segments-list:
+                  - "{{ ipv6('end', 'rr') }}"
+            - match:
+                teid: 0x02
+              bsid:
+                bsid-prefix: "{{ ipv6_prefix('end-dx4', 'r1') }}"
+                segments-list:
+                  - "{{ ipv6('end', 'rr') }}"
+      ENDPOINTS: |-
+        - prefix: "{{ ipv6_prefix('end-m-gtp4-e', 'srgw0') }}"
+          provider: "NextMN"
+          behavior: "End.M.GTP4.E"
     networks:
       control:
         ipv4_address: "{{ ipv4('srgw0', 'control') }}"

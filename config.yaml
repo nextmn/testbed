@@ -63,12 +63,33 @@ subnets:
       ipv4_address: 10.1.5.131
     s1:
       ipv4_address: 10.1.5.132
-  srgw0:
-    srgw0:
-      ipv4_address: 10.3.0.1
   service:
     s:
       ipv4_address: 10.4.0.1
   slice0:
     subnet:
       ipv4_address: 10.2.0.0/24
+  srgw0:
+    subnet:
+      ipv6_address: fc00:1::/32
+    srgw0:
+      ipv4_address: 10.3.0.1
+    end-m-gtp4-e:
+      ipv6_prefix: fc00:1:1::/48
+
+  r0:
+    subnet:
+      ipv6_address: fc00:2::/32
+    end-dx4:
+      ipv6_prefix: fc00:2:1::/48
+  r1:
+    subnet:
+      ipv6_address: fc00:3::/32
+    end-dx4:
+      ipv6_prefix: fc00:3:1::/48
+  rr:
+    subnet:
+      ipv6_address: fc00:4::/32
+    end:
+      ipv6_prefix: fc00:4:1::/48
+      ipv6_address: "fc00:4:1::"
