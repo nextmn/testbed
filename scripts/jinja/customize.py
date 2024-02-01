@@ -225,7 +225,7 @@ def container_setup(name: str) -> str:
     containers = {}
     containers[f'{name}-setup'] = {
         "container_name": f'{name}-setup',
-        "network_mode": f'service{name}',
+        "network_mode": f'service:{name}',
         "image": 'louisroyer/docker-setup',
         "cap_add": ['NET_ADMIN',],
         "restart": "no",
