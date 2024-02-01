@@ -76,6 +76,10 @@ subnets:
       ipv4_address: 10.3.0.1
     end-m-gtp4-e:
       ipv6_prefix: fc00:1:1::/48
+    gnb1:
+      ipv6_address: fc00:1:1:0A01:0081:0000:0000:0100 #10.1.0.129
+    gnb2:
+      ipv6_address: fc00:1:1:0A01:0082:0000:0000:0100 #10.1.0.130
 
   r0:
     subnet:

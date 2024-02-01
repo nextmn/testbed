@@ -361,7 +361,7 @@ services:
             - bsid:
               segments-list:
                 - "{{ ipv6_prefix('end', 'rr') }}"
-                - #TODO
+                - "{{ ipv6('gnb1', 'srgw0') }}"
     networks:
       control:
       dataplane:
@@ -393,7 +393,7 @@ services:
             - bsid:
               segments-list:
                 - "{{ ipv6_prefix('end', 'rr') }}"
-                - #TODO
+                - "{{ ipv6('gnb2', 'srgw0') }}"
     networks:
       control:
       dataplane:
