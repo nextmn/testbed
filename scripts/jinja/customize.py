@@ -187,7 +187,7 @@ def ipv6_subnet(subnet: str, context: _Context) -> str:
     return addr
 
 @function(output='json')
-def container(name: str, image: str, ipv6: typing.Optional[bool] = False, iface_tun: typing.Optional[bool] = False,
+def container(name: str, image: str, ipv6: typing.Optional[bool] = False, srv6: typing.Optional[bool] = False, iface_tun: typing.Optional[bool] = False,
               command: typing.Optional[str|bool] = None,
               cap_net_admin: typing.Optional[bool] = False, restart: typing.Optional[str] = None, debug: typing.Optional[bool] = False) -> str:
     containers = {}
@@ -214,9 +214,17 @@ def container(name: str, image: str, ipv6: typing.Optional[bool] = False, iface_
         containers[name]['sysctls'] = {
             'net.ipv6.conf.all.disable_ipv6': 0,
         }
-    if cap_net_admin:
+    if srv6:
+        containers[name]['sysctls'] = {
+            'net.ipv6.conf.all.disable_ipv6': 0,
+            'net.ipv4.ip_forward': 1,
+            'net.ipv6.conf.all.forwarding': 1,
+            'net.ipv6.conf.all.seg6_enabled': 1,
+            'net.ipv6.conf.default.seg6_enabled': 1,
+        }
+    if cap_net_admin or srv6:
         containers[name]['cap_add'] = ["NET_ADMIN"]
-    if iface_tun:
+    if iface_tun or srv6:
         containers[name]['devices'] = ["/dev/net/tun:/dev/net/tun"]
     return json.dumps(containers)
 

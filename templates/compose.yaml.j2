@@ -334,10 +334,41 @@ services:
     networks:
       sbi:
         ipv4_address: "{{ ipv4('nssf', 'sbi') }}"
-  # r0:
-  # r1:
-  # rr:
-  # srgw0:
+
+  {{ container_s(name='r0', image='louisroyer/dev-nextmn-srv6', restart='always', srv6=True  ) }}
+    environment:
+    networks:
+      control:
+      dataplane:
+        ipv6_address: "{{ ipv6('r0', 'dataplane') }}"
+      edge:
+        ipv4_address: "{{ ipv4('r0', 'edge') }}"
+
+  {{ container_s(name='r1', image='louisroyer/dev-nextmn-srv6', restart='always', srv6=True ) }}
+    environment:
+    networks:
+      control:
+      dataplane:
+        ipv6_address: "{{ ipv6('r1', 'dataplane') }}"
+      edge:
+        ipv4_address: "{{ ipv4('r1', 'edge') }}"
+
+  {{ container_s(name='rr', image='louisroyer/dev-nextmn-srv6', restart='always', srv6=True ) }}
+    environment:
+    networks:
+      control:
+      dataplane:
+        ipv6_address: "{{ ipv6('rr', 'dataplane') }}"
+
+  {{ container_s(name='srgw0', image='louisroyer/dev-nextmn-srv6', restart='always', srv6=True ) }}
+    environment:
+    networks:
+      control:
+        ipv4_address: "{{ ipv4('srgw0', 'control') }}"
+      dataplane:
+        ipv4_address: "{{ ipv4('srgw0', 'dataplane') }}"
+        ipv6_address: "{{ ipv6('srgw0', 'dataplane') }}"
+
   {{ container_s(name='srv6-ctrl', image='louisroyer/dev-nextmn-srv6-ctrl', restart='always') }}
     environment:
       N6: "{{ ipv4('srv6-ctrl', 'control') }}"
