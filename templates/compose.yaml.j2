@@ -208,15 +208,15 @@ services:
           type: AN
         UPF:
           type: UPF
-          nodeID: "{{ ipv4('srgw0', 'control') }}"
-          addr: "{{ ipv4('srgw0', 'control') }}"
+          nodeID: "{{ ipv4('srv6-ctrl', 'control') }}"
+          addr: "{{ ipv4('srv6-ctrl', 'control') }}"
           sNssaiUpfInfos:
             - sNssai:
                 sst: 1
                 sd: 000001
               dnnUpfInfoList:
                 - dnn: srv6
-                  pool: 10.2.0.0/24 # slice0
+                  pool: {{ ipv4_subnet('slice0') }}
           interfaces:
             - interfaceType: N3
               endpoints:
