@@ -20,6 +20,9 @@ test: build
 	@echo Running yamllint
 	@yamllint build config.yaml
 
+full-test: test
+	@docker compose --project-directory build config
+
 j: build
 
 pull: build/*

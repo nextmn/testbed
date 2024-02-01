@@ -21,4 +21,4 @@ jobs:
         - name: Install depends
           run: sudo apt-get install -qy j2cli make yamllint
         - name: Run Yaml lint
-          run: make test
+          run: make full-test
