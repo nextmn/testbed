@@ -188,7 +188,7 @@ def ipv6_subnet(subnet: str, context: _Context) -> str:
 
 @function(output='json')
 def container(name: str, image: str, ipv6: typing.Optional[bool] = False, srv6: typing.Optional[bool] = False, iface_tun: typing.Optional[bool] = False,
-              command: typing.Optional[str|bool] = None,
+              command: typing.Optional[str|bool] = None, init: typing.Optional[bool] = False,
               cap_net_admin: typing.Optional[bool] = False, restart: typing.Optional[str] = None, debug: typing.Optional[bool] = False) -> str:
     containers = {}
     if debug:
@@ -226,6 +226,8 @@ def container(name: str, image: str, ipv6: typing.Optional[bool] = False, srv6: 
         containers[name]['cap_add'] = ["NET_ADMIN"]
     if iface_tun or srv6:
         containers[name]['devices'] = ["/dev/net/tun:/dev/net/tun"]
+    if init:
+        containers[name]['init'] = True
     return json.dumps(containers)
 
 @function(output='json')

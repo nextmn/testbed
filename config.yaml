@@ -53,7 +53,7 @@ subnets:
     r1:
       ipv6_address: fd00:0:0:0:3:8000:0:4
     rr:
-      ipv6_address: fd00:0:0:0:4:8000:0:5
+      ipv6_address: fd00:0:0:0:3:8000:0:5
   edge:
     r0:
       ipv4_address: 10.1.5.129

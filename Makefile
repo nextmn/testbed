@@ -2,7 +2,10 @@
 # Use of this source code is governed by a MIT-style license that can be
 # found in the LICENSE file.
 # SPDX-License-Identifier: MIT
-.PHONY: default u d t j test clean build
+
+PROFILES = --profile debug
+
+.PHONY: default u d t j e t l lf test clean build
 build: build/compose.yaml
 
 clean:
@@ -21,10 +24,23 @@ j: build
 
 pull: build/*
 	@echo Pulling Docker images
-	@docker compose --project-directory build pull
+	@docker compose $(PROFILES) --project-directory build pull
 
 u: build/*
-	docker compose --project-directory build up
+	@docker compose $(PROFILES) --project-directory build up -d
 d:
 	@# don't depends on build-all because we need the old version to delete all
-	docker compose --project-directory build down
+	@docker compose $(PROFILES) --project-directory build down
+
+e/%:
+	@# enter container
+	docker exec -it $(@F) bash
+t/%:
+	@# enter container in debug mode
+	docker exec -it $(@F)-debug bash
+l/%:
+	@# show container's logs
+	docker logs $(@F)
+lf/%:
+	@# show container's logs (continuous)
+	docker logs $(@F) -f

@@ -55,7 +55,7 @@
 | r1        | `nextmn-srv6`                 | r1        | disabled        | `fc00:3:1::/48`         | End.DX4                                     |
 | r1        | `nextmn-srv6`                 | edge      | `10.1.5.130`    | disabled                | H.Encaps + Route to instances in edge1 (s1) |
 | rr        | `nextmn-srv6`                 | control   | auto            | auto                    |                                             |
-| rr        | `nextmn-srv6`                 | dataplane | auto (not used) | `fd00:0:0:0:4:8000:0:5` | IPv6 routes to SR domain (srgw0, r0, r1)    |
+| rr        | `nextmn-srv6`                 | dataplane | auto (not used) | `fd00:0:0:0:3:8000:0:5` | IPv6 routes to SR domain (srgw0, r0, r1)    |
 | rr        | `nextmn-srv6`                 | rr        | disabled        | `fc00:4:1::/48`         | End                                         |
 | s0        | `nginx`                       | edge      | `10.1.5.131`    | disabled                | Route to slice0 via r0                      |
 | s0        | `ngnix`                       | service   | `10.4.0.1`      | disabled                |                                             |

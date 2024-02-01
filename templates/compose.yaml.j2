@@ -5,7 +5,7 @@
 name: "nextmn-testbed"
 
 services:
-  {{ container_s(name='ue1', image='louisroyer/ueransim-ue', ipv6=True, debug=True, iface_tun=True, cap_net_admin=True) }}
+  {{ container_s(name='ue1', image='louisroyer/ueransim-ue', ipv6=True, debug=True, iface_tun=True, cap_net_admin=True, init=True) }}
     environment:
       MSISDN: "0000000001"
       GNBS: |-
@@ -25,7 +25,7 @@ services:
     networks:
       ran: # automatic allocation by docker compose
 
-  {{ container_s(name='ue2', image='louisroyer/ueransim-ue', ipv6=True, debug=True, iface_tun=True, cap_net_admin=True) }}
+  {{ container_s(name='ue2', image='louisroyer/ueransim-ue', ipv6=True, debug=True, iface_tun=True, cap_net_admin=True, init=True) }}
     environment:
       MSISDN: "0000000002"
       GNBS: |-
@@ -125,6 +125,8 @@ services:
       db:
 
   {{ container_s(name='nrf', image='louisroyer/dev-free5gc-nrf', restart='always') }}
+    depends_on:
+      - mongodb # required to being able to deregister propertly
     environment:
       MONGO_HOST: "mongodb.db"
       SBI_REGISTER_IP: "nrf.sbi"
@@ -336,7 +338,6 @@ services:
         ipv4_address: "{{ ipv4('nssf', 'sbi') }}"
 
   {{ container_s(name='r0', image='louisroyer/dev-nextmn-srv6', restart='always', srv6=True  ) }}
-    environment:
     networks:
       control:
       dataplane:
@@ -345,7 +346,6 @@ services:
         ipv4_address: "{{ ipv4('r0', 'edge') }}"
 
   {{ container_s(name='r1', image='louisroyer/dev-nextmn-srv6', restart='always', srv6=True ) }}
-    environment:
     networks:
       control:
       dataplane:
@@ -354,14 +354,12 @@ services:
         ipv4_address: "{{ ipv4('r1', 'edge') }}"
 
   {{ container_s(name='rr', image='louisroyer/dev-nextmn-srv6', restart='always', srv6=True ) }}
-    environment:
     networks:
       control:
       dataplane:
         ipv6_address: "{{ ipv6('rr', 'dataplane') }}"
 
   {{ container_s(name='srgw0', image='louisroyer/dev-nextmn-srv6', restart='always', srv6=True ) }}
-    environment:
     networks:
       control:
         ipv4_address: "{{ ipv4('srgw0', 'control') }}"
@@ -408,6 +406,7 @@ services:
     networks:
       edge:
         ipv4_address: "{{ ipv4('s1', 'edge') }}"
+
 
 networks:
   ran:
