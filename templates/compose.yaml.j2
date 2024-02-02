@@ -369,9 +369,9 @@ services:
           behavior: "H.Encaps"
           policy:
             - bsid:
-              segments-list:
-                - "{{ ipv6('end', 'rr') }}"
-                - "{{ ipv6('gnb1', 'srgw0') }}"
+                segments-list:
+                  - "{{ ipv6('end', 'rr') }}"
+                  - "{{ ipv6('gnb1', 'srgw0') }}"
     networks:
       control:
       dataplane:
@@ -401,9 +401,9 @@ services:
           behavior: "H.Encaps"
           policy:
             - bsid:
-              segments-list:
-                - "{{ ipv6('end', 'rr') }}"
-                - "{{ ipv6('gnb2', 'srgw0') }}"
+                segments-list:
+                  - "{{ ipv6('end', 'rr') }}"
+                  - "{{ ipv6('gnb2', 'srgw0') }}"
     networks:
       control:
       dataplane:
