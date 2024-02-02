@@ -347,13 +347,13 @@ services:
       sbi:
         ipv4_address: "{{ ipv4('nssf', 'sbi') }}"
 
-  {{ container_s(name='r0', image='louisroyer/dev-nextmn-srv6', restart='always', srv6=True  ) }}
+  {{ container_s(name='r0', image='louisroyer/dev-nextmn-srv6', restart='always', srv6=True, debug=True) }}
     volumes:
       {{ volume_ro('nextmn/routes-to-nei.sh', '/usr/local/bin/routes-to-nei.sh') }}
     environment:
-      DEBUG: "false"
-      NEI_ADDR: "{{ ipv6_subnet('r1') }} {{ ipv6_subnet('rr') }} {{ ipv6_subnet('srgw0') }}"
-      NEI_NH: "{{ ipv6('r1', 'dataplane') }} {{ ipv6('rr', 'dataplane') }} {{ ipv6('srgw0', 'dataplane') }}"
+      DEBUG: "true"
+      NEI_ADDR: "{{ ipv6_subnet('r1') }} {{ ipv6_subnet('rr') }} {{ ipv6_subnet('srgw0') }} {{ ipv4('s', 'service') }}"
+      NEI_NH: "{{ ipv6('r1', 'dataplane') }} {{ ipv6('rr', 'dataplane') }} {{ ipv6('srgw0', 'dataplane') }} {{ ipv4('s0', 'edge') }}"
       HOOKS: |-
         pre-init-hook: remove-default-routes.sh
         post-init-hook: routes-to-nei.sh
@@ -370,7 +370,7 @@ services:
           policy:
             - bsid:
               segments-list:
-                - "{{ ipv6_prefix('end', 'rr') }}"
+                - "{{ ipv6('end', 'rr') }}"
                 - "{{ ipv6('gnb1', 'srgw0') }}"
     networks:
       control:
@@ -379,13 +379,13 @@ services:
       edge:
         ipv4_address: "{{ ipv4('r0', 'edge') }}"
 
-  {{ container_s(name='r1', image='louisroyer/dev-nextmn-srv6', restart='always', srv6=True ) }}
+  {{ container_s(name='r1', image='louisroyer/dev-nextmn-srv6', restart='always', srv6=True, debug=True ) }}
     volumes:
       {{ volume_ro('nextmn/routes-to-nei.sh', '/usr/local/bin/routes-to-nei.sh') }}
     environment:
-      DEBUG: "false"
-      NEI_ADDR: "{{ ipv6_subnet('r0') }} {{ ipv6_subnet('rr') }} {{ ipv6_subnet('srgw0') }}"
-      NEI_NH: "{{ ipv6('r0', 'dataplane') }} {{ ipv6('rr', 'dataplane') }} {{ ipv6('srgw0', 'dataplane') }}"
+      DEBUG: "true"
+      NEI_ADDR: "{{ ipv6_subnet('r0') }} {{ ipv6_subnet('rr') }} {{ ipv6_subnet('srgw0') }} {{ ipv4('s', 'service') }}"
+      NEI_NH: "{{ ipv6('r0', 'dataplane') }} {{ ipv6('rr', 'dataplane') }} {{ ipv6('srgw0', 'dataplane') }} {{ ipv4('s1', 'edge') }}"
       HOOKS: |-
         pre-init-hook: remove-default-routes.sh
         post-init-hook: routes-to-nei.sh
@@ -402,7 +402,7 @@ services:
           policy:
             - bsid:
               segments-list:
-                - "{{ ipv6_prefix('end', 'rr') }}"
+                - "{{ ipv6('end', 'rr') }}"
                 - "{{ ipv6('gnb2', 'srgw0') }}"
     networks:
       control:
@@ -411,11 +411,11 @@ services:
       edge:
         ipv4_address: "{{ ipv4('r1', 'edge') }}"
 
-  {{ container_s(name='rr', image='louisroyer/dev-nextmn-srv6', restart='always', srv6=True ) }}
+  {{ container_s(name='rr', image='louisroyer/dev-nextmn-srv6', restart='always', srv6=True, debug=True ) }}
     volumes:
       {{ volume_ro('nextmn/routes-to-nei.sh', '/usr/local/bin/routes-to-nei.sh') }}
     environment:
-      DEBUG: "false"
+      DEBUG: "true"
       NEI_ADDR: "{{ ipv6_subnet('r0') }} {{ ipv6_subnet('r1') }} {{ ipv6_subnet('srgw0') }}"
       NEI_NH: "{{ ipv6('r0', 'dataplane') }} {{ ipv6('r1', 'dataplane') }} {{ ipv6('srgw0', 'dataplane') }}"
       HOOKS: |-
@@ -431,11 +431,11 @@ services:
       dataplane:
         ipv6_address: "{{ ipv6('rr', 'dataplane') }}"
 
-  {{ container_s(name='srgw0', image='louisroyer/dev-nextmn-srv6', restart='always', srv6=True ) }}
+  {{ container_s(name='srgw0', image='louisroyer/dev-nextmn-srv6', restart='always', srv6=True, debug=True ) }}
     volumes:
       {{ volume_ro('nextmn/routes-to-nei.sh', '/usr/local/bin/routes-to-nei.sh') }}
     environment:
-      DEBUG: "false"
+      DEBUG: "true"
       NEI_ADDR: "{{ ipv6_subnet('r0') }} {{ ipv6_subnet('r1') }} {{ ipv6_subnet('rr') }}"
       NEI_NH: "{{ ipv6('r0', 'dataplane') }} {{ ipv6('r1', 'dataplane') }} {{ ipv6('rr', 'dataplane') }}"
       HOOKS: |-
@@ -457,7 +457,7 @@ services:
                 segments-list:
                   - "{{ ipv6('end', 'rr') }}"
             - match:
-                teid: 0x02
+                teid: 0x03
               bsid:
                 bsid-prefix: "{{ ipv6_prefix('end-dx4', 'r1') }}"
                 segments-list:
@@ -486,7 +486,13 @@ services:
       ONESHOT: "true"
       ROUTES_INIT: |-
         - add {{ ipv4_subnet('slice0') }} via {{ ipv4('r0', 'edge') }}
-  {{ container_s(name='s0', image='nginx', command=False) }}
+      PRE_INIT_HOOK: "ip"
+      PRE_INIT_HOOK_0: "addr"
+      PRE_INIT_HOOK_1: "add"
+      PRE_INIT_HOOK_2: "{{ ipv4('s', 'service') }}"
+      PRE_INIT_HOOK_3: "dev"
+      PRE_INIT_HOOK_4: "edge-0"
+  {{ container_s(name='s0', image='nginx', command=False, debug=True) }}
     volumes:
       {{ volume_ro('nginx/instance.conf.template', '/etc/nginx/templates/instance.conf') }}
     environment:
@@ -502,7 +508,13 @@ services:
       ONESHOT: "true"
       ROUTES_INIT: |-
         - add {{ ipv4_subnet('slice0') }} via {{ ipv4('r1', 'edge') }}
-  {{ container_s(name='s1', image='nginx', command=False) }}
+      PRE_INIT_HOOK: "ip"
+      PRE_INIT_HOOK_0: "addr"
+      PRE_INIT_HOOK_1: "add"
+      PRE_INIT_HOOK_2: "{{ ipv4('s', 'service') }}"
+      PRE_INIT_HOOK_3: "dev"
+      PRE_INIT_HOOK_4: "edge-0"
+  {{ container_s(name='s1', image='nginx', command=False, debug=True) }}
     volumes:
       {{ volume_ro('nginx/instance.conf.template', '/etc/nginx/templates/instance.conf') }}
     environment:
@@ -562,7 +574,7 @@ networks:
     enable_ipv6: true
     driver: bridge
     driver_opts:
-      com.docker.networks.container_iface_prefix: control-
+      com.docker.network.container_iface_prefix: control-
       com.docker.network.bridge.name: control
     ipam:
       driver: default
@@ -578,7 +590,7 @@ networks:
     enable_ipv6: true
     driver: bridge
     driver_opts:
-      com.docker.networks.container_iface_prefix: dataplane-
+      com.docker.network.container_iface_prefix: dataplane-
       com.docker.network.bridge.name: dataplane
     ipam:
       driver: default
@@ -594,7 +606,7 @@ networks:
     enable_ipv6: false
     driver: bridge
     driver_opts:
-      com.docker.networks.container_iface_prefix: edge-
+      com.docker.network.container_iface_prefix: edge-
       com.docker.network.bridge.name: edge
     ipam:
       driver: default
