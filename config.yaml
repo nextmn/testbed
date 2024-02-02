@@ -80,20 +80,22 @@ subnets:
     end-m-gtp4-e:
       ipv6_prefix: fc00:1:1::/48
     gnb1:
-      ipv6_address: fc00:1:1:0A01:0081:0000:0000:0100 # 10.1.0.129
+      ipv6_address: fc00:1:1:0A01:0081:0000:0000:0200 # fc00:1:1 + hex(10.1.0.129) = 0A 01 00 81 + Args.Mob.Session ( 0 + 0000 0002) + padding
     gnb2:
-      ipv6_address: fc00:1:1:0A01:0082:0000:0000:0100 # 10.1.0.130
+      ipv6_address: fc00:1:1:0A01:0082:0000:0000:0400 # fc00:1:1 + hex(10.1.0.130) = 0A 01 00 82 + Args.Mob.Session ( 0 + 0000 0004) + padding
 
   r0:
     subnet:
       ipv6_address: fc00:2::/32
     end-dx4:
       ipv6_prefix: fc00:2:1::/48
+      ipv6_address: "fc00:2:1:0A03:0001:0868::30" # src address: fc00:2:1 + hex(srgw0) = hex(10.3.0.1) = 0A 03 00 01 + hex(udp port)= hex(2152) = 0x868 + padding + prefix len = hex(48) = 0x30
   r1:
     subnet:
       ipv6_address: fc00:3::/32
     end-dx4:
       ipv6_prefix: fc00:3:1::/48
+      ipv6_address: "fc00:3:1:0A03:0001:0868::30" # src address: fc00:3:1 + hex(srgw0) = hex(10.3.0.1) = 0A 03 00 01 + hex(udp port)= hex(2152) = 0x868 + padding + prefix len = hex(48) = 0x30
   rr:
     subnet:
       ipv6_address: fc00:4::/32

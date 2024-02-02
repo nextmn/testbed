@@ -362,6 +362,8 @@ services:
         - prefix: "{{ ipv6_prefix('end-dx4', 'r0') }}"
           provider: "Linux"
           behavior: "End.DX4"
+      LINUX_HEADEND_SET_SOURCE_ADDRESS: "{{ ipv6('end-dx4', 'r0') }}"
+      IPV4_HEADEND_PREFIX: "{{ ipv4_subnet('slice0') }}"
       HEADENDS: |-
         - name: "downlink"
           to: "{{ ipv4_subnet('slice0') }}"
@@ -394,6 +396,8 @@ services:
         - prefix: "{{ ipv6_prefix('end-dx4', 'r1') }}"
           provider: "Linux"
           behavior: "End.DX4"
+      LINUX_HEADEND_SET_SOURCE_ADDRESS: "{{ ipv6('end-dx4', 'r1') }}"
+      IPV4_HEADEND_PREFIX: "{{ ipv4_subnet('slice0') }}"
       HEADENDS: |-
         - name: "downlink"
           to: "{{ ipv4_subnet('slice0') }}"
