@@ -80,9 +80,9 @@ subnets:
     end-m-gtp4-e:
       ipv6_prefix: fc00:1:1::/48
     gnb1:
-      ipv6_address: fc00:1:1:0A01:0081:0000:0000:0200 # fc00:1:1 + hex(10.1.0.129) = 0A 01 00 81 + Args.Mob.Session ( 0 + 0000 0002) + padding
+      ipv6_address: fc00:1:1:0A01:0481:0000:0000:0100 # fc00:1:1 + hex(gnb1) = hex(10.1.4.129) = 0A 01 04 81 + Args.Mob.Session ( 0 + 0000 0001) + padding
     gnb2:
-      ipv6_address: fc00:1:1:0A01:0082:0000:0000:0400 # fc00:1:1 + hex(10.1.0.130) = 0A 01 00 82 + Args.Mob.Session ( 0 + 0000 0004) + padding
+      ipv6_address: fc00:1:1:0A01:0482:0000:0000:0100 # fc00:1:1 + hex(gnb2) = hex(10.1.4.130) = 0A 01 04 82 + Args.Mob.Session ( 0 + 0000 0001) + padding
 
   r0:
     subnet:
