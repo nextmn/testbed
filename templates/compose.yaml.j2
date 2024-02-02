@@ -100,6 +100,8 @@ services:
         ipv4_address: "{{ ipv4('gnb2', 'dataplane') }}"
 
   {{ container_s(name='amf', image='louisroyer/dev-free5gc-amf', restart='always') }}
+    depends_on:
+      - nrf # required to being able to deregister propertly
     environment:
       N2: "{{ ipv4('amf', 'control') }}"
       SBI_REGISTER_IP: "amf.sbi"
@@ -140,6 +142,8 @@ services:
         ipv4_address: "{{ ipv4('nrf', 'sbi') }}"
 
   {{ container_s(name='ausf', image='louisroyer/dev-free5gc-ausf', restart='always') }}
+    depends_on:
+      - nrf # required to being able to deregister propertly
     environment:
       SBI_REGISTER_IP: "ausf.sbi"
       SBI_BINDING_IP: "{{ ipv4('ausf', 'sbi') }}"
@@ -152,6 +156,8 @@ services:
         ipv4_address: "{{ ipv4('ausf', 'sbi') }}"
 
   {{ container_s(name='udm', image='louisroyer/dev-free5gc-udm', restart='always') }}
+    depends_on:
+      - nrf # required to being able to deregister propertly
     environment:
       SBI_REGISTER_IP: "udm.sbi"
       SBI_BINDING_IP: "{{ ipv4('udm', 'sbi') }}"
@@ -162,6 +168,8 @@ services:
         ipv4_address: "{{ ipv4('udm', 'sbi') }}"
 
   {{ container_s(name='udr', image='louisroyer/dev-free5gc-udr', restart='always') }}
+    depends_on:
+      - nrf # required to being able to deregister propertly
     environment:
       MONGO_HOST: "mongodb.db"
       SBI_REGISTER_IP: "udr.sbi"
@@ -174,6 +182,8 @@ services:
         ipv4_address: "{{ ipv4('udr', 'sbi') }}"
 
   {{ container_s(name='pcf', image='louisroyer/dev-free5gc-pcf', restart='always') }}
+    depends_on:
+      - nrf # required to being able to deregister propertly
     environment:
       MONGO_HOST: "mongodb.db"
       SBI_REGISTER_IP: "pcf.sbi"
@@ -186,6 +196,8 @@ services:
         ipv4_address: "{{ ipv4('pcf', 'sbi') }}"
 
   {{ container_s(name='smf', image='louisroyer/dev-free5gc-smf', restart='always') }}
+    depends_on:
+      - nrf # required to being able to deregister propertly
     environment:
       SBI_REGISTER_IP: "smf.sbi"
       SBI_BINDING_IP: "{{ ipv4('smf', 'sbi') }}"
@@ -204,9 +216,7 @@ services:
                 ipv4: 9.9.9.9 # TODO: replace with local dns
                 ipv6: 2620:fe::fe
       UP_NODES: |-
-        gnb1:
-          type: AN
-        gnb2:
+        GNB:
           type: AN
         UPF:
           type: UPF
@@ -218,7 +228,10 @@ services:
                 sd: 000001
               dnnUpfInfoList:
                 - dnn: srv6
-                  pool: {{ ipv4_subnet('slice0') }}
+                  pools:
+                    - cidr: {{ ipv4_subnet('slice0') }}
+                  staticPools:
+                    - cidr: {{ ipv4_subnet('slice0-static') }}
           interfaces:
             - interfaceType: N3
               endpoints:
@@ -227,22 +240,15 @@ services:
                 - srv6
       ULCL: "true"
       LINKS: |-
-        - A: gNB1
-          B: UPF
-        - A: gNB2
+        - A: GNB
           B: UPF
       UEROUTING_INFO: |-
         none1:
           members:
             - imsi-001010000000001
-          topology:
-            - A: gNB1
-              B: UPF
-        none2:
-          members:
             - imsi-001010000000002
           topology:
-            - A: gNB2
+            - A: GNB
               B: UPF
     networks:
       control:
@@ -251,6 +257,8 @@ services:
         ipv4_address: "{{ ipv4('smf', 'sbi') }}"
 
   {{ container_s(name='populate', image='louisroyer/free5gc-populate', restart='no') }}
+    depends_on:
+      - mongodb # required to being able to deregister propertly
     environment:
       MONGO_HOST: "mongodb.db"
       SLICES: |-
@@ -265,6 +273,8 @@ services:
       db:
 
   {{ container_s(name='nssf', image='louisroyer/dev-free5gc-nssf', restart='always') }}
+    depends_on:
+      - nrf # required to being able to deregister propertly
     environment:
       SBI_REGISTER_IP: "nssf.sbi"
       SBI_BINDING_IP: "{{ ipv4('nssf', 'sbi') }}"

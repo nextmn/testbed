@@ -69,6 +69,9 @@ subnets:
   slice0:
     subnet:
       ipv4_address: 10.2.0.0/24
+  slice0-static:
+    subnet:
+      ipv4_address: 10.2.0.128/25
   srgw0:
     subnet:
       ipv6_address: fc00:1::/32
@@ -77,9 +80,9 @@ subnets:
     end-m-gtp4-e:
       ipv6_prefix: fc00:1:1::/48
     gnb1:
-      ipv6_address: fc00:1:1:0A01:0081:0000:0000:0100 #10.1.0.129
+      ipv6_address: fc00:1:1:0A01:0081:0000:0000:0100 # 10.1.0.129
     gnb2:
-      ipv6_address: fc00:1:1:0A01:0082:0000:0000:0100 #10.1.0.130
+      ipv6_address: fc00:1:1:0A01:0082:0000:0000:0100 # 10.1.0.130
 
   r0:
     subnet:

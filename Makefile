@@ -29,6 +29,8 @@ pull: build/*
 
 u: build/*
 	@docker compose $(PROFILES) --project-directory build up -d
+u-fg: build/*
+	@docker compose $(PROFILES) --project-directory build up
 d:
 	@# don't depends on build-all because we need the old version to delete all
 	@docker compose $(PROFILES) --project-directory build down
