@@ -1,11 +1,13 @@
 # Testbed
 ![CI](https://github.com/nextmn/testbed/actions/workflows/main.yml/badge.svg)
 
-Warning: __WORK IN PROGRESS__
 ## Getting started
 ### Dependencies
-- `docker-ce`
-- `docker-compose-plugin`
+This testbed has been developped using Debian 12 (Bookworm), but it should also work on all other Linux distributions supported by Docker as long as a Linux kernel is used on the host system (incompatible with Microsoft WSL).
+
+The following Debian's packets are required (or their equivalent on your distribution):
+- [`docker-ce`](https://docs.docker.com/engine/install/debian/#install-using-the-repository)
+- [`docker-compose-plugin`](https://docs.docker.com/compose/install/linux/#install-using-the-repository)
 - `j2cli`
 - `make`
 
@@ -18,10 +20,12 @@ make d # stop containers
 ```
 
 #### Configuration
-TODO: Configuration is done in the file `config.yaml`.
+Configuration is done in the file `config.yaml`. Currently, it only contains a list of IP addresses.
 
 #### Documentation
 Documentation is available in the `doc` directory.
+
+![edge intance access through SRv6](./doc/img/edge-instance-access-through-srv6.svg)
 
 ### Contributing
 #### Syntax coloration
