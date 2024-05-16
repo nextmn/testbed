@@ -32,7 +32,7 @@ Documentation is available in the `doc` directory.
 To enable syntax coloration in vim, you can use the following plugin: [`louisroyer/vim-yaml-jinja`](https://github.com/louisroyer/vim-yaml-jinja).
 
 #### PCAP analysis
-To analyse RAN traffic, you can install the following Wireshark/Tshark plugin : [`louisroyer/RLS-wireshark-dissector`](https://github.com/louisroyer/RLS-wireshark-dissector).
+To analyse RAN traffic, you can install the following Wireshark/Tshark plugin : [`nextmn/RLS-wireshark-dissector`](https://github.com/nextmn/RLS-wireshark-dissector).
 
 ### Known issues
 Docker version `5:25.0.0` has [a bug](https://github.com/moby/moby/issues/47120) that prevent running the testbed. Use a different version (`5:25.0.1` or higher, or `5:24.*` or lower).
