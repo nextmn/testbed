@@ -386,6 +386,7 @@ services:
                   - "{{ ipv6('gnb1', 'srgw0') }}"
     networks:
       control:
+        ipv6_address: "{{ ipv6('r0', 'control') }}"
       dataplane:
         ipv6_address: "{{ ipv6('r0', 'dataplane') }}"
       edge:
@@ -426,6 +427,7 @@ services:
                   - "{{ ipv6('gnb2', 'srgw0') }}"
     networks:
       control:
+        ipv6_address: "{{ ipv6('r1', 'control') }}"
       dataplane:
         ipv6_address: "{{ ipv6('r1', 'dataplane') }}"
       edge:
@@ -454,6 +456,7 @@ services:
           behavior: "End"
     networks:
       control:
+        ipv6_address: "{{ ipv6('rr', 'control') }}"
       dataplane:
         ipv6_address: "{{ ipv6('rr', 'dataplane') }}"
 
@@ -501,6 +504,7 @@ services:
     networks:
       control:
         ipv4_address: "{{ ipv4('srgw0', 'control') }}"
+        ipv6_address: "{{ ipv6('srgw0', 'control') }}"
       dataplane:
         ipv4_address: "{{ ipv4('srgw0', 'dataplane') }}"
         ipv6_address: "{{ ipv6('srgw0', 'dataplane') }}"
@@ -514,6 +518,7 @@ services:
     networks:
       control:
         ipv4_address: "{{ ipv4('srv6-ctrl', 'control') }}"
+        ipv6_address: "{{ ipv6('srv6-ctrl', 'control') }}"
 
 
   {{ container_setup_s(name='s0') }}
