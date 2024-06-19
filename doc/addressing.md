@@ -30,6 +30,8 @@
 
 
 ## Hosts
+> [!IMPORTANT] IPv4 addresses ending with `.254` and IPv6 addresses ending with `:8000:0:1` are used by Docker internally (gateway).
+
 | Name      | Image                         | Network   | IPv4 address    | IPv6 address            | Comment                                     |
 |-----------|-------------------------------|-----------|-----------------|-------------------------|---------------------------------------------|
 | ue1       | `louisroyer/ueransim-ue`      | ran       | auto            | auto                    |                                             |
@@ -61,7 +63,7 @@
 | s0        | `ngnix`                       | service   | `10.4.0.1`      | disabled                |                                             |
 | s1        | `nginx`                       | edge      | `10.1.5.132`    | disabled                | Route to slice0 via r1                      |
 | s1        | `ngnix`                       | service   | `10.4.0.1`      | disabled                |                                             |
-| srv6-ctrl | `nextmn-srv6-ctrl`            | control   | `10.1.3.132`    | `fd00:0:0:0:2:8000:0:1` |                                             |
+| srv6-ctrl | `nextmn-srv6-ctrl`            | control   | `10.1.3.132`    | `fd00:0:0:0:2:8000:0:2` |                                             |
 | amf       | `free5gc-amf`                 | control   | `10.1.3.133`    | auto                    |                                             |
 | amf       | `free5gc-amf`                 | sbi       | `10.1.1.129`    | disabled                |                                             |
 | smf       | `free5gc-smf`                 | control   | `10.1.3.134`    | auto                    |                                             |
