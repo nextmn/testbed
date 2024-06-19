@@ -42,26 +42,26 @@
 | gnb2      | `louisroyer/ueransim-gnb`     | ran       | `10.1.0.130`    | `fd00:0:0:0:1:8000:0:3` |                                             |
 | gnb2      | `louisroyer/ueransim-gnb`     | control   | `10.1.3.130`    | auto                    |                                             |
 | gnb2      | `louisroyer/ueransim-gnb`     | dataplane | `10.1.4.130`    | auto (not used)         | Route to srgw0                              |
-| srgw0     | `nextmn-srv6`                 | control   | `10.1.3.131`    | auto                    |                                             |
+| srgw0     | `nextmn-srv6`                 | control   | `10.1.3.131`    | `fd00:0:0:0:2:8000:0:2` |                                             |
 | srgw0     | `nextmn-srv6`                 | dataplane | `10.1.4.131`    | `fd00:0:0:0:3:8000:0:2` | IPv6 routes to SR domain (rr)               |
 | srgw0     | `nextmn-srv6`                 | srgw0     | `10.3.0.1`      | disabled                | H.M.GTP4.D                                  |
 | srgw0     | `nextmn-srv6`                 | srgw0     | disabled        | `fc00:1:1::/48`         | End.M.GTP4.E                                |
-| r0        | `nextmn-srv6`                 | control   | auto            | auto                    |                                             |
+| r0        | `nextmn-srv6`                 | control   | auto            | `fd00:0:0:0:2:8000:0:4` |                                             |
 | r0        | `nextmn-srv6`                 | dataplane | auto (not used) | `fd00:0:0:0:3:8000:0:3` | IPv6 routes to SR domain (r1, rr)           |
 | r0        | `nextmn-srv6`                 | r0        | disabled        | `fc00:2:1::/48`         | End.DX4                                     |
 | r0        | `nextmn-srv6`                 | edge      | `10.1.5.129`    | disabled                | H.Encaps + Route to instance in edge0 (s0)  |
-| r1        | `nextmn-srv6`                 | control   | auto            | auto                    |                                             |
+| r1        | `nextmn-srv6`                 | control   | auto            | `fd00:0:0:0:2:8000:0:5` |                                             |
 | r1        | `nextmn-srv6`                 | dataplane | auto (not used) | `fd00:0:0:0:3:8000:0:4` | IPv6 routes to SR domain (r0, rr)           |
 | r1        | `nextmn-srv6`                 | r1        | disabled        | `fc00:3:1::/48`         | End.DX4                                     |
 | r1        | `nextmn-srv6`                 | edge      | `10.1.5.130`    | disabled                | H.Encaps + Route to instances in edge1 (s1) |
-| rr        | `nextmn-srv6`                 | control   | auto            | auto                    |                                             |
-| rr        | `nextmn-srv6`                 | dataplane | auto (not used) | `fd00:0:0:0:3:8000:0:5` | IPv6 routes to SR domain (srgw0, r0, r1)    |
+| rr        | `nextmn-srv6`                 | control   | auto            | `fd00:0:0:0:2:8000:0:3` |                                             |
+| rr        | `nextmn-srv6`                 | dataplane | auto (not used) | `fd00:0:0:0:3:8000:0:3` | IPv6 routes to SR domain (srgw0, r0, r1)    |
 | rr        | `nextmn-srv6`                 | rr        | disabled        | `fc00:4:1::/48`         | End                                         |
 | s0        | `nginx`                       | edge      | `10.1.5.131`    | disabled                | Route to slice0 via r0                      |
 | s0        | `ngnix`                       | service   | `10.4.0.1`      | disabled                |                                             |
 | s1        | `nginx`                       | edge      | `10.1.5.132`    | disabled                | Route to slice0 via r1                      |
 | s1        | `ngnix`                       | service   | `10.4.0.1`      | disabled                |                                             |
-| srv6-ctrl | `nextmn-srv6-ctrl`            | control   | `10.1.3.132`    | auto                    |                                             |
+| srv6-ctrl | `nextmn-srv6-ctrl`            | control   | `10.1.3.132`    | `fd00:0:0:0:2:8000:0:1` |                                             |
 | amf       | `free5gc-amf`                 | control   | `10.1.3.133`    | auto                    |                                             |
 | amf       | `free5gc-amf`                 | sbi       | `10.1.1.129`    | disabled                |                                             |
 | smf       | `free5gc-smf`                 | control   | `10.1.3.134`    | auto                    |                                             |
