@@ -352,6 +352,8 @@ services:
         ipv4_address: "{{ ipv4('nssf', 'sbi') }}"
 
   {{ container_s(name='r0', image='louisroyer/dev-nextmn-srv6', restart='always', srv6=True, debug=True) }}
+    depends_on:
+      - srv6-ctrl
     volumes:
       {{ volume_ro('nextmn/routes-to-nei.sh', '/usr/local/bin/routes-to-nei.sh') }}
     environment:
@@ -361,6 +363,10 @@ services:
       HOOKS: |-
         pre-init-hook: remove-default-routes.sh
         post-init-hook: routes-to-nei.sh
+      HTTP_ADDRESS: "{{ ipv6('r0', 'control') }}"
+      HTTP_PORT: "8080"
+      CONTROLLER_URI: "http://[{{ ipv6('srv6-ctrl', 'control') }}]:8080"
+      BACKBONE_IP: "{{ ipv6('r0', 'dataplane') }}"
       LOCATOR: "{{ ipv6_subnet('r0') }}"
       ENDPOINTS: |-
         - prefix: "{{ ipv6_prefix('end-dx4', 'r0') }}"
@@ -386,6 +392,8 @@ services:
         ipv4_address: "{{ ipv4('r0', 'edge') }}"
 
   {{ container_s(name='r1', image='louisroyer/dev-nextmn-srv6', restart='always', srv6=True, debug=True ) }}
+    depends_on:
+      - srv6-ctrl
     volumes:
       {{ volume_ro('nextmn/routes-to-nei.sh', '/usr/local/bin/routes-to-nei.sh') }}
     environment:
@@ -395,6 +403,10 @@ services:
       HOOKS: |-
         pre-init-hook: remove-default-routes.sh
         post-init-hook: routes-to-nei.sh
+      HTTP_ADDRESS: "{{ ipv6('r1', 'control') }}"
+      HTTP_PORT: "8080"
+      CONTROLLER_URI: "http://[{{ ipv6('srv6-ctrl', 'control') }}]:8080"
+      BACKBONE_IP: "{{ ipv6('r1', 'dataplane') }}"
       LOCATOR: "{{ ipv6_subnet('r1') }}"
       ENDPOINTS: |-
         - prefix: "{{ ipv6_prefix('end-dx4', 'r1') }}"
@@ -420,6 +432,8 @@ services:
         ipv4_address: "{{ ipv4('r1', 'edge') }}"
 
   {{ container_s(name='rr', image='louisroyer/dev-nextmn-srv6', restart='always', srv6=True, debug=True ) }}
+    depends_on:
+      - srv6-ctrl
     volumes:
       {{ volume_ro('nextmn/routes-to-nei.sh', '/usr/local/bin/routes-to-nei.sh') }}
     environment:
@@ -429,6 +443,10 @@ services:
       HOOKS: |-
         pre-init-hook: remove-default-routes.sh
         post-init-hook: routes-to-nei.sh
+      HTTP_ADDRESS: "{{ ipv6('rr', 'control') }}"
+      HTTP_PORT: "8080"
+      CONTROLLER_URI: "http://[{{ ipv6('srv6-ctrl', 'control') }}]:8080"
+      BACKBONE_IP: "{{ ipv6('rr', 'dataplane') }}"
       LOCATOR: "{{ ipv6_subnet('rr') }}"
       ENDPOINTS: |-
         - prefix: "{{ ipv6_prefix('end', 'rr') }}"
@@ -440,6 +458,8 @@ services:
         ipv6_address: "{{ ipv6('rr', 'dataplane') }}"
 
   {{ container_s(name='srgw0', image='louisroyer/dev-nextmn-srv6', restart='always', srv6=True, debug=True ) }}
+    depends_on:
+      - srv6-ctrl
     volumes:
       {{ volume_ro('nextmn/routes-to-nei.sh', '/usr/local/bin/routes-to-nei.sh') }}
     environment:
@@ -449,6 +469,10 @@ services:
       HOOKS: |-
         pre-init-hook: remove-default-routes.sh
         post-init-hook: routes-to-nei.sh
+      HTTP_ADDRESS: "{{ ipv6('srgw0', 'control') }}"
+      HTTP_PORT: "8080"
+      CONTROLLER_URI: "http://[{{ ipv6('srv6-ctrl', 'control') }}]:8080"
+      BACKBONE_IP: "{{ ipv6('srgw0', 'dataplane') }}"
       LOCATOR: "{{ ipv6_subnet('srgw0') }}"
       IPV4_HEADEND_PREFIX: "{{ ipv4('srgw0', 'srgw0') }}/32"
       HEADENDS: |-
@@ -483,7 +507,10 @@ services:
 
   {{ container_s(name='srv6-ctrl', image='louisroyer/dev-nextmn-srv6-ctrl', restart='always') }}
     environment:
+      DEBUG: "true"
       N6: "{{ ipv4('srv6-ctrl', 'control') }}"
+      HTTP_ADDRESS: "{{ ipv6('srv6-ctrl', 'control') }}"
+      HTTP_PORT: "8080"
     networks:
       control:
         ipv4_address: "{{ ipv4('srv6-ctrl', 'control') }}"
