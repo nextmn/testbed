@@ -30,7 +30,7 @@
 
 
 ## Hosts
-> [!IMPORTANT] IPv4 addresses ending with `.254` and IPv6 addresses ending with `:8000:0:1` are used by Docker internally (gateway).
+> ![IMPORTANT] IPv4 addresses ending with `.254` and IPv6 addresses ending with `:8000:0:1` are used by Docker internally (gateway).
 
 | Name      | Image                         | Network   | IPv4 address    | IPv6 address            | Comment                                     |
 |-----------|-------------------------------|-----------|-----------------|-------------------------|---------------------------------------------|
