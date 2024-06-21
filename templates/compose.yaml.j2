@@ -373,7 +373,7 @@ services:
           provider: "Linux"
           behavior: "End.DX4"
       LINUX_HEADEND_SET_SOURCE_ADDRESS: "{{ ipv6('end-dx4', 'r0') }}"
-      IPV4_HEADEND_PREFIX: "{{ ipv4_subnet('slice0') }}"
+      GTP4_HEADEND_PREFIX: "{{ ipv4_subnet('slice0') }}"
       HEADENDS: |-
         - name: "downlink"
           to: "{{ ipv4_subnet('slice0') }}"
@@ -414,7 +414,7 @@ services:
           provider: "Linux"
           behavior: "End.DX4"
       LINUX_HEADEND_SET_SOURCE_ADDRESS: "{{ ipv6('end-dx4', 'r1') }}"
-      IPV4_HEADEND_PREFIX: "{{ ipv4_subnet('slice0') }}"
+      GTP4_HEADEND_PREFIX: "{{ ipv4_subnet('slice0') }}"
       HEADENDS: |-
         - name: "downlink"
           to: "{{ ipv4_subnet('slice0') }}"
@@ -477,7 +477,7 @@ services:
       CONTROLLER_URI: "http://[{{ ipv6('srv6-ctrl', 'control') }}]:8080"
       BACKBONE_IP: "{{ ipv6('srgw0', 'dataplane') }}"
       LOCATOR: "{{ ipv6_subnet('srgw0') }}"
-      IPV4_HEADEND_PREFIX: "{{ ipv4('srgw0', 'srgw0') }}/32"
+      GTP4_HEADEND_PREFIX: "{{ ipv4('srgw0', 'srgw0') }}/32"
       HEADENDS: |-
         - name: "srgw0 uplink"
           to: "{{ ipv4('srgw0', 'srgw0') }}/32"
