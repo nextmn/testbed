@@ -4,6 +4,7 @@
 # SPDX-License-Identifier: MIT
 
 PROFILES = --profile debug
+PROJECT_DIRECTORY = --project-directory build
 
 .PHONY: default u d t j e t l lf test clean build
 build: build/compose.yaml
@@ -19,27 +20,33 @@ build/compose.yaml: templates/compose.yaml.j2 scripts/jinja/customize.py config.
 test: build
 	@echo Running yamllint
 	@yamllint build config.yaml
-	@docker compose --project-directory build config >/dev/null
+	@docker compose $(PROJECT_DIRECTORY) config >/dev/null
 
 j: build
 
 pull: build/*
 	@echo Pulling Docker images
-	@docker compose $(PROFILES) --project-directory build pull
+	@docker compose $(PROFILES) $(PROJECT_DIRECTORY) pull
 
 u: build/*
-	@docker compose $(PROFILES) --project-directory build up -d
+	@# set containers up
+	@docker compose $(PROFILES) $(PROJECT_DIRECTORY) up -d
+
 u-fg: build/*
-	@docker compose $(PROFILES) --project-directory build up
+	@# set containers up in foreground
+	@docker compose $(PROFILES) $(PROJECT_DIRECTORY) build up
 
 ctrl:
+	@# show control plane REST API in firefox
 	@scripts/show-ctrl.py config.yaml
 d:
-	@# don't depends on build-all because we need the old version to delete all
-	@docker compose $(PROFILES) --project-directory build down
+	@# shutdown containers
+	@#> don't depends on build-all because we need the old version to delete all
+	@docker compose $(PROFILES) $(PROJECT_DIRECTORY) down
 
 r:
-	@docker compose $(PROFILES) --project-directory build restart
+	@# restart all containers
+	@docker compose $(PROFILES) $(PROJECT_DIRECTORY) restart
 
 e/%:
 	@# enter container
@@ -47,9 +54,15 @@ e/%:
 t/%:
 	@# enter container in debug mode
 	docker exec -it $(@F)-debug bash
+l:
+	@# show all logs
+	docker compose $(PROFILES) $(PROJECT_DIRECTORY) logs
 l/%:
 	@# show container's logs
-	docker logs $(@F)
+	docker compose $(PROFILES) $(PROJECT_DIRECTORY) logs $(@F)
+lf:
+	@# show all logs (continuous)
+	docker compose $(PROFILES) $(PROJECT_DIRECTORY) logs -f
 lf/%:
 	@# show container's logs (continuous)
-	docker logs $(@F) -f
+	docker compose $(PROFILES) $(PROJECT_DIRECTORY) logs $(@F) -f
