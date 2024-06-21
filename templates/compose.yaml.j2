@@ -373,17 +373,12 @@ services:
           provider: "Linux"
           behavior: "End.DX4"
       LINUX_HEADEND_SET_SOURCE_ADDRESS: "{{ ipv6('end-dx4', 'r0') }}"
-      GTP4_HEADEND_PREFIX: "{{ ipv4_subnet('slice0') }}"
+      IPV4_HEADEND_PREFIX: "{{ ipv4_subnet('slice0') }}"
       HEADENDS: |-
-        - name: "downlink"
+        - name: "downlink (controlled)"
           to: "{{ ipv4_subnet('slice0') }}"
-          provider: "Linux"
+          provider: "NextMN-ctrl"
           behavior: "H.Encaps"
-          policy:
-            - bsid:
-                segments-list:
-                  - "{{ ipv6('end', 'rr') }}"
-                  - "{{ ipv6('gnb1', 'srgw0') }}"
     networks:
       control:
         ipv6_address: "{{ ipv6('r0', 'control') }}"
@@ -414,17 +409,12 @@ services:
           provider: "Linux"
           behavior: "End.DX4"
       LINUX_HEADEND_SET_SOURCE_ADDRESS: "{{ ipv6('end-dx4', 'r1') }}"
-      GTP4_HEADEND_PREFIX: "{{ ipv4_subnet('slice0') }}"
+      IPV4_HEADEND_PREFIX: "{{ ipv4_subnet('slice0') }}"
       HEADENDS: |-
-        - name: "downlink"
+        - name: "downlink (controlled)"
           to: "{{ ipv4_subnet('slice0') }}"
-          provider: "Linux"
+          provider: "NextMN-ctrl"
           behavior: "H.Encaps"
-          policy:
-            - bsid:
-                segments-list:
-                  - "{{ ipv6('end', 'rr') }}"
-                  - "{{ ipv6('gnb2', 'srgw0') }}"
     networks:
       control:
         ipv6_address: "{{ ipv6('r1', 'control') }}"
