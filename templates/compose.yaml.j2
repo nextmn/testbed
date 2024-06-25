@@ -552,8 +552,6 @@ services:
         ipv4_address: "{{ ipv4('srv6-ctrl', 'control') }}"
         ipv6_address: "{{ ipv6('srv6-ctrl', 'control') }}"
 
-
-
   {{ container_setup_s(name='s0') }}
     environment:
       ONESHOT: "true"
