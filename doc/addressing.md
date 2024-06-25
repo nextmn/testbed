@@ -20,6 +20,7 @@
 | control   | docker-compose | `10.1.3.0/24` | `fd00:0:0:0:2::/80` | (N2 + N4) Management interfaces : NGAP + PFCP |
 | dataplane | docker-compose | `10.1.4.0/24` | `fd00:0:0:0:3::/80` | (N3 + N9) Dataplane backbone                  |
 | edge      | docker-compose | `10.1.5.0/24` | disabled            | (N6) Edges instances                          |
+| nextmndb  | docker-compose | `10.1.6.0/24` | `fd00:0:0:0:4::/80` | Internal databases for NextMN                 |
 | slice0    | free5gc        | `10.2.0.0/24` | disabled            | Slice 0                                       |
 | srgw0     | nextmn/srgw0   | `10.3.0.1/32` | `fc00:1::/32`       | srgw0 locators                                |
 | r0        | nextmn/r0      | disabled      | `fc00:2::/32`       | r0 locator                                    |
@@ -48,17 +49,21 @@
 | srgw0     | `nextmn-srv6`                 | dataplane | `10.1.4.131`    | `fd00:0:0:0:3:8000:0:2` | IPv6 routes to SR domain (rr)               |
 | srgw0     | `nextmn-srv6`                 | srgw0     | `10.3.0.1`      | disabled                | H.M.GTP4.D                                  |
 | srgw0     | `nextmn-srv6`                 | srgw0     | disabled        | `fc00:1:1::/48`         | End.M.GTP4.E                                |
+| srgw0     | `nextmn-srv6`                 | nextmndb  | auto            | auto                    |                                             |
 | r0        | `nextmn-srv6`                 | control   | auto            | `fd00:0:0:0:2:8000:0:4` |                                             |
 | r0        | `nextmn-srv6`                 | dataplane | auto (not used) | `fd00:0:0:0:3:8000:0:3` | IPv6 routes to SR domain (r1, rr)           |
 | r0        | `nextmn-srv6`                 | r0        | disabled        | `fc00:2:1::/48`         | End.DX4                                     |
 | r0        | `nextmn-srv6`                 | edge      | `10.1.5.129`    | disabled                | H.Encaps + Route to instance in edge0 (s0)  |
+| r0        | `nextmn-srv6`                 | nextmndb  | auto            | auto                    |                                             |
 | r1        | `nextmn-srv6`                 | control   | auto            | `fd00:0:0:0:2:8000:0:5` |                                             |
 | r1        | `nextmn-srv6`                 | dataplane | auto (not used) | `fd00:0:0:0:3:8000:0:4` | IPv6 routes to SR domain (r0, rr)           |
 | r1        | `nextmn-srv6`                 | r1        | disabled        | `fc00:3:1::/48`         | End.DX4                                     |
 | r1        | `nextmn-srv6`                 | edge      | `10.1.5.130`    | disabled                | H.Encaps + Route to instances in edge1 (s1) |
+| r1        | `nextmn-srv6`                 | nextmndb  | auto            | auto                    |                                             |
 | rr        | `nextmn-srv6`                 | control   | auto            | `fd00:0:0:0:2:8000:0:3` |                                             |
 | rr        | `nextmn-srv6`                 | dataplane | auto (not used) | `fd00:0:0:0:3:8000:0:3` | IPv6 routes to SR domain (srgw0, r0, r1)    |
 | rr        | `nextmn-srv6`                 | rr        | disabled        | `fc00:4:1::/48`         | End                                         |
+| rr        | `nextmn-srv6`                 | nextmndb  | auto            | auto                    |                                             |
 | s0        | `nginx`                       | edge      | `10.1.5.131`    | disabled                | Route to slice0 via r0                      |
 | s0        | `ngnix`                       | service   | `10.4.0.1`      | disabled                |                                             |
 | s1        | `nginx`                       | edge      | `10.1.5.132`    | disabled                | Route to slice0 via r1                      |
@@ -79,3 +84,4 @@
 | udr       | `free5gc-udr`                 | db        | auto            | disabled                |                                             |
 | populate  | `louisroyer/free5gc-populate` | db        | auto            | disabled                |                                             |
 | mongodb   | `mongodb`                     | db        | auto            | disabled                |                                             |
+| nextmndb  | `postgres`                    | nextmndb  | auto            | auto                    |                                             |

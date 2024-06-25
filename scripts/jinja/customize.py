@@ -11,6 +11,7 @@ import sys
 import os.path
 import functools
 import shutil
+import secrets
 
 class _Context:
     _context = {}
@@ -154,6 +155,20 @@ def volume_ro(s: str, s2: str) -> str:
     os.makedirs(os.path.dirname(build), exist_ok=True)
     shutil.copy2(src=template, dst=build)
     return f'- ./{s}:{s2}:ro'
+
+@function
+def secret(s: str) -> str:
+    build, _ = build_and_template_dir()
+    build = os.path.join(build,'secrets',  s)
+    os.makedirs(os.path.dirname(build), exist_ok=True)
+    try:
+        with open(build, 'x') as f:
+            print(f'Creating new secret `{s}`')
+            f.write(secrets.token_hex(16))
+    except FileExistsError:
+        pass
+    return f'{os.path.join("./secrets", s)}'
+
 
 @function
 def ipv4(host: str, subnet: str, _context: _Context) -> str:
