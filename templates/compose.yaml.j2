@@ -354,7 +354,7 @@ services:
   {{ container_s(name='r0', image='louisroyer/dev-nextmn-srv6', restart='always', srv6=True, debug=True) }}
     depends_on:
       - srv6-ctrl
-      - nextmndb
+      - r0-db
     volumes:
       {{ volume_ro('nextmn/routes-to-nei.sh', '/usr/local/bin/routes-to-nei.sh') }}
     environment:
@@ -380,10 +380,10 @@ services:
           to: "{{ ipv4_subnet('slice0') }}"
           provider: "NextMN-ctrl"
           behavior: "H.Encaps"
-      POSTGRES_PASSWORD_FILE: /run/secrets/nextmndb_password
-      POSTGRES_HOST: "nextmndb.nextmndb"
+      POSTGRES_PASSWORD_FILE: /run/secrets/r0_db_password
+      POSTGRES_HOST: "r0-db.nextmndb"
     secrets:
-      - nextmndb_password
+      - r0_db_password
     networks:
       control:
         ipv6_address: "{{ ipv6('r0', 'control') }}"
@@ -393,10 +393,18 @@ services:
         ipv4_address: "{{ ipv4('r0', 'edge') }}"
       nextmndb:
 
+  {{ container_s(name='r0-db', image='postgres', restart='always', command=False) }}
+    secrets:
+      - r0_db_password
+    environment:
+      POSTGRES_PASSWORD_FILE: /run/secrets/r0_db_password
+    networks:
+      nextmndb:
+
   {{ container_s(name='r1', image='louisroyer/dev-nextmn-srv6', restart='always', srv6=True, debug=True ) }}
     depends_on:
       - srv6-ctrl
-      - nextmndb
+      - r1-db
     volumes:
       {{ volume_ro('nextmn/routes-to-nei.sh', '/usr/local/bin/routes-to-nei.sh') }}
     environment:
@@ -422,10 +430,10 @@ services:
           to: "{{ ipv4_subnet('slice0') }}"
           provider: "NextMN-ctrl"
           behavior: "H.Encaps"
-      POSTGRES_PASSWORD_FILE: /run/secrets/nextmndb_password
+      POSTGRES_PASSWORD_FILE: /run/secrets/r1_db_password
       POSTGRES_HOST: "nextmndb.nextmndb"
     secrets:
-      - nextmndb_password
+      - r1_db_password
     networks:
       control:
         ipv6_address: "{{ ipv6('r1', 'control') }}"
@@ -435,10 +443,18 @@ services:
         ipv4_address: "{{ ipv4('r1', 'edge') }}"
       nextmndb:
 
+  {{ container_s(name='r1-db', image='postgres', restart='always', command=False) }}
+    secrets:
+      - r1_db_password
+    environment:
+      POSTGRES_PASSWORD_FILE: /run/secrets/r1_db_password
+    networks:
+      nextmndb:
+
   {{ container_s(name='rr', image='louisroyer/dev-nextmn-srv6', restart='always', srv6=True, debug=True ) }}
     depends_on:
       - srv6-ctrl
-      - nextmndb
+      - rr-db
     volumes:
       {{ volume_ro('nextmn/routes-to-nei.sh', '/usr/local/bin/routes-to-nei.sh') }}
     environment:
@@ -457,10 +473,10 @@ services:
         - prefix: "{{ ipv6_prefix('end', 'rr') }}"
           provider: "Linux"
           behavior: "End"
-      POSTGRES_PASSWORD_FILE: /run/secrets/nextmndb_password
-      POSTGRES_HOST: "nextmndb.nextmndb"
+      POSTGRES_PASSWORD_FILE: /run/secrets/rr_db_password
+      POSTGRES_HOST: "rr-db.nextmndb"
     secrets:
-      - nextmndb_password
+      - rr_db_password
     networks:
       control:
         ipv6_address: "{{ ipv6('rr', 'control') }}"
@@ -468,10 +484,18 @@ services:
         ipv6_address: "{{ ipv6('rr', 'dataplane') }}"
       nextmndb:
 
+  {{ container_s(name='rr-db', image='postgres', restart='always', command=False) }}
+    secrets:
+      - rr_db_password
+    environment:
+      POSTGRES_PASSWORD_FILE: /run/secrets/rr_db_password
+    networks:
+      nextmndb:
+
   {{ container_s(name='srgw0', image='louisroyer/dev-nextmn-srv6', restart='always', srv6=True, debug=True ) }}
     depends_on:
       - srv6-ctrl
-      - nextmndb
+      - srgw0-db
     volumes:
       {{ volume_ro('nextmn/routes-to-nei.sh', '/usr/local/bin/routes-to-nei.sh') }}
     environment:
@@ -510,10 +534,10 @@ services:
         - prefix: "{{ ipv6_prefix('end-m-gtp4-e', 'srgw0') }}"
           provider: "NextMN"
           behavior: "End.M.GTP4.E"
-      POSTGRES_PASSWORD_FILE: /run/secrets/nextmndb_password
-      POSTGRES_HOST: "nextmndb.nextmndb"
+      POSTGRES_PASSWORD_FILE: /run/secrets/srgw0_db_password
+      POSTGRES_HOST: "srgw0-db.nextmndb"
     secrets:
-      - nextmndb_password
+      - srgw0_db_password
     networks:
       control:
         ipv4_address: "{{ ipv4('srgw0', 'control') }}"
@@ -521,6 +545,14 @@ services:
       dataplane:
         ipv4_address: "{{ ipv4('srgw0', 'dataplane') }}"
         ipv6_address: "{{ ipv6('srgw0', 'dataplane') }}"
+      nextmndb:
+
+  {{ container_s(name='srgw0-db', image='postgres', restart='always', command=False) }}
+    secrets:
+      - srgw0_db_password
+    environment:
+      POSTGRES_PASSWORD_FILE: /run/secrets/srgw0_db_password
+    networks:
       nextmndb:
 
   {{ container_s(name='srv6-ctrl', image='louisroyer/dev-nextmn-srv6-ctrl', restart='always') }}
@@ -534,13 +566,6 @@ services:
         ipv4_address: "{{ ipv4('srv6-ctrl', 'control') }}"
         ipv6_address: "{{ ipv6('srv6-ctrl', 'control') }}"
 
-  {{ container_s(name='nextmndb', image='postgres', restart='always', command=False) }}
-    secrets:
-      - nextmndb_password
-    environment:
-      POSTGRES_PASSWORD_FILE: /run/secrets/nextmndb_password
-    networks:
-      nextmndb:
 
 
   {{ container_setup_s(name='s0') }}
@@ -588,8 +613,14 @@ services:
         ipv4_address: "{{ ipv4('s1', 'edge') }}"
 
 secrets:
-  nextmndb_password:
-    file: "{{ secret('nextmndb_password.txt') }}"
+  rr_db_password:
+    file: "{{ secret('rr_db_password.txt') }}"
+  r0_db_password:
+    file: "{{ secret('r0_db_password.txt') }}"
+  r1_db_password:
+    file: "{{ secret('r1_db_password.txt') }}"
+  srgw0_db_password:
+    file: "{{ secret('srgw0_db_password.txt') }}"
 
 networks:
   ran:
