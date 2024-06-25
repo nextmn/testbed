@@ -431,7 +431,7 @@ services:
           provider: "NextMN-ctrl"
           behavior: "H.Encaps"
       POSTGRES_PASSWORD_FILE: /run/secrets/r1_db_password
-      POSTGRES_HOST: "nextmndb.nextmndb"
+      POSTGRES_HOST: "r1-db.nextmndb"
     secrets:
       - r1_db_password
     networks:
@@ -512,24 +512,10 @@ services:
       LOCATOR: "{{ ipv6_subnet('srgw0') }}"
       GTP4_HEADEND_PREFIX: "{{ ipv4('srgw0', 'srgw0') }}/32"
       HEADENDS: |-
-        - name: "srgw0 uplink"
+        - name: "srgw0 uplink (controlled)"
           to: "{{ ipv4('srgw0', 'srgw0') }}/32"
-          provider: "NextMN"
+          provider: "NextMN-Ctrl"
           behavior: "H.M.GTP4.D"
-          source-address-prefix: "{{ ipv6_prefix('end-m-gtp4-e', 'srgw0') }}"
-          policy:
-            - match:
-                teid: 0x01
-              bsid:
-                bsid-prefix: "{{ ipv6_prefix('end-dx4', 'r0') }}"
-                segments-list:
-                  - "{{ ipv6('end', 'rr') }}"
-            - match:
-                teid: 0x03
-              bsid:
-                bsid-prefix: "{{ ipv6_prefix('end-dx4', 'r1') }}"
-                segments-list:
-                  - "{{ ipv6('end', 'rr') }}"
       ENDPOINTS: |-
         - prefix: "{{ ipv6_prefix('end-m-gtp4-e', 'srgw0') }}"
           provider: "NextMN"

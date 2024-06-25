@@ -34,7 +34,7 @@ u: build/*
 
 u-fg: build/*
 	@# set containers up in foreground
-	@docker compose $(PROFILES) $(PROJECT_DIRECTORY) build up
+	@docker compose $(PROFILES) $(PROJECT_DIRECTORY)  up
 
 ctrl:
 	@# show control plane REST API in firefox
