@@ -47,7 +47,8 @@ services:
 
   {{ container_s(name='gnb1', image='louisroyer/ueransim-gnb', ipv6=True, restart='always', iface_tun=True, cap_net_admin=True, debug=True) }}
     depends_on:
-      - amf
+      amf:
+        condition: service_started
     environment:
       NCI: 000000001
       RLS_IP: "{{ ipv6('gnb1', 'ran') }}"
@@ -76,7 +77,8 @@ services:
 
   {{ container_s(name='gnb2', image='louisroyer/ueransim-gnb', ipv6=True, restart='always', iface_tun=True, cap_net_admin=True, debug=True) }}
     depends_on:
-      - amf
+      amf:
+        condition: service_started
     environment:
       NCI: 000000002
       RLS_IP: "{{ ipv6('gnb2', 'ran') }}"
@@ -105,7 +107,8 @@ services:
 
   {{ container_s(name='amf', image='louisroyer/dev-free5gc-amf', restart='always') }}
     depends_on:
-      - nrf # required to being able to deregister propertly
+      nrf: # required to being able to deregister propertly
+        condition: service_started
     environment:
       N2: "{{ ipv4('amf', 'control') }}"
       SBI_REGISTER_IP: "amf.sbi"
@@ -132,7 +135,8 @@ services:
 
   {{ container_s(name='nrf', image='louisroyer/dev-free5gc-nrf', restart='always') }}
     depends_on:
-      - mongodb # required to being able to deregister propertly
+      mongodb: # required to being able to deregister propertly
+        condition: service_started
     environment:
       MONGO_HOST: "mongodb.db"
       SBI_REGISTER_IP: "nrf.sbi"
@@ -147,7 +151,8 @@ services:
 
   {{ container_s(name='ausf', image='louisroyer/dev-free5gc-ausf', restart='always') }}
     depends_on:
-      - nrf # required to being able to deregister propertly
+      nrf: # required to being able to deregister propertly
+        condition: service_started
     environment:
       SBI_REGISTER_IP: "ausf.sbi"
       SBI_BINDING_IP: "{{ ipv4('ausf', 'sbi') }}"
@@ -161,7 +166,8 @@ services:
 
   {{ container_s(name='udm', image='louisroyer/dev-free5gc-udm', restart='always') }}
     depends_on:
-      - nrf # required to being able to deregister propertly
+      nrf: # required to being able to deregister propertly
+        condition: service_started
     environment:
       SBI_REGISTER_IP: "udm.sbi"
       SBI_BINDING_IP: "{{ ipv4('udm', 'sbi') }}"
@@ -173,7 +179,8 @@ services:
 
   {{ container_s(name='udr', image='louisroyer/dev-free5gc-udr', restart='always') }}
     depends_on:
-      - nrf # required to being able to deregister propertly
+      nrf: # required to being able to deregister propertly
+        condition: service_started
     environment:
       MONGO_HOST: "mongodb.db"
       SBI_REGISTER_IP: "udr.sbi"
@@ -187,7 +194,8 @@ services:
 
   {{ container_s(name='pcf', image='louisroyer/dev-free5gc-pcf', restart='always') }}
     depends_on:
-      - nrf # required to being able to deregister propertly
+      nrf: # required to being able to deregister propertly
+        condition: service_started
     environment:
       MONGO_HOST: "mongodb.db"
       SBI_REGISTER_IP: "pcf.sbi"
@@ -201,7 +209,8 @@ services:
 
   {{ container_s(name='smf', image='louisroyer/dev-free5gc-smf', restart='always') }}
     depends_on:
-      - nrf # required to being able to deregister propertly
+      nrf: # required to being able to deregister propertly
+        condition: service_started
     environment:
       SBI_REGISTER_IP: "smf.sbi"
       SBI_BINDING_IP: "{{ ipv4('smf', 'sbi') }}"
@@ -262,7 +271,8 @@ services:
 
   {{ container_s(name='populate', image='louisroyer/free5gc-populate', restart='no') }}
     depends_on:
-      - mongodb # required to being able to deregister propertly
+      mongodb: # required to being able to deregister propertly
+        condition: service_started
     environment:
       MONGO_HOST: "mongodb.db"
       SLICES: |-
@@ -278,7 +288,8 @@ services:
 
   {{ container_s(name='nssf', image='louisroyer/dev-free5gc-nssf', restart='always') }}
     depends_on:
-      - nrf # required to being able to deregister propertly
+      nrf: # required to being able to deregister propertly
+        condition: service_started
     environment:
       SBI_REGISTER_IP: "nssf.sbi"
       SBI_BINDING_IP: "{{ ipv4('nssf', 'sbi') }}"
