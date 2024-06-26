@@ -18,8 +18,8 @@ if __name__ == '__main__':
         r0 = f'http://[{c["subnets"]["control"]["r0"]["ipv6_address"]}]:8080'
         r1 = f'http://[{c["subnets"]["control"]["r1"]["ipv6_address"]}]:8080'
         srgw = f'http://[{c["subnets"]["control"]["srgw0"]["ipv6_address"]}]:8080'
-        webbrowser.get('firefox').open_new_tab(f'{controller}/routers')
-        webbrowser.get('firefox').open_new_tab(f'{rr}/rules')
-        webbrowser.get('firefox').open_new_tab(f'{r0}/rules')
-        webbrowser.get('firefox').open_new_tab(f'{r1}/rules')
-        webbrowser.get('firefox').open_new_tab(f'{srgw}/rules')
+        webbrowser.get('firefox').open_new_tab(f'{controller}/routers#controller')
+        webbrowser.get('firefox').open_new_tab(f'{rr}/rules#rr')
+        webbrowser.get('firefox').open_new_tab(f'{r0}/rules#r0')
+        webbrowser.get('firefox').open_new_tab(f'{r1}/rules#r1')
+        webbrowser.get('firefox').open_new_tab(f'{srgw}/rules#srgw')
