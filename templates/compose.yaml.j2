@@ -353,8 +353,10 @@ services:
 
   {{ container_s(name='r0', image='louisroyer/dev-nextmn-srv6', restart='always', srv6=True, debug=True) }}
     depends_on:
-      - srv6-ctrl
-      - r0-db
+      srv6-ctrl:
+        condition: service_started
+      r0-db:
+        condition: service_healthy
     volumes:
       {{ volume_ro('nextmn/routes-to-nei.sh', '/usr/local/bin/routes-to-nei.sh') }}
     environment:
@@ -394,6 +396,11 @@ services:
       nextmndb:
 
   {{ container_s(name='r0-db', image='postgres', restart='always', command=False) }}
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
     secrets:
       - r0_db_password
     environment:
@@ -403,8 +410,10 @@ services:
 
   {{ container_s(name='r1', image='louisroyer/dev-nextmn-srv6', restart='always', srv6=True, debug=True ) }}
     depends_on:
-      - srv6-ctrl
-      - r1-db
+      srv6-ctrl:
+        condition: service_started
+      r1-db:
+        condition: service_healthy
     volumes:
       {{ volume_ro('nextmn/routes-to-nei.sh', '/usr/local/bin/routes-to-nei.sh') }}
     environment:
@@ -444,6 +453,11 @@ services:
       nextmndb:
 
   {{ container_s(name='r1-db', image='postgres', restart='always', command=False) }}
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
     secrets:
       - r1_db_password
     environment:
@@ -453,8 +467,10 @@ services:
 
   {{ container_s(name='rr', image='louisroyer/dev-nextmn-srv6', restart='always', srv6=True, debug=True ) }}
     depends_on:
-      - srv6-ctrl
-      - rr-db
+      srv6-ctrl:
+        condition: service_started
+      rr-db:
+        condition: service_healthy
     volumes:
       {{ volume_ro('nextmn/routes-to-nei.sh', '/usr/local/bin/routes-to-nei.sh') }}
     environment:
@@ -485,6 +501,11 @@ services:
       nextmndb:
 
   {{ container_s(name='rr-db', image='postgres', restart='always', command=False) }}
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
     secrets:
       - rr_db_password
     environment:
@@ -494,8 +515,10 @@ services:
 
   {{ container_s(name='srgw0', image='louisroyer/dev-nextmn-srv6', restart='always', srv6=True, debug=True ) }}
     depends_on:
-      - srv6-ctrl
-      - srgw0-db
+      srv6-ctrl:
+        condition: service_started
+      srgw0-db:
+        condition: service_healthy
     volumes:
       {{ volume_ro('nextmn/routes-to-nei.sh', '/usr/local/bin/routes-to-nei.sh') }}
     environment:
@@ -534,6 +557,11 @@ services:
       nextmndb:
 
   {{ container_s(name='srgw0-db', image='postgres', restart='always', command=False) }}
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
     secrets:
       - srgw0_db_password
     environment:

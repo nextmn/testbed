@@ -66,3 +66,6 @@ lf:
 lf/%:
 	@# show container's logs (continuous)
 	docker compose $(PROFILES) $(PROJECT_DIRECTORY) logs $(@F) -f
+ps:
+	@# show container's status
+	docker compose $(PROFILES) $(PROJECT_DIRECTORY) ps
