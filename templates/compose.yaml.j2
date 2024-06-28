@@ -409,6 +409,8 @@ services:
   {{ container_s(name='r0-db', image='postgres', restart='always', command=False) }}
     healthcheck:
       test: ["CMD-SHELL", "pg_isready"]
+      start_interval: 1s
+      start_period: 10s
       interval: 10s
       timeout: 5s
       retries: 5
@@ -466,6 +468,8 @@ services:
   {{ container_s(name='r1-db', image='postgres', restart='always', command=False) }}
     healthcheck:
       test: ["CMD-SHELL", "pg_isready"]
+      start_interval: 1s
+      start_period: 10s
       interval: 10s
       timeout: 5s
       retries: 5
@@ -514,6 +518,8 @@ services:
   {{ container_s(name='rr-db', image='postgres', restart='always', command=False) }}
     healthcheck:
       test: ["CMD-SHELL", "pg_isready"]
+      start_interval: 1s
+      start_period: 10s
       interval: 10s
       timeout: 5s
       retries: 5
@@ -570,6 +576,8 @@ services:
   {{ container_s(name='srgw0-db', image='postgres', restart='always', command=False) }}
     healthcheck:
       test: ["CMD-SHELL", "pg_isready"]
+      start_interval: 1s
+      start_period: 10s
       interval: 10s
       timeout: 5s
       retries: 5
