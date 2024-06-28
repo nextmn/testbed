@@ -42,7 +42,7 @@ ctrl:
 d:
 	@# shutdown containers
 	@#> don't depends on build-all because we need the old version to delete all
-	@docker compose $(PROFILES) $(PROJECT_DIRECTORY) down
+	@docker compose $(PROFILES) $(PROJECT_DIRECTORY) down -v
 
 r:
 	@# restart all containers
