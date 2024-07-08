@@ -46,15 +46,15 @@ setnextmn:
 
 j: build
 
-pull: build/*
+pull: build
 	@echo Pulling Docker images
 	@docker compose $(PROFILES) $(PROJECT_DIRECTORY) pull
 
-u: build/*
+u: build
 	@# set containers up
 	@docker compose $(PROFILES) $(PROJECT_DIRECTORY) up -d
 
-u-fg: build/*
+u-fg: build
 	@# set containers up in foreground
 	@docker compose $(PROFILES) $(PROJECT_DIRECTORY)  up
 
