@@ -25,25 +25,25 @@ services:
     networks:
       ran: # automatic allocation by docker compose
 
-  {{ container_s(name='ue2', image='louisroyer/ueransim-ue', ipv6=True, debug=True, iface_tun=True, cap_net_admin=True, init=True) }}
-    environment:
-      MSISDN: "0000000002"
-      GNBS: |-
-        - "{{ ipv6('gnb2', 'ran') }}"
-      CONFIGURED_NSSAI: |-
-        - sst: 1
-          sd: 000001
-      DEFAULT_NSSAI: |-
-        - sst: 1
-          sd: 000001
-      SESSIONS: |-
-        - type: "IPv4"
-          apn: "srv6"
-          slice:
-            sst: 1
-            sd: 000001
-    networks:
-      ran: # automatic allocation by docker compose
+  {{ container_s(name='ue2', image='louisroyer/ueransim-ue', ipv6=True, debug=True, iface_tun=True, cap_net_admin=True, init=True) | comment }}
+#    environment:
+#      MSISDN: "0000000002"
+#      GNBS: |-
+#        - "{{ ipv6('gnb2', 'ran') }}"
+#      CONFIGURED_NSSAI: |-
+#        - sst: 1
+#          sd: 000001
+#      DEFAULT_NSSAI: |-
+#        - sst: 1
+#          sd: 000001
+#      SESSIONS: |-
+#        - type: "IPv4"
+#          apn: "srv6"
+#          slice:
+#            sst: 1
+#            sd: 000001
+#    networks:
+#      ran: # automatic allocation by docker compose
 
   {{ container_s(name='gnb1', image='louisroyer/ueransim-gnb', ipv6=True, restart='always', iface_tun=True, cap_net_admin=True, debug=True) }}
     depends_on:
@@ -75,35 +75,35 @@ services:
       dataplane:
         ipv4_address: "{{ ipv4('gnb1', 'dataplane') }}"
 
-  {{ container_s(name='gnb2', image='louisroyer/ueransim-gnb', ipv6=True, restart='always', iface_tun=True, cap_net_admin=True, debug=True) }}
-    depends_on:
-      amf:
-        condition: service_started
-    environment:
-      NCI: 000000002
-      RLS_IP: "{{ ipv6('gnb2', 'ran') }}"
-      N2_IP: "{{ ipv4('gnb2', 'control') }}"
-      N3_IP: "{{ ipv4('gnb2', 'dataplane') }}"
-      SUPPORTED_NSSAIS: |-
-        - sst: 1
-          sd: 000001
-      MCC: "001"
-      MNC: "01"
-      ID_LEN: 32
-      TAC: 1
-      AMF_CONFIGS: |-
-        - address: "{{ ipv4('amf', 'control') }}"
-          port: 38412
-      ROUTES_INIT: |-
-        - add {{ ipv4('srgw0', 'srgw0') }} via {{ ipv4('srgw0', 'dataplane') }}
-    networks:
-      ran:
-        ipv4_address: "{{ ipv4('gnb2', 'ran') }}"
-        ipv6_address: "{{ ipv6('gnb2', 'ran') }}"
-      control:
-        ipv4_address: "{{ ipv4('gnb2', 'control') }}"
-      dataplane:
-        ipv4_address: "{{ ipv4('gnb2', 'dataplane') }}"
+  {{ container_s(name='gnb2', image='louisroyer/ueransim-gnb', ipv6=True, restart='always', iface_tun=True, cap_net_admin=True, debug=True) |comment}}
+#    depends_on:
+#      amf:
+#        condition: service_started
+#    environment:
+#      NCI: 000000002
+#      RLS_IP: "{{ ipv6('gnb2', 'ran') }}"
+#      N2_IP: "{{ ipv4('gnb2', 'control') }}"
+#      N3_IP: "{{ ipv4('gnb2', 'dataplane') }}"
+#      SUPPORTED_NSSAIS: |-
+#        - sst: 1
+#          sd: 000001
+#      MCC: "001"
+#      MNC: "01"
+#      ID_LEN: 32
+#      TAC: 1
+#      AMF_CONFIGS: |-
+#        - address: "{{ ipv4('amf', 'control') }}"
+#          port: 38412
+#      ROUTES_INIT: |-
+#        - add {{ ipv4('srgw0', 'srgw0') }} via {{ ipv4('srgw0', 'dataplane') }}
+#    networks:
+#      ran:
+#        ipv4_address: "{{ ipv4('gnb2', 'ran') }}"
+#        ipv6_address: "{{ ipv6('gnb2', 'ran') }}"
+#      control:
+#        ipv4_address: "{{ ipv4('gnb2', 'control') }}"
+#      dataplane:
+#        ipv4_address: "{{ ipv4('gnb2', 'dataplane') }}"
 
   {{ container_s(name='amf', image='louisroyer/dev-free5gc-amf', restart='always') }}
     depends_on:

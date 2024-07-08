@@ -130,6 +130,14 @@ def s(s: str) -> str:
     '''Convert json to indented yaml'''
     return indent(json_to_yaml(s))
 
+@filter
+def comment(s: str) -> str:
+    '''Comment lines'''
+    o = '#' + s
+    o = '\n#'.join(o.splitlines())
+    return o
+
+
 @functools.cache # parsing is only required once
 def build_and_template_dir():
     pos = None
