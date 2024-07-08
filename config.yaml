@@ -2,6 +2,8 @@
 # Use of this source code is governed by a MIT-style license that can be
 # found in the LICENSE file.
 # SPDX-License-Identifier: MIT
+use_free5gc_upf: false # Use Free5GC UPFs instead of NextMN SRv6
+nb_ue: 1
 subnets:
   ran:
     gnb1:
