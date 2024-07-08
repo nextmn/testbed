@@ -591,7 +591,7 @@ services:
   {{ container_s(name='srv6-ctrl', image='louisroyer/dev-nextmn-srv6-ctrl', restart='always') }}
     environment:
       DEBUG: "true"
-      N6: "{{ ipv4('srv6-ctrl', 'control') }}"
+      N4: "{{ ipv4('srv6-ctrl', 'control') }}"
       HTTP_ADDRESS: "{{ ipv6('srv6-ctrl', 'control') }}"
       HTTP_PORT: "8080"
     networks:
