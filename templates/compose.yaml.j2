@@ -327,6 +327,7 @@ services:
               networkInstances:
                 - srv6
 #~ else
+  #~ if nb_upf > 1
         UPFI:
           type: UPF
           nodeID: "{{ ipv4('upfi', 'control') }}"
@@ -348,6 +349,7 @@ services:
                 - {{ ipv4('upfi', 'dataplane') }}
               networkInstances:
                 - free5gc
+  #~ endif
         UPFA:
           type: UPF
           nodeID: "{{ ipv4('upfa', 'control') }}"
@@ -363,6 +365,13 @@ services:
                   staticPools:
                     - cidr: {{ ipv4_subnet('slice1-static') }}
           interfaces:
+  #~ if nb_upf < 2
+            - interfaceType: N3
+              endpoints:
+                - {{ ipv4('upfa', 'dataplane') }}
+              networkInstances:
+                - free5gc
+  #~ endif
             - interfaceType: N9
               endpoints:
                 - {{ ipv4('upfa', 'dataplane') }}
@@ -375,10 +384,15 @@ services:
         - A: GNB
           B: UPF
 #~ else
+  #~ if nb_upf > 1
         - A: GNB
           B: UPFI
         - A: UPFI
           B: UPFA
+  #~ else
+        - A: GNB
+          B: UPFA
+  #~ endif
 #~ endif
       UEROUTING_INFO: |-
         none1:
@@ -392,10 +406,15 @@ services:
             - A: GNB
               B: UPF
 #~ else
+  #~ if nb_upf > 1
             - A: GNB
               B: UPFI
             - A: UPFI
               B: UPFA
+  #~ else
+            - A: GNB
+              B: UPFA
+  #~ endif
 #~ endif
     networks:
       control:
@@ -832,6 +851,7 @@ services:
         ipv4_address: "{{ ipv4('s1', 'edge') }}"
 
 #~ if use_free5gc_upf
+  #~ if nb_upf > 1
   {{ container_s(name='upfi', image='louisroyer/dev-free5gc-upf', restart='always', cap_net_admin=True, debug=True) }}
     environment:
       N4: "{{ ipv4('upfi', 'control') }}"
@@ -848,10 +868,15 @@ services:
         ipv4_address: "{{ ipv4('upfi', 'control') }}"
       dataplane:
         ipv4_address: "{{ ipv4('upfi', 'dataplane') }}"
+  #~ endif
   {{ container_s(name='upfa', image='louisroyer/dev-free5gc-upf', restart='always', cap_net_admin=True, debug=True) }}
     environment:
       N4: "{{ ipv4('upfa', 'control') }}"
       IF_LIST: |-
+  #~ if nb_upf < 2
+        - addr: "{{ ipv4('upfa', 'dataplane') }}"
+          type: N3
+  #~ endif
         - addr: "{{ ipv4('upfa', 'dataplane') }}"
           type: N9
       DNN_LIST: |-

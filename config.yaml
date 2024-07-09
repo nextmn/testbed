@@ -4,6 +4,7 @@
 # SPDX-License-Identifier: MIT
 use_free5gc_upf: false # Use Free5GC UPFs instead of NextMN SRv6
 nb_ue: 1
+nb_upf: 1
 subnets:
   ran:
     gnb1:
