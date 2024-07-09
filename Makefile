@@ -5,8 +5,9 @@
 
 PROFILES = --profile debug
 PROJECT_DIRECTORY = --project-directory build
+MAKE = make --no-print-directory
 
-.PHONY: default u d t j e t l lf test clean build
+.PHONY: default u d t j e t l lf clean build setf5gc setnextmn test testf5gc testnextmn
 build: build/compose.yaml
 
 clean:
@@ -17,22 +18,43 @@ build/compose.yaml: templates/compose.yaml.j2 scripts/jinja/customize.py config.
 	@mkdir -p build
 	@j2 --customize scripts/jinja/customize.py -o build/compose.yaml templates/compose.yaml.j2 config.yaml
 
-test: build
+test:
+	@echo [1/2] Running tests for Free5GC config
+	@$(MAKE) clean
+	@$(MAKE) testf5gc
+	@echo [2/2] Running tests for NextMN config
+	@$(MAKE) clean
+	@$(MAKE) testnextmn
+
+testnextmn: setnextmn build
 	@echo Running yamllint
 	@yamllint build config.yaml
+	@echo Running docker compose config
 	@docker compose $(PROJECT_DIRECTORY) config >/dev/null
+testf5gc: setf5gc build
+	@echo Running yamllint
+	@yamllint build config.yaml
+	@echo Running docker compose config
+	@docker compose $(PROJECT_DIRECTORY) config >/dev/null
+
+setf5gc:
+	@echo Set use_free5gc_upf to true
+	@sed -i 's/use_free5gc_upf: false/use_free5gc_upf: true/g' config.yaml
+setnextmn:
+	@echo Set use_free5gc_upf to false
+	@sed -i 's/use_free5gc_upf: true/use_free5gc_upf: false/g' config.yaml
 
 j: build
 
-pull: build/*
+pull: build
 	@echo Pulling Docker images
 	@docker compose $(PROFILES) $(PROJECT_DIRECTORY) pull
 
-u: build/*
+u: build
 	@# set containers up
 	@docker compose $(PROFILES) $(PROJECT_DIRECTORY) up -d
 
-u-fg: build/*
+u-fg: build
 	@# set containers up in foreground
 	@docker compose $(PROFILES) $(PROJECT_DIRECTORY)  up
 
