@@ -11,17 +11,35 @@ services:
       GNBS: |-
         - "{{ ipv6('gnb1', 'ran') }}"
       CONFIGURED_NSSAI: |-
+#~ if not use_free5gc_upf
         - sst: 1
           sd: 000001
+#~ else
+        - sst: 1
+          sd: 000002
+#~ endif
       DEFAULT_NSSAI: |-
+#~ if not use_free5gc_upf
         - sst: 1
           sd: 000001
+#~ else
+        - sst: 1
+          sd: 000002
+#~ endif
       SESSIONS: |-
+#~ if not use_free5gc_upf
         - type: "IPv4"
           apn: "srv6"
           slice:
             sst: 1
             sd: 000001
+#~ else
+        - type: "IPv4"
+          apn: "free5gc"
+          slice:
+            sst: 1
+            sd: 000002
+#~ endif
     networks:
       ran: # automatic allocation by docker compose
 
@@ -32,17 +50,35 @@ services:
       GNBS: |-
         - "{{ ipv6('gnb2', 'ran') }}"
       CONFIGURED_NSSAI: |-
+  #~ if not use_free5gc_upf
         - sst: 1
           sd: 000001
+  #~ else
+        - sst: 1
+          sd: 000002
+  #~ endif
       DEFAULT_NSSAI: |-
+  #~ if not use_free5gc_upf
         - sst: 1
           sd: 000001
+  #~ else
+        - sst: 1
+          sd: 000002
+  #~ endif
       SESSIONS: |-
+  #~ if not use_free5gc_upf
         - type: "IPv4"
           apn: "srv6"
           slice:
             sst: 1
             sd: 000001
+  #~ else
+        - type: "IPv4"
+          apn: "free5gc"
+          slice:
+            sst: 1
+            sd: 000002
+  #~ endif
     networks:
       ran: # automatic allocation by docker compose
 #~ endif
@@ -57,8 +93,13 @@ services:
       N2_IP: "{{ ipv4('gnb1', 'control') }}"
       N3_IP: "{{ ipv4('gnb1', 'dataplane') }}"
       SUPPORTED_NSSAIS: |-
+#~ if not use_free5gc_upf
         - sst: 1
           sd: 000001
+#~ else
+        - sst: 1
+          sd: 000002
+#~ endif
       MCC: "001"
       MNC: "01"
       ID_LEN: 32
@@ -66,8 +107,10 @@ services:
       AMF_CONFIGS: |-
         - address: "{{ ipv4('amf', 'control') }}"
           port: 38412
+#~ if not use_free5gc_upf
       ROUTES_INIT: |-
         - add {{ ipv4('srgw0', 'srgw0') }} via {{ ipv4('srgw0', 'dataplane') }}
+#~ endif
     networks:
       ran:
         ipv4_address: "{{ ipv4('gnb1', 'ran') }}"
@@ -88,8 +131,13 @@ services:
       N2_IP: "{{ ipv4('gnb2', 'control') }}"
       N3_IP: "{{ ipv4('gnb2', 'dataplane') }}"
       SUPPORTED_NSSAIS: |-
+#~ if not use_free5gc_upf
         - sst: 1
           sd: 000001
+#~ else
+        - sst: 1
+          sd: 000002
+#~ endif
       MCC: "001"
       MNC: "01"
       ID_LEN: 32
@@ -97,8 +145,10 @@ services:
       AMF_CONFIGS: |-
         - address: "{{ ipv4('amf', 'control') }}"
           port: 38412
+#~ if not use_free5gc_upf
       ROUTES_INIT: |-
         - add {{ ipv4('srgw0', 'srgw0') }} via {{ ipv4('srgw0', 'dataplane') }}
+#~ endif
     networks:
       ran:
         ipv4_address: "{{ ipv4('gnb2', 'ran') }}"
@@ -122,10 +172,19 @@ services:
       MNC: "01"
       NRF: "nrf.sbi:8000"
       SUPPORT_DNN_LIST: |-
+#~ if not use_free5gc_upf
         - srv6
+#~ else
+        - free5gc
+#~ endif
       SNSSAI_LIST: |-
+#~ if not use_free5gc_upf
         - sst: 1
           sd: 000001
+#~ else
+        - sst: 1
+          sd: 000002
+#~ endif
       TAC: "000001"
     networks:
       control:
@@ -224,6 +283,7 @@ services:
       MCC: "001"
       MNC: "01"
       SNSSAI_INFOS: |-
+#~ if not use_free5gc_upf
         - sNssai:
             sst: 1
             sd: 000001
@@ -232,9 +292,20 @@ services:
               dns:
                 ipv4: 9.9.9.9 # TODO: replace with local dns
                 ipv6: 2620:fe::fe
+#~ else
+        - sNssai:
+            sst: 1
+            sd: 000002
+          dnnInfos:
+            - dnn: free5gc
+              dns:
+                ipv4: 9.9.9.9 # TODO: replace with local dns
+                ipv6: 2620:fe::fe
+#~ endif
       UP_NODES: |-
         GNB:
           type: AN
+#~ if not use_free5gc_upf
         UPF:
           type: UPF
           nodeID: "{{ ipv4('srv6-ctrl', 'control') }}"
@@ -255,18 +326,77 @@ services:
                 - {{ ipv4('srgw0', 'srgw0') }}
               networkInstances:
                 - srv6
+#~ else
+        UPFI:
+          type: UPF
+          nodeID: "{{ ipv4('upfi', 'control') }}"
+          addr: "{{ ipv4('upfi', 'control') }}"
+          sNssaiUpfInfos:
+            - sNssai:
+                sst: 1
+                sd: 000002
+              dnnUpfInfoList:
+                - dnn: free5gc
+          interfaces:
+            - interfaceType: N3
+              endpoints:
+                - {{ ipv4('upfi', 'dataplane') }}
+              networkInstances:
+                - free5gc
+            - interfaceType: N9
+              endpoints:
+                - {{ ipv4('upfi', 'dataplane') }}
+              networkInstances:
+                - free5gc
+        UPFA:
+          type: UPF
+          nodeID: "{{ ipv4('upfa', 'control') }}"
+          addr: "{{ ipv4('upfa', 'control') }}"
+          sNssaiUpfInfos:
+            - sNssai:
+                sst: 1
+                sd: 000002
+              dnnUpfInfoList:
+                - dnn: free5gc
+                  pools:
+                    - cidr: {{ ipv4_subnet('slice1') }}
+                  staticPools:
+                    - cidr: {{ ipv4_subnet('slice1-static') }}
+          interfaces:
+            - interfaceType: N9
+              endpoints:
+                - {{ ipv4('upfa', 'dataplane') }}
+              networkInstances:
+                - free5gc
+#~ endif
       ULCL: "true"
       LINKS: |-
+#~ if not use_free5gc_upf
         - A: GNB
           B: UPF
+#~ else
+        - A: GNB
+          B: UPFI
+        - A: UPFI
+          B: UPFA
+#~ endif
       UEROUTING_INFO: |-
         none1:
           members:
             - imsi-001010000000001
+#~ if nb_ue > 1
             - imsi-001010000000002
+#~ endif
           topology:
+#~ if not use_free5gc_upf
             - A: GNB
               B: UPF
+#~ else
+            - A: GNB
+              B: UPFI
+            - A: UPFI
+              B: UPFA
+#~ endif
     networks:
       control:
         ipv4_address: "{{ ipv4('smf', 'control') }}"
@@ -280,13 +410,22 @@ services:
     environment:
       MONGO_HOST: "mongodb.db"
       SLICES: |-
+#~ if not use_free5gc_upf
         - sst: 1
           sd: 000001
           varqi: 9
           dnn: srv6
+#~ else
+        - sst: 1
+          sd: 000002
+          varqi: 9
+          dnn: free5gc
+#~ endif
       IMSI: |-
         - imsi-001010000000001
+#~ if nb_ue > 1
         - imsi-001010000000002
+#~ endif
     networks:
       db:
 
@@ -307,8 +446,13 @@ services:
               mcc: 001
               mnc: 01
             supportedSnssaiList:
+#~ if not use_free5gc_upf
               - sst: 1
                 sd: 000001
+#~ else
+              - sst: 1
+                sd: 000002
+#~ endif
       NSI_LIST: |-
         - snssai:
             sst: 1
@@ -327,8 +471,13 @@ services:
                   mnc: 01
                 tac: 00001
               supportedSnssaiList:
+#~ if not use_free5gc_upf
                 - sst: 1
                   sd: 000001
+#~ else
+                - sst: 1
+                  sd: 000002
+#~ endif
       AMF_LIST: |-
         - nfId: 469de254-2fe5-4ca0-8381-af3f500af77c
           supportedNssaiAvailabilityData:
@@ -338,8 +487,14 @@ services:
                   mnc: 01
                 tac: 1
               supportedSnssaiList:
+#~ if not use_free5gc_upf
                 - sst: 1
                   sd: 000001
+#~ else
+                - sst: 1
+                  sd: 000002
+#~ endif
+
       TA_LIST: |-
         - tai:
             plmnId:
@@ -348,20 +503,35 @@ services:
             tac: 00001
           accessType: 3GPP_ACCESS
           supportedSnssaiList:
+#~ if not use_free5gc_upf
             - sst: 1
               sd: 000001
+#~ else
+            - sst: 1
+              sd: 000002
+#~ endif
+
       MAPPING_LIST_FROM_PLMN: |-
         - operatorName: dummyoperator
           homePlmnId:
             mcc: 001
             mnc: 02
           mappingOfSnssai:
+#~ if not use_free5gc_upf
             - servingSnssai:
                 sst: 1
                 sd: 00001
               homeSnssai:
                 sst: 1
                 sd: 00001
+#~ else
+            - servingSnssai:
+                sst: 1
+                sd: 00002
+              homeSnssai:
+                sst: 1
+                sd: 00002
+#~ endif
     networks:
       sbi:
         ipv4_address: "{{ ipv4('nssf', 'sbi') }}"
@@ -617,7 +787,11 @@ services:
     environment:
       ONESHOT: "true"
       ROUTES_INIT: |-
+#~ if not use_free5gc_upf
         - add {{ ipv4_subnet('slice0') }} via {{ ipv4('r0', 'edge') }}
+#~ else
+        - add {{ ipv4_subnet('slice1') }} via {{ ipv4('upfa', 'edge') }}
+#~ endif
       PRE_INIT_HOOK: "ip"
       PRE_INIT_HOOK_0: "addr"
       PRE_INIT_HOOK_1: "add"
@@ -658,33 +832,40 @@ services:
         ipv4_address: "{{ ipv4('s1', 'edge') }}"
 
 #~ if use_free5gc_upf
-  {{ container_s(name='upf', image='louisroyer/dev-free5gc-upf', restart='always', cap_net_admin=true) }}
+  {{ container_s(name='upfi', image='louisroyer/dev-free5gc-upf', restart='always', cap_net_admin=True, debug=True) }}
     environment:
-      DEBUG: "true"
-      N4: "{{ ipv4('srv6-ctrl', 'control') }}"
+      N4: "{{ ipv4('upfi', 'control') }}"
       IF_LIST: |-
-        - addr: "{{ ipv4('srgw0', 'srgw0') }}"
+        - addr: "{{ ipv4('upfi', 'dataplane') }}"
           type: N3
+        - addr: "{{ ipv4('upfi', 'dataplane') }}"
+          type: N9
       DNN_LIST: |-
-        - dnn: srv6
-          cidr: {{ ipv4_subnet('slice0') }}
-      ROUTES_INIT: |-
-        - add {{ ipv4('s', 'service') }} via {{ ipv4('s1', 'edge') }}
-      PRE_INIT_HOOK: "ip"
-      PRE_INIT_HOOK_0: "addr"
-      PRE_INIT_HOOK_1: "add"
-      PRE_INIT_HOOK_2: "{{ ipv4('srgw0', 'srgw0') }}"
-      PRE_INIT_HOOK_3: "dev"
-      PRE_INIT_HOOK_4: "dataplane-0"
+        - dnn: free5gc
+          cidr: {{ ipv4_subnet('slice1') }}
     networks:
       control:
-        ipv4_address: "{{ ipv4('srv6-ctrl', 'control') }}"
-        ipv6_address: "{{ ipv6('srv6-ctrl', 'control') }}"
+        ipv4_address: "{{ ipv4('upfi', 'control') }}"
       dataplane:
-        ipv4_address: "{{ ipv4('srgw0', 'dataplane') }}"
-        ipv6_address: "{{ ipv6('srgw0', 'dataplane') }}"
+        ipv4_address: "{{ ipv4('upfi', 'dataplane') }}"
+  {{ container_s(name='upfa', image='louisroyer/dev-free5gc-upf', restart='always', cap_net_admin=True, debug=True) }}
+    environment:
+      N4: "{{ ipv4('upfa', 'control') }}"
+      IF_LIST: |-
+        - addr: "{{ ipv4('upfa', 'dataplane') }}"
+          type: N9
+      DNN_LIST: |-
+        - dnn: free5gc
+          cidr: {{ ipv4_subnet('slice1') }}
+      ROUTES_INIT: |-
+        - add {{ ipv4('s', 'service') }} via {{ ipv4('s0', 'edge') }}
+    networks:
+      control:
+        ipv4_address: "{{ ipv4('upfa', 'control') }}"
+      dataplane:
+        ipv4_address: "{{ ipv4('upfa', 'dataplane') }}"
       edge:
-        ipv4_address: "{{ ipv4('r0', 'edge') }}"
+        ipv4_address: "{{ ipv4('upfa', 'edge') }}"
 #~ endif
 
 #~ if not use_free5gc_upf
