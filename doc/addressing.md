@@ -86,9 +86,12 @@
 | udr       | `louisroyer/dev-free5gc-udr`      | db        | auto            | disabled                |                                             |
 | upfi      | `louisroyer/dev-free5gc-upf`      | control   | `10.1.3.135`    | auto                    |                                             |
 | upfi      | `louisroyer/dev-free5gc-upf`      | dataplane | `10.1.4.132`    | auto (not used)         |                                             |
-| upfa      | `louisroyer/dev-free5gc-upf`      | control   | `10.1.3.136`    | auto                    |                                             |
-| upfa      | `louisroyer/dev-free5gc-upf`      | dataplane | `10.1.4.133`    | auto (not used)         |                                             |
-| upfa      | `louisroyer/dev-free5gc-upf`      | edge      | `10.1.4.133`    | auto (not used)         |                                             |
+| upfa1     | `louisroyer/dev-free5gc-upf`      | control   | `10.1.3.136`    | auto                    |                                             |
+| upfa1     | `louisroyer/dev-free5gc-upf`      | dataplane | `10.1.4.133`    | auto (not used)         |                                             |
+| upfa1     | `louisroyer/dev-free5gc-upf`      | edge      | `10.1.4.133`    | auto (not used)         |                                             |
+| upfa2     | `louisroyer/dev-free5gc-upf`      | control   | `10.1.3.137`    | auto                    |                                             |
+| upfa2     | `louisroyer/dev-free5gc-upf`      | dataplane | `10.1.4.134`    | auto (not used)         |                                             |
+| upfa2     | `louisroyer/dev-free5gc-upf`      | edge      | `10.1.4.134`    | auto (not used)         |                                             |
 | populate  | `louisroyer/free5gc-populate`     | db        | auto            | disabled                |                                             |
 | mongodb   | `mongodb`                         | db        | auto            | disabled                |                                             |
 | nextmndb  | `postgres`                        | nextmndb  | auto            | auto                    |                                             |

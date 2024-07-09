@@ -350,10 +350,10 @@ services:
               networkInstances:
                 - free5gc
   #~ endif
-        UPFA:
+        UPFA1:
           type: UPF
-          nodeID: "{{ ipv4('upfa', 'control') }}"
-          addr: "{{ ipv4('upfa', 'control') }}"
+          nodeID: "{{ ipv4('upfa1', 'control') }}"
+          addr: "{{ ipv4('upfa1', 'control') }}"
           sNssaiUpfInfos:
             - sNssai:
                 sst: 1
@@ -361,22 +361,44 @@ services:
               dnnUpfInfoList:
                 - dnn: free5gc
                   pools:
-                    - cidr: {{ ipv4_subnet('slice1') }}
+                    - cidr: {{ ipv4_subnet('slice1-e1') }}
                   staticPools:
-                    - cidr: {{ ipv4_subnet('slice1-static') }}
+                    - cidr: {{ ipv4_subnet('slice1-e1-static') }}
           interfaces:
   #~ if nb_upf < 2
             - interfaceType: N3
               endpoints:
-                - {{ ipv4('upfa', 'dataplane') }}
+                - {{ ipv4('upfa1', 'dataplane') }}
               networkInstances:
                 - free5gc
   #~ endif
             - interfaceType: N9
               endpoints:
-                - {{ ipv4('upfa', 'dataplane') }}
+                - {{ ipv4('upfa1', 'dataplane') }}
               networkInstances:
                 - free5gc
+  #~ if nb_edges > 1
+        UPFA2:
+          type: UPF
+          nodeID: "{{ ipv4('upfa2', 'control') }}"
+          addr: "{{ ipv4('upfa2', 'control') }}"
+          sNssaiUpfInfos:
+            - sNssai:
+                sst: 1
+                sd: 000002
+              dnnUpfInfoList:
+                - dnn: free5gc
+                  pools:
+                    - cidr: {{ ipv4_subnet('slice1-e2') }}
+                  staticPools:
+                    - cidr: {{ ipv4_subnet('slice1-e2-static') }}
+          interfaces:
+            - interfaceType: N9
+              endpoints:
+                - {{ ipv4('upfa2', 'dataplane') }}
+              networkInstances:
+                - free5gc
+  #~ endif
 #~ endif
       ULCL: "true"
       LINKS: |-
@@ -388,10 +410,14 @@ services:
         - A: GNB
           B: UPFI
         - A: UPFI
-          B: UPFA
+          B: UPFA1
+    #~ if nb_edges > 1
+        - A: UPFI
+          B: UPFA2
+    #~ endif
   #~ else
         - A: GNB
-          B: UPFA
+          B: UPFA1
   #~ endif
 #~ endif
       UEROUTING_INFO: |-
@@ -410,10 +436,17 @@ services:
             - A: GNB
               B: UPFI
             - A: UPFI
-              B: UPFA
+              B: UPFA1
+    #~ if nb_edges > 1
+            - A: UPFI
+              B: UPFA2
+          specificPath:
+            - dest: 10.4.0.1/32
+              path: [UPFI, UPFA1]
+    #~ endif
   #~ else
             - A: GNB
-              B: UPFA
+              B: UPFA1
   #~ endif
 #~ endif
     networks:
@@ -809,7 +842,7 @@ services:
 #~ if not use_free5gc_upf
         - add {{ ipv4_subnet('slice0') }} via {{ ipv4('r0', 'edge') }}
 #~ else
-        - add {{ ipv4_subnet('slice1') }} via {{ ipv4('upfa', 'edge') }}
+        - add {{ ipv4_subnet('slice1') }} via {{ ipv4('upfa1', 'edge') }}
 #~ endif
       PRE_INIT_HOOK: "ip"
       PRE_INIT_HOOK_0: "addr"
@@ -832,7 +865,11 @@ services:
     environment:
       ONESHOT: "true"
       ROUTES_INIT: |-
+#~ if not use_free5gc_upf
         - add {{ ipv4_subnet('slice0') }} via {{ ipv4('r1', 'edge') }}
+#~ else
+        - add {{ ipv4_subnet('slice1') }} via {{ ipv4('upfa2', 'edge') }}
+#~ endif
       PRE_INIT_HOOK: "ip"
       PRE_INIT_HOOK_0: "addr"
       PRE_INIT_HOOK_1: "add"
@@ -863,21 +900,23 @@ services:
       DNN_LIST: |-
         - dnn: free5gc
           cidr: {{ ipv4_subnet('slice1') }}
+      ROUTES_INIT: |-
+        - add {{ ipv4('s', 'service') }} via {{ ipv4('s1', 'edge') }}
     networks:
       control:
         ipv4_address: "{{ ipv4('upfi', 'control') }}"
       dataplane:
         ipv4_address: "{{ ipv4('upfi', 'dataplane') }}"
   #~ endif
-  {{ container_s(name='upfa', image='louisroyer/dev-free5gc-upf', restart='always', cap_net_admin=True, debug=True) }}
+  {{ container_s(name='upfa1', image='louisroyer/dev-free5gc-upf', restart='always', cap_net_admin=True, debug=True) }}
     environment:
-      N4: "{{ ipv4('upfa', 'control') }}"
+      N4: "{{ ipv4('upfa1', 'control') }}"
       IF_LIST: |-
   #~ if nb_upf < 2
-        - addr: "{{ ipv4('upfa', 'dataplane') }}"
+        - addr: "{{ ipv4('upfa1', 'dataplane') }}"
           type: N3
   #~ endif
-        - addr: "{{ ipv4('upfa', 'dataplane') }}"
+        - addr: "{{ ipv4('upfa1', 'dataplane') }}"
           type: N9
       DNN_LIST: |-
         - dnn: free5gc
@@ -886,11 +925,31 @@ services:
         - add {{ ipv4('s', 'service') }} via {{ ipv4('s0', 'edge') }}
     networks:
       control:
-        ipv4_address: "{{ ipv4('upfa', 'control') }}"
+        ipv4_address: "{{ ipv4('upfa1', 'control') }}"
       dataplane:
-        ipv4_address: "{{ ipv4('upfa', 'dataplane') }}"
+        ipv4_address: "{{ ipv4('upfa1', 'dataplane') }}"
       edge:
-        ipv4_address: "{{ ipv4('upfa', 'edge') }}"
+        ipv4_address: "{{ ipv4('upfa1', 'edge') }}"
+  #~ if nb_edges > 1
+  {{ container_s(name='upfa2', image='louisroyer/dev-free5gc-upf', restart='always', cap_net_admin=True, debug=True) }}
+    environment:
+      N4: "{{ ipv4('upfa2', 'control') }}"
+      IF_LIST: |-
+        - addr: "{{ ipv4('upfa2', 'dataplane') }}"
+          type: N9
+      DNN_LIST: |-
+        - dnn: free5gc
+          cidr: {{ ipv4_subnet('slice1') }}
+      ROUTES_INIT: |-
+        - add {{ ipv4('s', 'service') }} via {{ ipv4('s1', 'edge') }}
+    networks:
+      control:
+        ipv4_address: "{{ ipv4('upfa2', 'control') }}"
+      dataplane:
+        ipv4_address: "{{ ipv4('upfa2', 'dataplane') }}"
+      edge:
+        ipv4_address: "{{ ipv4('upfa2', 'edge') }}"
+  #~ endif
 #~ endif
 
 #~ if not use_free5gc_upf
