@@ -12,6 +12,7 @@ import os.path
 import functools
 import shutil
 import secrets
+import subprocess
 
 class _Context:
     _context = {}
@@ -111,9 +112,9 @@ def j2_environment_params():
         )
 
 @filter
-def indent(s: str, width: typing.Union[int, str] = 2, first: bool = False, blank: bool = False) -> str:
+def indent(s: str, width: typing.Union[int, str] = 1, first: bool = False, blank: bool = False) -> str:
     '''Replace default indent function with sane default values'''
-    return jinja2.filters.do_indent(s=s, width=width, first=first, blank=blank)
+    return jinja2.filters.do_indent(s=s, width=width*2, first=first, blank=blank)
 
 class _Dumper(yaml.Dumper):
     '''Indent yaml list correctly'''
@@ -167,7 +168,7 @@ def volume_ro(s: str, s2: str) -> str:
 @function
 def secret(s: str) -> str:
     build, _ = build_and_template_dir()
-    build = os.path.join(build,'secrets',  s)
+    build = os.path.join(build, 'secrets',  s)
     os.makedirs(os.path.dirname(build), exist_ok=True)
     try:
         with open(build, 'x') as f:
@@ -177,13 +178,61 @@ def secret(s: str) -> str:
         pass
     return f'{os.path.join("./secrets", s)}'
 
+@function(output='json')
+def openssl(host: str, subnet: str) -> str:
+    ip = ipv4(host, subnet)
+    build, _ = build_and_template_dir()
+    key_filename = f'{host}_{subnet}.key'
+    pem_filename = f'{host}_{subnet}.pem'
+    path_key = os.path.join(build, 'secrets', key_filename)
+    path_pem = os.path.join(build, 'secrets', pem_filename)
+    if not (os.path.isfile(path_key) and os.path.isfile(path_key)):
+        os.makedirs(os.path.join('build', 'secrets'), exist_ok=True)
+        print(f'Creating new openssl key and certificate for `{host}.{subnet}`')
+        try:
+            subprocess.run(['openssl', 'req', '-x509',
+                             '-sha256', '-nodes',
+                             '-days', '30',
+                             '-subj', f'/CN={host}.{subnet}',
+                             '-addext', f'subjectAltName=DNS:{host}.{subnet},IP.1:{ip}',
+                             '-newkey', 'rsa:2048',
+                             '-keyout', path_key,
+                             '-out', path_pem
+                             ], check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+        except subprocess.CalledProcessError:
+            raise(Exception(f'Could not create openssl key and certificate for {host}.{subnet}'))
+
+    s = {
+            f'openssl_{host}_{subnet}_key': {
+                'file': os.path.join("./secrets", key_filename),
+            },
+            f'openssl_{host}_{subnet}_pem': {
+                'file': os.path.join("./secrets", pem_filename),
+            },
+    }
+    return json.dumps(s)
+
+@function(output='json')
+def openssl_secrets(host: str, subnet: str) -> str:
+    return json.dumps([f'openssl_{host}_{subnet}_key', f'openssl_{host}_{subnet}_pem'])
+@function(output='json')
+def openssl_secrets_pem(host: str, subnet: str) -> str:
+    return json.dumps([f'openssl_{host}_{subnet}_pem'])
+
+@function
+def openssl_secret_key(host: str, subnet: str) -> str:
+    return f'/run/secrets/openssl_{host}_{subnet}_key'
+
+@function
+def openssl_secret_pem(host: str, subnet: str) -> str:
+    return f'/run/secrets/openssl_{host}_{subnet}_pem'
 
 @function
 def ipv4(host: str, subnet: str, _context: _Context) -> str:
     try:
         addr = _context.dict['subnets'][subnet][host]['ipv4_address']
     except:
-        raise('Unknown ip address')
+        raise(Exception(f'Unknown ipv4 address for {host}.{subnet}'))
     return addr
 
 @function
@@ -191,7 +240,7 @@ def ipv6(host: str, subnet: str, _context: _Context) -> str:
     try:
        addr = _context.dict['subnets'][subnet][host]['ipv6_address']
     except:
-        raise('Unknown ip address')
+        raise(Exception(f'Unknown ipv6 address for {host}.{subnet}'))
     return addr
 
 @function
@@ -199,7 +248,7 @@ def ipv4_subnet(subnet: str, _context: _Context) -> str:
     try:
         addr = _context.dict['subnets'][subnet]['subnet']['ipv4_address']
     except:
-        raise('Unknown ip subnet')
+      raise(Exception(f'Unknown ipv4 subnet: {subnet}'))
     return addr
 
 @function
@@ -207,7 +256,7 @@ def ipv6_subnet(subnet: str, _context: _Context) -> str:
     try:
        addr = _context.dict['subnets'][subnet]['subnet']['ipv6_address']
     except:
-        raise('Unknown ip subnet')
+        raise(Exception(f'Unknown ipv6 subnet: {subnet}'))
     return addr
 
 @function
@@ -215,7 +264,7 @@ def ipv6_prefix(name: str, subnet: str, _context: _Context) -> str:
     try:
        addr = _context.dict['subnets'][subnet][name]['ipv6_prefix']
     except:
-        raise('Unknown ip address')
+        raise(Exception(f'Unknown ipv6 prefix for subnet {subnet}'))
     return addr
 
 @function(output='json')

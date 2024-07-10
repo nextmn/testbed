@@ -171,6 +171,9 @@ services:
       MCC: "001"
       MNC: "01"
       NRF: "nrf.sbi:8000"
+      NRF_PEM: "{{ openssl_secret_pem('nrf', 'sbi') }}"
+      AMF_PEM: "{{ openssl_secret_pem('amf', 'sbi') }}"
+      AMF_KEY: "{{ openssl_secret_key('amf', 'sbi') }}"
       SUPPORT_DNN_LIST: |-
 #~ if not use_free5gc_upf
         - srv6
@@ -186,6 +189,9 @@ services:
           sd: 000002
 #~ endif
       TAC: "000001"
+    secrets:
+      {{ openssl_secrets_pem_s('nrf', 'sbi') | indent(2) }}
+      {{ openssl_secrets_s('amf', 'sbi') | indent(2) }}
     networks:
       control:
         ipv4_address: "{{ ipv4('amf', 'control') }}"
@@ -207,6 +213,10 @@ services:
       SBI_BINDING_PORT: "8000"
       MCC: "001"
       MNC: "01"
+      NRF_PEM: "{{ openssl_secret_pem('nrf', 'sbi') }}"
+      NRF_KEY: "{{ openssl_secret_key('nrf', 'sbi') }}"
+    secrets:
+      {{ openssl_secrets_s('nrf', 'sbi') | indent(2) }}
     networks:
       db:
       sbi:
@@ -223,6 +233,9 @@ services:
       MCC: "001"
       MNC: "01"
       NRF: "nrf.sbi:8000"
+      NRF_PEM: "{{ openssl_secret_pem('nrf', 'sbi') }}"
+      AUSF_PEM: "{{ openssl_secret_pem('ausf', 'sbi') }}"
+      AUSF_KEY: "{{ openssl_secret_key('ausf', 'sbi') }}"
     networks:
       sbi:
         ipv4_address: "{{ ipv4('ausf', 'sbi') }}"
@@ -236,6 +249,12 @@ services:
       SBI_BINDING_IP: "{{ ipv4('udm', 'sbi') }}"
       SBI_BINDING_PORT: "8000"
       NRF: "nrf.sbi:8000"
+      NRF_PEM: "{{ openssl_secret_pem('nrf', 'sbi') }}"
+      UDM_PEM: "{{ openssl_secret_pem('udm', 'sbi') }}"
+      UDM_KEY: "{{ openssl_secret_key('udm', 'sbi') }}"
+    secrets:
+      {{ openssl_secrets_pem_s('nrf', 'sbi') | indent(2) }}
+      {{ openssl_secrets_s('udm', 'sbi') | indent(2) }}
     networks:
       sbi:
         ipv4_address: "{{ ipv4('udm', 'sbi') }}"
@@ -250,6 +269,12 @@ services:
       SBI_BINDING_IP: "{{ ipv4('udr', 'sbi') }}"
       SBI_BINDING_PORT: "8000"
       NRF: "nrf.sbi:8000"
+      NRF_PEM: "{{ openssl_secret_pem('nrf', 'sbi') }}"
+      UDR_PEM: "{{ openssl_secret_pem('udr', 'sbi') }}"
+      UDR_KEY: "{{ openssl_secret_key('udr', 'sbi') }}"
+    secrets:
+      {{ openssl_secrets_pem_s('nrf', 'sbi') | indent(2) }}
+      {{ openssl_secrets_s('udr', 'sbi') | indent(2) }}
     networks:
       db:
       sbi:
@@ -265,10 +290,59 @@ services:
       SBI_BINDING_IP: "{{ ipv4('pcf', 'sbi') }}"
       SBI_BINDING_PORT: "8000"
       NRF: "nrf.sbi:8000"
+      NRF_PEM: "{{ openssl_secret_pem('nrf', 'sbi') }}"
+      PCF_PEM: "{{ openssl_secret_pem('pcf', 'sbi') }}"
+      PCF_KEY: "{{ openssl_secret_key('pcf', 'sbi') }}"
+    secrets:
+      {{ openssl_secrets_pem_s('nrf', 'sbi') | indent(2) }}
+      {{ openssl_secrets_s('pcf', 'sbi') | indent(2) }}
     networks:
       db:
       sbi:
         ipv4_address: "{{ ipv4('pcf', 'sbi') }}"
+
+  {{ container_s(name='chf', image='louisroyer/dev-free5gc-chf', restart='always') }}
+    depends_on:
+      nrf: # required to being able to deregister propertly
+        condition: service_started
+      webconsole:
+        condition: service_started
+    environment:
+      MONGO_HOST: "mongodb.db"
+      SBI_REGISTER_IP: "chf.sbi"
+      SBI_BINDING_IP: "{{ ipv4('chf', 'sbi') }}"
+      SBI_BINDING_PORT: "8000"
+      NRF: "nrf.sbi:8000"
+      NRF_PEM: "{{ openssl_secret_pem('nrf', 'sbi') }}"
+      BILLING_IP: "{{ ipv4('webconsole', 'sbi') }}"
+      CHF_PEM: "{{ openssl_secret_pem('chf', 'sbi') }}"
+      CHF_KEY: "{{ openssl_secret_key('chf', 'sbi') }}"
+    secrets:
+      {{ openssl_secrets_pem_s('nrf', 'sbi') | indent(2) }}
+      {{ openssl_secrets_s('chf', 'sbi') | indent(2) }}
+    networks:
+      db:
+      sbi:
+        ipv4_address: "{{ ipv4('chf', 'sbi') }}"
+
+  {{ container_s(name='webconsole', image='louisroyer/dev-free5gc-webconsole', restart='always') }}
+    depends_on:
+      nrf: # required to being able to deregister propertly
+        condition: service_started
+    environment:
+      MONGO_HOST: "mongodb.db"
+      NRF: "nrf.sbi:8000"
+      NRF_PEM: "{{ openssl_secret_pem('nrf', 'sbi') }}"
+      BILLING_IP: "{{ ipv4('webconsole', 'sbi') }}"
+      CHF_PEM: "{{ openssl_secret_pem('chf', 'sbi') }}"
+      CHF_KEY: "{{ openssl_secret_key('chf', 'sbi') }}"
+    secrets:
+      {{ openssl_secrets_pem_s('nrf', 'sbi') | indent(2) }}
+      {{ openssl_secrets_s('chf', 'sbi') | indent(2) }}
+    networks:
+      db:
+      sbi:
+        ipv4_address: "{{ ipv4('webconsole', 'sbi') }}"
 
   {{ container_s(name='smf', image='louisroyer/dev-free5gc-smf', restart='always') }}
     depends_on:
@@ -279,6 +353,9 @@ services:
       SBI_BINDING_IP: "{{ ipv4('smf', 'sbi') }}"
       SBI_BINDING_PORT: "8000"
       NRF: "nrf.sbi:8000"
+      NRF_PEM: "{{ openssl_secret_pem('nrf', 'sbi') }}"
+      SMF_PEM: "{{ openssl_secret_pem('smf', 'sbi') }}"
+      SMF_KEY: "{{ openssl_secret_key('smf', 'sbi') }}"
       N4: "{{ ipv4('smf', 'control') }}"
       MCC: "001"
       MNC: "01"
@@ -449,6 +526,9 @@ services:
               B: UPFA1
   #~ endif
 #~ endif
+    secrets:
+      {{ openssl_secrets_pem_s('nrf', 'sbi') | indent(2) }}
+      {{ openssl_secrets_s('smf', 'sbi') | indent(2) }}
     networks:
       control:
         ipv4_address: "{{ ipv4('smf', 'control') }}"
@@ -490,6 +570,9 @@ services:
       SBI_BINDING_IP: "{{ ipv4('nssf', 'sbi') }}"
       SBI_BINDING_PORT: "8000"
       NRF: "nrf.sbi:8000"
+      NRF_PEM: "{{ openssl_secret_pem('nrf', 'sbi') }}"
+      NSSF_PEM: "{{ openssl_secret_pem('nssf', 'sbi') }}"
+      NSSF_KEY: "{{ openssl_secret_key('nssf', 'sbi') }}"
       MCC: "001"
       MNC: "01"
       NSSF_NAME: "NSSF"
@@ -584,6 +667,9 @@ services:
                 sst: 1
                 sd: 00002
 #~ endif
+    secrets:
+      {{ openssl_secrets_pem_s('nrf', 'sbi') | indent(2) }}
+      {{ openssl_secrets_s('nssf', 'sbi') | indent(2) }}
     networks:
       sbi:
         ipv4_address: "{{ ipv4('nssf', 'sbi') }}"
@@ -952,8 +1038,17 @@ services:
   #~ endif
 #~ endif
 
-#~ if not use_free5gc_upf
 secrets:
+  {{ openssl_s('amf', 'sbi') }}
+  {{ openssl_s('ausf', 'sbi') }}
+  {{ openssl_s('chf', 'sbi') }}
+  {{ openssl_s('nrf', 'sbi') }}
+  {{ openssl_s('nssf', 'sbi') }}
+  {{ openssl_s('pcf', 'sbi') }}
+  {{ openssl_s('smf', 'sbi') }}
+  {{ openssl_s('udm', 'sbi') }}
+  {{ openssl_s('udr', 'sbi') }}
+#~ if not use_free5gc_upf
   rr_db_password:
     file: "{{ secret('rr_db_password.txt') }}"
   r0_db_password:
