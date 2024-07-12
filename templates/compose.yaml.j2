@@ -17,6 +17,9 @@ services:
 #~ elif config["topology"]["dataplane"] == "free5gc"
         - sst: 1
           sd: 000002
+#~ elif config["topology"]["dataplane"] == "nextmn-upf"
+        - sst: 1
+          sd: 000003
 #~ endif
       DEFAULT_NSSAI: |-
 #~ if config["topology"]["dataplane"] == "nextmn-srv6"
@@ -25,6 +28,9 @@ services:
 #~ elif config["topology"]["dataplane"] == "free5gc"
         - sst: 1
           sd: 000002
+#~ elif config["topology"]["dataplane"] == "nextmn-upf"
+        - sst: 1
+          sd: 000003
 #~ endif
       SESSIONS: |-
 #~ if config["topology"]["dataplane"] == "nextmn-srv6"
@@ -39,6 +45,12 @@ services:
           slice:
             sst: 1
             sd: 000002
+#~ elif config["topology"]["dataplane"] == "nextmn-upf"
+        - type: "IPv4"
+          apn: "nextmn-upf"
+          slice:
+            sst: 1
+            sd: 000003
 #~ endif
     networks:
       ran: # automatic allocation by docker compose
@@ -56,6 +68,9 @@ services:
   #~ elif config["topology"]["dataplane"] == "free5gc"
         - sst: 1
           sd: 000002
+  #~ elif config["topology"]["dataplane"] == "nextmn-upf"
+        - sst: 1
+          sd: 000003
   #~ endif
       DEFAULT_NSSAI: |-
   #~ if config["topology"]["dataplane"] == "nextmn-srv6"
@@ -64,6 +79,9 @@ services:
   #~ elif config["topology"]["dataplane"] == "free5gc"
         - sst: 1
           sd: 000002
+  #~ elif config["topology"]["dataplane"] == "nextmn-upf"
+        - sst: 1
+          sd: 000003
   #~ endif
       SESSIONS: |-
   #~ if config["topology"]["dataplane"] == "nextmn-srv6"
@@ -78,6 +96,12 @@ services:
           slice:
             sst: 1
             sd: 000002
+  #~ elif config["topology"]["dataplane"] == "nextmn-upf"
+        - type: "IPv4"
+          apn: "nextmn-upf"
+          slice:
+            sst: 1
+            sd: 000003
   #~ endif
     networks:
       ran: # automatic allocation by docker compose
@@ -99,6 +123,9 @@ services:
 #~ elif config["topology"]["dataplane"] == "free5gc"
         - sst: 1
           sd: 000002
+#~ elif config["topology"]["dataplane"] == "nextmn-upf"
+        - sst: 1
+          sd: 000003
 #~ endif
       MCC: "001"
       MNC: "01"
@@ -137,6 +164,9 @@ services:
 #~ elif config["topology"]["dataplane"] == "free5gc"
         - sst: 1
           sd: 000002
+#~ elif config["topology"]["dataplane"] == "nextmn-upf"
+        - sst: 1
+          sd: 000003
 #~ endif
       MCC: "001"
       MNC: "01"
@@ -179,6 +209,8 @@ services:
         - srv6
 #~ elif config["topology"]["dataplane"] == "free5gc"
         - free5gc
+#~ elif config["topology"]["dataplane"] == "nextmn-upf"
+        - nextmn-upf
 #~ endif
       SNSSAI_LIST: |-
 #~ if config["topology"]["dataplane"] == "nextmn-srv6"
@@ -187,6 +219,9 @@ services:
 #~ elif config["topology"]["dataplane"] == "free5gc"
         - sst: 1
           sd: 000002
+#~ elif config["topology"]["dataplane"] == "nextmn-upf"
+        - sst: 1
+          sd: 000003
 #~ endif
       TAC: "000001"
     secrets:
@@ -378,6 +413,15 @@ services:
               dns:
                 ipv4: 9.9.9.9 # TODO: replace with local dns
                 ipv6: 2620:fe::fe
+#~ elif config["topology"]["dataplane"] == "nextmn-upf"
+        - sNssai:
+            sst: 1
+            sd: 000003
+          dnnInfos:
+            - dnn: nextmn-upf
+              dns:
+                ipv4: 9.9.9.9 # TODO: replace with local dns
+                ipv6: 2620:fe::fe
 #~ endif
       UP_NODES: |-
         GNB:
@@ -467,13 +511,77 @@ services:
               networkInstances:
                 - free5gc
   #~ endif
+#~ elif config["topology"]["dataplane"] == "nextmn-upf"
+        UPFI:
+          type: UPF
+          nodeID: "{{ ipv4('upfi', 'control') }}"
+          addr: "{{ ipv4('upfi', 'control') }}"
+          sNssaiUpfInfos:
+            - sNssai:
+                sst: 1
+                sd: 000003
+              dnnUpfInfoList:
+                - dnn: nextmn-upf
+          interfaces:
+            - interfaceType: N3
+              endpoints:
+                - {{ ipv4('upfi', 'dataplane') }}
+              networkInstances:
+                - nextmn-upf
+            - interfaceType: N9
+              endpoints:
+                - {{ ipv4('upfi', 'dataplane') }}
+              networkInstances:
+                - nextmn-upf
+        UPFA1:
+          type: UPF
+          nodeID: "{{ ipv4('upfa1', 'control') }}"
+          addr: "{{ ipv4('upfa1', 'control') }}"
+          sNssaiUpfInfos:
+            - sNssai:
+                sst: 1
+                sd: 000003
+              dnnUpfInfoList:
+                - dnn: nextmn-upf
+                  pools:
+                    - cidr: {{ ipv4_subnet('slice1-e1') }}
+                  staticPools:
+                    - cidr: {{ ipv4_subnet('slice1-e1-static') }}
+          interfaces:
+            - interfaceType: N9
+              endpoints:
+                - {{ ipv4('upfa1', 'dataplane') }}
+              networkInstances:
+                - nextmn-upf
+  #~ if config["topology"]["nb_edges"] > 1
+        UPFA2:
+          type: UPF
+          nodeID: "{{ ipv4('upfa2', 'control') }}"
+          addr: "{{ ipv4('upfa2', 'control') }}"
+          sNssaiUpfInfos:
+            - sNssai:
+                sst: 1
+                sd: 000003
+              dnnUpfInfoList:
+                - dnn: nextmn-upf
+                  pools:
+                    - cidr: {{ ipv4_subnet('slice1-e2') }}
+                  staticPools:
+                    - cidr: {{ ipv4_subnet('slice1-e2-static') }}
+          interfaces:
+            - interfaceType: N9
+              endpoints:
+                - {{ ipv4('upfa2', 'dataplane') }}
+              networkInstances:
+                - nextmn-upf
+  #~ endif
 #~ endif
       ULCL: "true"
       LINKS: |-
 #~ if config["topology"]["dataplane"] == "nextmn-srv6"
         - A: GNB
           B: UPF
-#~ elif config["topology"]["dataplane"] == "free5gc"
+#~ elif config["topology"]["dataplane"] in ("free5gc", "nextmn-upf")
         - A: GNB
           B: UPFI
         - A: UPFI
@@ -494,7 +602,7 @@ services:
 #~ if config["topology"]["dataplane"] == "nextmn-srv6"
             - A: GNB
               B: UPF
-#~ elif config["topology"]["dataplane"] == "free5gc"
+#~ elif config["topology"]["dataplane"] in ("free5gc", "nextmn-upf")
             - A: GNB
               B: UPFI
             - A: UPFI
@@ -533,6 +641,11 @@ services:
           sd: 000002
           varqi: 9
           dnn: free5gc
+#~ elif config["topology"]["dataplane"] == "nextmn-upf"
+        - sst: 1
+          sd: 000003
+          varqi: 9
+          dnn: nextmn-upf
 #~ endif
       IMSI: |-
         - imsi-001010000000001
@@ -568,6 +681,9 @@ services:
 #~ elif config["topology"]["dataplane"] == "free5gc"
             - sst: 1
               sd: 000002
+#~ elif config["topology"]["dataplane"] == "nextmn-upf"
+            - sst: 1
+              sd: 000003
 #~ endif
       NSI_LIST: |-
         - snssai:
@@ -593,6 +709,9 @@ services:
 #~ elif config["topology"]["dataplane"] == "free5gc"
                 - sst: 1
                   sd: 000002
+#~ elif config["topology"]["dataplane"] == "nextmn-upf"
+                - sst: 1
+                  sd: 000003
 #~ endif
       AMF_LIST: |-
         - nfId: 469de254-2fe5-4ca0-8381-af3f500af77c
@@ -609,6 +728,9 @@ services:
 #~ elif config["topology"]["dataplane"] == "free5gc"
                 - sst: 1
                   sd: 000002
+#~ elif config["topology"]["dataplane"] == "nextmn-upf"
+                - sst: 1
+                  sd: 000003
 #~ endif
 
       TA_LIST: |-
@@ -625,6 +747,9 @@ services:
 #~ elif config["topology"]["dataplane"] == "free5gc"
             - sst: 1
               sd: 000002
+#~ elif config["topology"]["dataplane"] == "nextmn-upf"
+            - sst: 1
+              sd: 000003
 #~ endif
 
       MAPPING_LIST_FROM_PLMN: |-
@@ -647,6 +772,13 @@ services:
               homeSnssai:
                 sst: 1
                 sd: 00002
+#~ elif config["topology"]["dataplane"] == "nextmn-upf"
+            - servingSnssai:
+                sst: 1
+                sd: 00003
+              homeSnssai:
+                sst: 1
+                sd: 00003
 #~ endif
     secrets:
       {{ openssl_secrets_pem_s('nrf', 'sbi') | indent(2) }}
@@ -898,9 +1030,9 @@ services:
     environment:
       ONESHOT: "true"
       ROUTES_INIT: |-
-#~ if config["topology"]["dataplane"] == "nextmn-upf"
+#~ if config["topology"]["dataplane"] == "nextmn-srv6"
         - add {{ ipv4_subnet('slice0') }} via {{ ipv4('r0', 'edge') }}
-#~ elif config["topology"]["dataplane"] == "free5gc"
+#~ elif config["topology"]["dataplane"] in ("free5gc", "nextmn-upf")
         - add {{ ipv4_subnet('slice1') }} via {{ ipv4('upfa1', 'edge') }}
 #~ endif
       PRE_INIT_HOOK: "ip"
@@ -924,9 +1056,9 @@ services:
     environment:
       ONESHOT: "true"
       ROUTES_INIT: |-
-#~ if config["topology"]["dataplane"] == "nextmn-upf"
+#~ if config["topology"]["dataplane"] == "nextmn-srv6"
         - add {{ ipv4_subnet('slice0') }} via {{ ipv4('r1', 'edge') }}
-#~ elif config["topology"]["dataplane"] == "free5gc"
+#~ elif config["topology"]["dataplane"] in ("free5gc", "nextmn-upf")
         - add {{ ipv4_subnet('slice1') }} via {{ ipv4('upfa2', 'edge') }}
 #~ endif
       PRE_INIT_HOOK: "ip"
@@ -958,8 +1090,6 @@ services:
       DNN_LIST: |-
         - dnn: free5gc
           cidr: {{ ipv4_subnet('slice1') }}
-      ROUTES_INIT: |-
-        - add {{ ipv4('s', 'service') }} via {{ ipv4('s1', 'edge') }}
     networks:
       control:
         ipv4_address: "{{ ipv4('upfi', 'control') }}"
@@ -1005,6 +1135,58 @@ services:
   #~ endif
 #~ endif
 
+#~ if config["topology"]["dataplane"] == "nextmn-upf"
+  {{ container_s(name='upfi', image='louisroyer/dev-nextmn-upf', restart='always', iface_tun=True, ipv4_forward=True, cap_net_admin=True, debug=True) }}
+    environment:
+      N4: "{{ ipv4('upfi', 'control') }}"
+      GTPU_ENTITIES_LIST: |-
+        - "{{ ipv4('upfi', 'dataplane') }}"
+        - "{{ ipv4('upfi', 'dataplane') }}"
+      DNN_LIST: |-
+        - dnn: free5gc
+          cidr: {{ ipv4_subnet('slice1') }}
+      ROUTES_INIT: |-
+        - add {{ ipv4('s', 'service') }} via {{ ipv4('s1', 'edge') }}
+    networks:
+      control:
+        ipv4_address: "{{ ipv4('upfi', 'control') }}"
+      dataplane:
+        ipv4_address: "{{ ipv4('upfi', 'dataplane') }}"
+  {{ container_s(name='upfa1', image='louisroyer/dev-nextmn-upf', restart='always', iface_tun=True, ipv4_forward=True, cap_net_admin=True, debug=True) }}
+    environment:
+      N4: "{{ ipv4('upfa1', 'control') }}"
+      GTPU_ENTITIES_LIST: |-
+        - "{{ ipv4('upfa1', 'dataplane') }}"
+      DNN_LIST: |-
+        - dnn: free5gc
+          cidr: {{ ipv4_subnet('slice1') }}
+    networks:
+      control:
+        ipv4_address: "{{ ipv4('upfa1', 'control') }}"
+      dataplane:
+        ipv4_address: "{{ ipv4('upfa1', 'dataplane') }}"
+      edge:
+        ipv4_address: "{{ ipv4('upfa1', 'edge') }}"
+  #~ if config["topology"]["nb_edges"] > 1
+  {{ container_s(name='upfa2', image='louisroyer/dev-nextmn-upf', restart='always', iface_tun=True, ipv4_forward=True, cap_net_admin=True, debug=True) }}
+    environment:
+      N4: "{{ ipv4('upfa2', 'control') }}"
+      GTPU_ENTITIES_LIST: |-
+        - "{{ ipv4('upfa2', 'dataplane') }}"
+      DNN_LIST: |-
+        - dnn: free5gc
+          cidr: {{ ipv4_subnet('slice1') }}
+      ROUTES_INIT: |-
+        - add {{ ipv4('s', 'service') }} via {{ ipv4('s1', 'edge') }}
+    networks:
+      control:
+        ipv4_address: "{{ ipv4('upfa2', 'control') }}"
+      dataplane:
+        ipv4_address: "{{ ipv4('upfa2', 'dataplane') }}"
+      edge:
+        ipv4_address: "{{ ipv4('upfa2', 'edge') }}"
+  #~ endif
+#~ endif
 secrets:
   {{ openssl_s('amf', 'sbi') }}
   {{ openssl_s('ausf', 'sbi') }}

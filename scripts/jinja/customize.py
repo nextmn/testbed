@@ -352,6 +352,7 @@ def container(name: str, image: str, enable_ipv6: typing.Optional[bool] = False,
               srv6: typing.Optional[bool] = False, iface_tun: typing.Optional[bool] = False,
               command: typing.Optional[str|bool] = None, init: typing.Optional[bool] = False,
               cap_net_admin: typing.Optional[bool] = False, restart: typing.Optional[str] = None,
+              ipv4_forward: typing.Optional[bool] = False,
               debug: typing.Optional[bool] = False) -> str:
     '''Add a container'''
     containers = {}
@@ -374,10 +375,13 @@ def container(name: str, image: str, enable_ipv6: typing.Optional[bool] = False,
         containers[name]['command'] = [' ']
     if restart is not None:
         containers[name]['restart'] = restart
-    if enable_ipv6:
+    if enable_ipv6 or ipv4_forward:
         containers[name]['sysctls'] = {
-            'net.ipv6.conf.all.disable_ipv6': 0,
         }
+    if enable_ipv6:
+        containers[name]['sysctls']['net.ipv6.conf.all.disable_ipv6'] = 0
+    if ipv4_forward:
+        containers[name]['sysctls']['net.ipv4.ip_forward'] = 1
     if srv6:
         containers[name]['sysctls'] = {
             'net.ipv6.conf.all.disable_ipv6': 0,
