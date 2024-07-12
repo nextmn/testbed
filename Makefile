@@ -3,64 +3,92 @@
 # found in the LICENSE file.
 # SPDX-License-Identifier: MIT
 
+BUILD_DIR = build
+BCOMPOSE = $(BUILD_DIR)/compose.yaml
+BCONFIG = $(BUILD_DIR)/config.yaml
+
 PROFILES = --profile debug
-PROJECT_DIRECTORY = --project-directory build
+PROJECT_DIRECTORY = --project-directory $(BUILD_DIR)
 MAKE = make --no-print-directory
 
-.PHONY: default u d t j e t l lf clean build setf5gc setnextmn test testf5gc testnextmn
-build: build/compose.yaml
 
-clean:
-	@rm -rf build
+.PHONY: default u d t e t l lf clean build test set
 
-build/compose.yaml: templates/compose.yaml.j2 scripts/jinja/customize.py config.yaml
-	@echo Building compose.yaml from jinja template
-	@mkdir -p build
-	@j2 --customize scripts/jinja/customize.py -o build/compose.yaml templates/compose.yaml.j2 config.yaml
+$(BCONFIG): default-config.yaml
+	@echo Copying default-config.yaml into $(BCONFIG)
+	@mkdir -p $$(dirname $(BCONFIG))
+	@cp default-config.yaml $(BCONFIG)
+
+$(BCOMPOSE): templates/compose.yaml.j2 scripts/jinja/customize.py $(BCONFIG)
+	@echo Building $(BCOMPOSE) from jinja template
+	@mkdir -p $$(dirname $(BCOMPOSE))
+	@j2 --customize scripts/jinja/customize.py -o $(BCOMPOSE) templates/compose.yaml.j2 $(BCONFIG)
 
 test:
-	@echo [1/2] Running tests for Free5GC config
 	@$(MAKE) clean
-	@$(MAKE) testf5gc
-	@echo [2/2] Running tests for NextMN config
-	@$(MAKE) clean
-	@$(MAKE) testnextmn
+	@echo [1/4] Running linter on python scripts
+	@$(MAKE) test/lint/python
+	@echo [2/3] Running tests for Free5GC config
+	@$(MAKE) test/free5gc
+	@echo [3/4] Running tests for NextMN/UPF config
+	@$(MAKE) test/nextmn-upf
+	@echo [4/4] Running tests for NextMN/SRv6 config
+	@$(MAKE) test/nextmn-srv6
 
-testnextmn: setnextmn build
+test/lint/python:
+	@find -type f -iname '*.py' -print | parallel '(echo -n Running pylint on {} ; pylint --persistent=false -v -j 0 {})' :::
+
+test/lint/yaml:
+	@echo "disable_openssl_generation: true" >> $(BCONFIG)
+	@$(MAKE) build
 	@echo Running yamllint
-	@yamllint build config.yaml
+	@yamllint $(BUILD_DIR) default-config.yaml
 	@echo Running docker compose config
 	@docker compose $(PROJECT_DIRECTORY) config >/dev/null
-testf5gc: setf5gc build
-	@echo Running yamllint
-	@yamllint build config.yaml
-	@echo Running docker compose config
-	@docker compose $(PROJECT_DIRECTORY) config >/dev/null
+	@$(MAKE) clean
 
-setf5gc:
-	@echo Set use_free5gc_upf to true
-	@sed -i 's/use_free5gc_upf: false/use_free5gc_upf: true/g' config.yaml
-setnextmn:
-	@echo Set use_free5gc_upf to false
-	@sed -i 's/use_free5gc_upf: true/use_free5gc_upf: false/g' config.yaml
+test/nextmn-srv6:
+	@$(MAKE) set/dataplane/nextmn-srv6
+	@$(MAKE) test/lint/yaml
+test/nextmn-upf:
+	@$(MAKE) set/dataplane/nextmn-upf
+	@$(MAKE) test/lint/yaml
+test/free5gc:
+	@$(MAKE) set/dataplane/free5gc
+	@$(MAKE) test/lint/yaml
 
-j: build
+set/dataplane/%: $(BCONFIG)
+	@echo Set dataplane to $(@F)
+	@./scripts/config_edit.py $(BCONFIG) --dataplane=$(@F)
 
-pull: build
+set/nb-edges/%: $(BCONFIG)
+	@echo Set number of edges to $(@F)
+	@./scripts/config_edit.py $(BCONFIG) --nb-edges=$(@F)
+
+set/nb-ue/%: $(BCONFIG)
+	@echo Set number of ue to $(@F)
+	@./scripts/config_edit.py $(BCONFIG) --nb-ue=$(@F)
+
+clean:
+	@rm -rf $(BUILD_DIR)
+build:
+	@$(MAKE) $(BCOMPOSE)
+
+pull: $(BCOMPOSE)
 	@echo Pulling Docker images
 	@docker compose $(PROFILES) $(PROJECT_DIRECTORY) pull
 
-u: build
+u: $(BCOMPOSE)
 	@# set containers up
 	@docker compose $(PROFILES) $(PROJECT_DIRECTORY) up -d
 
-u-fg: build
+u-fg: $(BCOMPOSE)
 	@# set containers up in foreground
 	@docker compose $(PROFILES) $(PROJECT_DIRECTORY)  up
 
-ctrl:
+ctrl: $(BCONFIG)
 	@# show control plane REST API in firefox
-	@scripts/show-ctrl.py config.yaml
+	@scripts/show_ctrl.py $(BCONFIG)
 d:
 	@# shutdown containers
 	@#> don't depends on build-all because we need the old version to delete all

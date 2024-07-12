@@ -2,11 +2,11 @@
 # Use of this source code is governed by a MIT-style license that can be
 # found in the LICENSE file.
 # SPDX-License-Identifier: MIT
-nb_ue: 1
-
-use_free5gc_upf: true # Use Free5GC UPFs instead of NextMN SRv6
-nb_upf: 2 # only if free5gc is enabled
-nb_edges: 2 # only if free5gc is enabled
+config:
+  topology:
+    nb_edges: 2
+    nb_ue: 1
+    dataplane: nextmn-srv6 # ( nextmn-srv6 | free5gc | nextmn-upf)
 
 subnets:
   ran:

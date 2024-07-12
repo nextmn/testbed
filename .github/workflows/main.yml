@@ -19,6 +19,6 @@ jobs:
         - name: Checkout
           uses: actions/checkout@v4
         - name: Install depends
-          run: sudo apt-get install -qy j2cli make yamllint openssl
-        - name: Run Yaml lint
+          run: sudo apt-get install -qy j2cli make pylint yamllint parallel
+        - name: Run tests
           run: make test
