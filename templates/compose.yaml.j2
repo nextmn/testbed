@@ -1139,14 +1139,14 @@ services:
   {{ container_s(name='upfi', image='louisroyer/dev-nextmn-upf', restart='always', iface_tun=True, ipv4_forward=True, cap_net_admin=True, debug=True) }}
     environment:
       N4: "{{ ipv4('upfi', 'control') }}"
-      GTPU_ENTITIES_LIST: |-
-        - "{{ ipv4('upfi', 'dataplane') }}"
-        - "{{ ipv4('upfi', 'dataplane') }}"
+      IF_LIST: |-
+        - addr: "{{ ipv4('upfi', 'dataplane') }}"
+          type: N3
+        - addr: "{{ ipv4('upfi', 'dataplane') }}"
+          type: N9
       DNN_LIST: |-
-        - dnn: free5gc
+        - dnn: nextmn-upf
           cidr: {{ ipv4_subnet('slice1') }}
-      ROUTES_INIT: |-
-        - add {{ ipv4('s', 'service') }} via {{ ipv4('s1', 'edge') }}
     networks:
       control:
         ipv4_address: "{{ ipv4('upfi', 'control') }}"
@@ -1155,11 +1155,14 @@ services:
   {{ container_s(name='upfa1', image='louisroyer/dev-nextmn-upf', restart='always', iface_tun=True, ipv4_forward=True, cap_net_admin=True, debug=True) }}
     environment:
       N4: "{{ ipv4('upfa1', 'control') }}"
-      GTPU_ENTITIES_LIST: |-
-        - "{{ ipv4('upfa1', 'dataplane') }}"
+      IF_LIST: |-
+        - addr: "{{ ipv4('upfa1', 'dataplane') }}"
+          type: N9
       DNN_LIST: |-
-        - dnn: free5gc
+        - dnn: nextmn-upf
           cidr: {{ ipv4_subnet('slice1') }}
+      ROUTES_INIT: |-
+        - add {{ ipv4('s', 'service') }} via {{ ipv4('s0', 'edge') }}
     networks:
       control:
         ipv4_address: "{{ ipv4('upfa1', 'control') }}"
@@ -1171,10 +1174,11 @@ services:
   {{ container_s(name='upfa2', image='louisroyer/dev-nextmn-upf', restart='always', iface_tun=True, ipv4_forward=True, cap_net_admin=True, debug=True) }}
     environment:
       N4: "{{ ipv4('upfa2', 'control') }}"
-      GTPU_ENTITIES_LIST: |-
-        - "{{ ipv4('upfa2', 'dataplane') }}"
+      IF_LIST: |-
+        - addr: "{{ ipv4('upfa2', 'dataplane') }}"
+          type: N9
       DNN_LIST: |-
-        - dnn: free5gc
+        - dnn: nextmn-upf
           cidr: {{ ipv4_subnet('slice1') }}
       ROUTES_INIT: |-
         - add {{ ipv4('s', 'service') }} via {{ ipv4('s1', 'edge') }}
