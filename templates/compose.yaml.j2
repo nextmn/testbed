@@ -797,7 +797,7 @@ services:
     volumes:
       {{ volume_ro('nextmn/routes-to-nei.sh', '/usr/local/bin/routes-to-nei.sh') }}
     environment:
-      DEBUG: "true"
+      LOG_LEVEL: "debug"
       NEI_ADDR: "{{ ipv6_subnet('r1') }} {{ ipv6_subnet('rr') }} {{ ipv6_subnet('srgw0') }} {{ ipv4('s', 'service') }}"
       NEI_NH: "{{ ipv6('r1', 'dataplane') }} {{ ipv6('rr', 'dataplane') }} {{ ipv6('srgw0', 'dataplane') }} {{ ipv4('s0', 'edge') }}"
       HOOKS: |-
@@ -856,7 +856,7 @@ services:
     volumes:
       {{ volume_ro('nextmn/routes-to-nei.sh', '/usr/local/bin/routes-to-nei.sh') }}
     environment:
-      DEBUG: "true"
+      LOG_LEVEL: "debug"
       NEI_ADDR: "{{ ipv6_subnet('r0') }} {{ ipv6_subnet('rr') }} {{ ipv6_subnet('srgw0') }} {{ ipv4('s', 'service') }}"
       NEI_NH: "{{ ipv6('r0', 'dataplane') }} {{ ipv6('rr', 'dataplane') }} {{ ipv6('srgw0', 'dataplane') }} {{ ipv4('s1', 'edge') }}"
       HOOKS: |-
@@ -915,7 +915,7 @@ services:
     volumes:
       {{ volume_ro('nextmn/routes-to-nei.sh', '/usr/local/bin/routes-to-nei.sh') }}
     environment:
-      DEBUG: "true"
+      LOG_LEVEL: "debug"
       NEI_ADDR: "{{ ipv6_subnet('r0') }} {{ ipv6_subnet('r1') }} {{ ipv6_subnet('srgw0') }}"
       NEI_NH: "{{ ipv6('r0', 'dataplane') }} {{ ipv6('r1', 'dataplane') }} {{ ipv6('srgw0', 'dataplane') }}"
       HOOKS: |-
@@ -965,7 +965,7 @@ services:
     volumes:
       {{ volume_ro('nextmn/routes-to-nei.sh', '/usr/local/bin/routes-to-nei.sh') }}
     environment:
-      DEBUG: "true"
+      LOG_LEVEL: "debug"
       NEI_ADDR: "{{ ipv6_subnet('r0') }} {{ ipv6_subnet('r1') }} {{ ipv6_subnet('rr') }}"
       NEI_NH: "{{ ipv6('r0', 'dataplane') }} {{ ipv6('r1', 'dataplane') }} {{ ipv6('rr', 'dataplane') }}"
       HOOKS: |-
