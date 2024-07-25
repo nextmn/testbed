@@ -101,6 +101,9 @@ r:
 e/%:
 	@# enter container
 	docker exec -it $(@F) bash
+db/%:
+	@# enter database of a container
+	docker exec -it $(@F)-db psql postgres -U postgres
 t/%:
 	@# enter container in debug mode
 	docker exec -it $(@F)-debug bash
