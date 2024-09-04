@@ -1016,10 +1016,10 @@ services:
 
   {{ container_s(name='srv6-ctrl', image='louisroyer/dev-nextmn-srv6-ctrl', restart='always') }}
     environment:
-      DEBUG: "true"
       N4: "{{ ipv4('srv6-ctrl', 'control') }}"
       HTTP_ADDRESS: "{{ ipv6('srv6-ctrl', 'control') }}"
       HTTP_PORT: "8080"
+      LOG_LEVEL: "debug"
     networks:
       control:
         ipv4_address: "{{ ipv4('srv6-ctrl', 'control') }}"
