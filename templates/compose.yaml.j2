@@ -350,6 +350,7 @@ services:
       NRF: "nrf.sbi:8000"
       NRF_PEM: "{{ openssl_secret_pem('nrf', 'sbi') }}"
       BILLING_IP: "{{ ipv4('webconsole', 'sbi') }}"
+      BILLING_ENABLE: "false"
       CHF_PEM: "{{ openssl_secret_pem('chf', 'sbi') }}"
       CHF_KEY: "{{ openssl_secret_key('chf', 'sbi') }}"
     secrets:
