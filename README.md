@@ -11,25 +11,44 @@ The following Debian's packets are required (or their equivalent on your distrib
 - `j2cli`
 - `make`
 
+>[!NOTE]
+> If you intend to use Free5GC’s UPF (with `make set/dataplane/free5gc`),
+> install [Free5CG's GTP5G kernel module](https://github.com/free5gc/gtp5g) on your host.
+> Until [upstream issue](https://github.com/free5gc/go-upf/issues/53) is fixed, and this repository updated, use version v0.8.10 of the driver.
+> Please note that you need to have Linux headers installed on the host to be able to install the module
+> (for example, the package linux-headers-amd64 on Debian if you are on an amd64 architecture).
+
+
 ### Usage
-```text
-make j # build
-make pull # update docker images
-make u # run containers
-make d # stop containers
+> [!IMPORTANT]
+> Make sure to enable IPv6.
+This can be done by adding the following in `/etc/docker/daemon.json`:
+ ```json
+{
+	"ipv6": true,
+}
 ```
 
+```text
+make build # build
+make pull # update docker images
+make up # run containers
+make down # stop containers
+```
+
+The Makefile provides some other commands you might want to use. They are described in [`doc/commands.md`](doc/commands.md)
+
 #### Configuration
-Configuration is done in the file `config.yaml`. Currently, it only contains a list of IP addresses.
+Configuration is done in the file [`default-config.yaml`](./default-config.yaml). Currently, it only contains a list of IP addresses.
 
 #### Documentation
-Documentation is available in the `doc` directory.
+Documentation is available in the [`doc`](./doc) directory.
 
 ![edge intance access through SRv6](./doc/img/edge-instance-access-through-srv6.svg)
 
 ### Contributing
 #### Syntax coloration
-To enable syntax coloration in vim, you can use the following plugin: [`nextmn/vim-yaml-jinja`](https://github.com/nextmn/vim-yaml-jinja).
+To enable syntax coloration in Vim, you can use the following plugin: [`nextmn/vim-yaml-jinja`](https://github.com/nextmn/vim-yaml-jinja).
 
 #### PCAP analysis
 To analyse RAN traffic, you can install the following Wireshark/Tshark plugin : [`nextmn/RLS-wireshark-dissector`](https://github.com/nextmn/RLS-wireshark-dissector).

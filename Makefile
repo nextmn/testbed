@@ -12,8 +12,6 @@ PROJECT_DIRECTORY = --project-directory $(BUILD_DIR)
 MAKE = make --no-print-directory
 
 
-.PHONY: default u d t e t l lf clean build test set
-
 $(BCONFIG): default-config.yaml
 	@echo Copying default-config.yaml into $(BCONFIG)
 	@mkdir -p $$(dirname $(BCONFIG))
@@ -24,6 +22,7 @@ $(BCOMPOSE): templates/compose.yaml.j2 scripts/jinja/customize.py $(BCONFIG)
 	@mkdir -p $$(dirname $(BCOMPOSE))
 	@j2 --customize scripts/jinja/customize.py -o $(BCOMPOSE) templates/compose.yaml.j2 $(BCONFIG)
 
+.PHONY: test
 test:
 	@$(MAKE) clean
 	@echo [1/4] Running linter on python scripts
@@ -35,9 +34,11 @@ test:
 	@echo [4/4] Running tests for NextMN/SRv6 config
 	@$(MAKE) test/nextmn-srv6
 
+.PHONY: test/lint/python
 test/lint/python:
 	@find -type f -iname '*.py' -print | parallel '(echo -n Running pylint on {} ; pylint --persistent=false -v -j 0 {})' :::
 
+.PHONY: test/lint/yaml
 test/lint/yaml:
 	@echo "disable_openssl_generation: true" >> $(BCONFIG)
 	@$(MAKE) build
@@ -47,78 +48,139 @@ test/lint/yaml:
 	@docker compose $(PROJECT_DIRECTORY) config >/dev/null
 	@$(MAKE) clean
 
+.PHONY: test/nextmn-srv6
 test/nextmn-srv6:
 	@$(MAKE) set/dataplane/nextmn-srv6
 	@$(MAKE) test/lint/yaml
+.PHONY: test/nextmn-upf
 test/nextmn-upf:
 	@$(MAKE) set/dataplane/nextmn-upf
 	@$(MAKE) test/lint/yaml
+.PHONY: test/nextmn-free5gc
 test/free5gc:
 	@$(MAKE) set/dataplane/free5gc
 	@$(MAKE) test/lint/yaml
 
+.PHONY: set/dataplane
 set/dataplane/%: $(BCONFIG)
 	@echo Set dataplane to $(@F)
 	@./scripts/config_edit.py $(BCONFIG) --dataplane=$(@F)
 
+.PHONY: set/nb-edges
 set/nb-edges/%: $(BCONFIG)
 	@echo Set number of edges to $(@F)
 	@./scripts/config_edit.py $(BCONFIG) --nb-edges=$(@F)
 
+.PHONY: set/nb-ue
 set/nb-ue/%: $(BCONFIG)
 	@echo Set number of ue to $(@F)
 	@./scripts/config_edit.py $(BCONFIG) --nb-ue=$(@F)
 
+.PHONY: clean
 clean:
 	@rm -rf $(BUILD_DIR)
+
+.PHONY: build
 build:
 	@$(MAKE) $(BCOMPOSE)
 
+.PHONY: pull
 pull: $(BCOMPOSE)
 	@echo Pulling Docker images
 	@docker compose $(PROFILES) $(PROJECT_DIRECTORY) pull
 
-u: $(BCOMPOSE)
+.PHONY: pull/all
+pull/all:
+	@echo Pull **all** Docker images
+	@docker compose -f templates/images-list.yaml pull
+
+.PHONY: u
+u:
+	@$(MAKE) up
+
+.PHONY: d
+d:
+	@$(MAKE) down
+
+.PHONY: r
+r:
+	@$(MAKE) restart
+
+.PHONY: up
+up: $(BCOMPOSE)
 	@# set containers up
 	@docker compose $(PROFILES) $(PROJECT_DIRECTORY) up -d
 
-u-fg: $(BCOMPOSE)
+.PHONY: up-fg
+up-fg: $(BCOMPOSE)
 	@# set containers up in foreground
 	@docker compose $(PROFILES) $(PROJECT_DIRECTORY)  up
 
+.PHONY: ctrl
 ctrl: $(BCONFIG)
 	@# show control plane REST API in firefox
 	@scripts/show_ctrl.py $(BCONFIG)
-d:
+
+.PHONY: down
+down:
 	@# shutdown containers
 	@#> don't depends on build-all because we need the old version to delete all
 	@docker compose $(PROFILES) $(PROJECT_DIRECTORY) down -v
 
-r:
+.PHONY: restart
+restart:
 	@# restart all containers
 	@docker compose $(PROFILES) $(PROJECT_DIRECTORY) restart
 
+.PHONY: e
 e/%:
 	@# enter container
 	docker exec -it $(@F) bash
+
+.PHONY: db
 db/%:
 	@# enter database of a container
 	docker exec -it $(@F)-db psql postgres -U postgres
+
+.PHONY: t
 t/%:
 	@# enter container in debug mode
 	docker exec -it $(@F)-debug bash
+
+.PHONY: l
 l:
 	@# show all logs
 	docker compose $(PROFILES) $(PROJECT_DIRECTORY) logs
 l/%:
 	@# show container's logs
 	docker compose $(PROFILES) $(PROJECT_DIRECTORY) logs $(@F)
+
+.PHONY: lf
 lf:
 	@# show all logs (continuous)
 	docker compose $(PROFILES) $(PROJECT_DIRECTORY) logs -f
 lf/%:
 	@# show container's logs (continuous)
 	docker compose $(PROFILES) $(PROJECT_DIRECTORY) logs $(@F) -f
+
+.PHONY: ps
 ps:
 	@# show container's status
 	docker compose $(PROFILES) $(PROJECT_DIRECTORY) ps
+
+.PHONY: ping
+ping/%:
+	@# ping from a container
+	@docker exec -it $(*D)-debug bash -c "ping $(@F)"
+
+.PHONY: ue/ip
+ue/ip/%:
+	@# show ip of ue
+	@docker exec -it ue$(@F)-debug bash -c "ip --brief address show uesimtun0|awk '{print \"ue$(@F):\", \$$3; exit}'"
+
+.PHONY: ue/ping
+ue/ping/%:
+	@# ping between ues
+	@# ex: `make ue/ping/1/2` pings from ue1 to ue2
+	@TARGET=$(shell docker exec -it ue$(@F)-debug bash -c "ip --brief address show uesimtun0|awk '{print \$$3; exit}'|cut -d"/" -f 1");\
+	docker exec -it ue$(*D)-debug bash -c "ping $$TARGET"

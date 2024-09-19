@@ -1,0 +1,44 @@
+name: "nextmn-testbed-pull-images"
+services:
+  mongo:
+    image: mongo
+  postgres:
+    image: postgres
+  nginx:
+    image: nginx
+  ue:
+    image: louisroyer/ueransim-ue
+  gnb:
+    image: louisroyer/ueransim-gnb
+  debug:
+    image: louisroyer/network-debug
+  docker-setup:
+    image: louisroyer/docker-setup
+  free5gc-upf:
+    image: louisroyer/dev-free5gc-upf
+  nextmn-upf:
+    image: louisroyer/dev-nextmn-upf
+  nextmn-srv6:
+    image: louisroyer/dev-nextmn-srv6
+  nextmn-srv6-ctrl:
+    image: louisroyer/dev-nextmn-srv6-ctrl
+  amf:
+    image: louisroyer/dev-free5gc-amf
+  ausf:
+    image: louisroyer/dev-free5gc-ausf
+  chf:
+    image: louisroyer/dev-free5gc-chf
+  nrf:
+    image: louisroyer/dev-free5gc-nrf
+  nssf:
+    image: louisroyer/dev-free5gc-nssf
+  pcf:
+    image: louisroyer/dev-free5gc-pcf
+  smf:
+    image: louisroyer/dev-free5gc-smf
+  udm:
+    image: louisroyer/dev-free5gc-udm
+  udr:
+    image: louisroyer/dev-free5gc-udr
+  webconsole:
+    image: louisroyer/dev-free5gc-webconsole
