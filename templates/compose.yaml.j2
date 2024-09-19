@@ -614,6 +614,8 @@ services:
           specificPath:
             - dest: 10.4.0.1/32
               path: [UPFI, UPFA1]
+            - dest: 10.4.0.2/32
+              path: [UPFI, UPFA2]
   #~ endif
 #~ endif
     secrets:
@@ -1148,6 +1150,7 @@ services:
       DNN_LIST: |-
         - dnn: nextmn-upf
           cidr: {{ ipv4_subnet('slice1') }}
+      LOG_LEVEL: "debug"
     networks:
       control:
         ipv4_address: "{{ ipv4('upfi', 'control') }}"
@@ -1164,6 +1167,7 @@ services:
           cidr: {{ ipv4_subnet('slice1') }}
       ROUTES_INIT: |-
         - add {{ ipv4('s', 'service') }} via {{ ipv4('s0', 'edge') }}
+      LOG_LEVEL: "debug"
     networks:
       control:
         ipv4_address: "{{ ipv4('upfa1', 'control') }}"
@@ -1183,6 +1187,7 @@ services:
           cidr: {{ ipv4_subnet('slice1') }}
       ROUTES_INIT: |-
         - add {{ ipv4('s', 'service') }} via {{ ipv4('s1', 'edge') }}
+      LOG_LEVEL: "debug"
     networks:
       control:
         ipv4_address: "{{ ipv4('upfa2', 'control') }}"
