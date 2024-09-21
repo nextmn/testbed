@@ -181,6 +181,8 @@ ue/ip/%:
 .PHONY: ue/ping
 ue/ping/%:
 	@# ping between ues
-	@# ex: `make ue/ping/1/2` pings from ue1 to ue2
+	@# example:
+	@#   make ue/ping/1/2
+	@# pings from ue1 to ue2
 	@TARGET=$(shell docker exec -it ue$(@F)-debug bash -c "ip --brief address show uesimtun0|awk '{print \$$3; exit}'|cut -d"/" -f 1");\
 	docker exec -it ue$(*D)-debug bash -c "ping $$TARGET"

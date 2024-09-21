@@ -30,7 +30,8 @@ When you update the git repository, please ensure to update Docker images as wel
 - `make db/<container-name>`: enter the database associated with a container (for NextMN-SRv6)
 - `make l/<container-name>`: show logs of a container
 - `make lf/<container-name>`: show logs of a container (continuous)
+- `make ping/<container-source-name>/<container-target-name>`: ping from `container-source` to `container-target`
 
 ## Using UEs
 - `make ue/ip/<ue-number>`: show IP Address of the UE within the Mobile Network
-- `make ue/ping/<ue-source-number>/<ue-target-number>`
+- `make ue/ping/<ue-source-number>/<ue-target-number>`: ping from `ue-source` to `ue-target`

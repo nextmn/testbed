@@ -16,7 +16,7 @@ The following Debian's packets are required (or their equivalent on your distrib
 > install [Free5CG's GTP5G kernel module](https://github.com/free5gc/gtp5g) on your host.
 > Until [upstream issue](https://github.com/free5gc/go-upf/issues/53) is fixed, and this repository updated, use version v0.8.10 of the driver.
 > Please note that you need to have Linux headers installed on the host to be able to install the module
-> (for example, the package linux-headers-amd64 on Debian if you are on an amd64 architecture).
+> (for example, the package `linux-headers-amd64` on Debian if you are on an amd64 architecture).
 
 
 ### Usage
