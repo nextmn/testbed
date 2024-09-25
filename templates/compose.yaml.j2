@@ -799,6 +799,7 @@ services:
         condition: service_healthy
     volumes:
       {{ volume_ro('nextmn/routes-to-nei.sh', '/usr/local/bin/routes-to-nei.sh') }}
+      - r0_db_volume:/var/run/postgresql/
     environment:
       LOG_LEVEL: "debug"
       NEI_ADDR: "{{ ipv6_subnet('r1') }} {{ ipv6_subnet('rr') }} {{ ipv6_subnet('srgw0') }} {{ ipv4('s', 'service') }}"
@@ -824,6 +825,7 @@ services:
           behavior: "H.Encaps"
       POSTGRES_PASSWORD_FILE: /run/secrets/r0_db_password
       POSTGRES_HOST: "r0-db.nextmndb"
+      POSTGRES_UNIX_SOCKET_PATH: "/var/run/postgresql/"
     secrets:
       - r0_db_password
     networks:
@@ -847,6 +849,8 @@ services:
       - r0_db_password
     environment:
       POSTGRES_PASSWORD_FILE: /run/secrets/r0_db_password
+    volumes:
+      - r0_db_volume:/var/run/postgresql/
     networks:
       nextmndb:
 
@@ -858,6 +862,7 @@ services:
         condition: service_healthy
     volumes:
       {{ volume_ro('nextmn/routes-to-nei.sh', '/usr/local/bin/routes-to-nei.sh') }}
+      - r1_db_volume:/var/run/postgresql/
     environment:
       LOG_LEVEL: "debug"
       NEI_ADDR: "{{ ipv6_subnet('r0') }} {{ ipv6_subnet('rr') }} {{ ipv6_subnet('srgw0') }} {{ ipv4('s', 'service') }}"
@@ -883,6 +888,7 @@ services:
           behavior: "H.Encaps"
       POSTGRES_PASSWORD_FILE: /run/secrets/r1_db_password
       POSTGRES_HOST: "r1-db.nextmndb"
+      POSTGRES_UNIX_SOCKET_PATH: "/var/run/postgresql"
     secrets:
       - r1_db_password
     networks:
@@ -906,6 +912,8 @@ services:
       - r1_db_password
     environment:
       POSTGRES_PASSWORD_FILE: /run/secrets/r1_db_password
+    volumes:
+      - r1_db_volume:/var/run/postgresql/
     networks:
       nextmndb:
 
@@ -917,6 +925,7 @@ services:
         condition: service_healthy
     volumes:
       {{ volume_ro('nextmn/routes-to-nei.sh', '/usr/local/bin/routes-to-nei.sh') }}
+      - rr_db_volume:/var/run/postgresql/
     environment:
       LOG_LEVEL: "debug"
       NEI_ADDR: "{{ ipv6_subnet('r0') }} {{ ipv6_subnet('r1') }} {{ ipv6_subnet('srgw0') }}"
@@ -935,6 +944,7 @@ services:
           behavior: "End"
       POSTGRES_PASSWORD_FILE: /run/secrets/rr_db_password
       POSTGRES_HOST: "rr-db.nextmndb"
+      POSTGRES_UNIX_SOCKET_PATH: "/var/run/postgresql/"
     secrets:
       - rr_db_password
     networks:
@@ -956,6 +966,8 @@ services:
       - rr_db_password
     environment:
       POSTGRES_PASSWORD_FILE: /run/secrets/rr_db_password
+    volumes:
+      - rr_db_volume:/var/run/postgresql/
     networks:
       nextmndb:
 
@@ -967,6 +979,7 @@ services:
         condition: service_healthy
     volumes:
       {{ volume_ro('nextmn/routes-to-nei.sh', '/usr/local/bin/routes-to-nei.sh') }}
+      - srgw0_db_volume:/var/run/postgresql/
     environment:
       LOG_LEVEL: "debug"
       NEI_ADDR: "{{ ipv6_subnet('r0') }} {{ ipv6_subnet('r1') }} {{ ipv6_subnet('rr') }}"
@@ -991,6 +1004,7 @@ services:
           behavior: "End.M.GTP4.E"
       POSTGRES_PASSWORD_FILE: /run/secrets/srgw0_db_password
       POSTGRES_HOST: "srgw0-db.nextmndb"
+      POSTGRES_UNIX_SOCKET_PATH: "/var/run/postgresql/"
     secrets:
       - srgw0_db_password
     networks:
@@ -1014,6 +1028,8 @@ services:
       - srgw0_db_password
     environment:
       POSTGRES_PASSWORD_FILE: /run/secrets/srgw0_db_password
+    volumes:
+      - srgw0_db_volume:/var/run/postgresql/
     networks:
       nextmndb:
 
@@ -1217,6 +1233,12 @@ secrets:
   srgw0_db_password:
     file: "{{ secret('srgw0_db_password.txt') }}"
 #~ endif
+
+volumes:
+  rr_db_volume:
+  r0_db_volume:
+  r1_db_volume:
+  srgw0_db_volume:
 
 networks:
   ran:
