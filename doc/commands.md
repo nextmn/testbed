@@ -35,3 +35,4 @@ When you update the git repository, please ensure to update Docker images as wel
 ## Using UEs
 - `make ue/ip/<ue-number>`: show IP Address of the UE within the Mobile Network
 - `make ue/ping/<ue-source-number>/<ue-target-number>`: ping from `ue-source` to `ue-target`
+- `make ue/switch-edge/<ue-number>`: switch edge enabled for this ue (only for NextMN-SRv6)

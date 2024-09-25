@@ -186,3 +186,8 @@ ue/ping/%:
 	@# pings from ue1 to ue2
 	@TARGET=$(shell docker exec -it ue$(@F)-debug bash -c "ip --brief address show uesimtun0|awk '{print \$$3; exit}'|cut -d"/" -f 1");\
 	docker exec -it ue$(*D)-debug bash -c "ping $$TARGET"
+.PHONY: ue/switch-edge
+ue/switch-edge/%:
+	@# swich edge for ue
+	@UE_IP=$(shell docker exec -it ue$(@F)-debug bash -c "ip --brief address show uesimtun0|awk '{print \$$3; exit}'|cut -d"/" -f 1");\
+	scripts/switch.py $(BCONFIG) $$UE_IP
