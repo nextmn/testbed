@@ -5,7 +5,7 @@
 name: "nextmn-testbed"
 
 services:
-  {{ container_s(name='ue1', image='louisroyer/ueransim-ue', enable_ipv6=True, debug=True, iface_tun=True, cap_net_admin=True, init=True) }}
+  {{ container_s(name='ue1', image='louisroyer/ueransim-ue', enable_ipv6=True, debug=True, debug_volume=True, iface_tun=True, cap_net_admin=True, init=True) }}
     environment:
       MSISDN: "0000000001"
       GNBS: |-

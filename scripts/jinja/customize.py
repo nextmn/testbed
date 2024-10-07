@@ -348,12 +348,13 @@ def ipv6_prefix(name: str, subnet: str, _context: _Context) -> str:
     return addr
 
 @j2_function(output='json')
-def container(name: str, image: str, enable_ipv6: typing.Optional[bool] = False, # pylint: disable=too-many-arguments
+def container(name: str, image: str, enable_ipv6: typing.Optional[bool] = False, # pylint: disable=too-many-arguments, disable=too-many-branches, disable=too-many-locals
               srv6: typing.Optional[bool] = False, iface_tun: typing.Optional[bool] = False,
               command: typing.Optional[str|bool] = None, init: typing.Optional[bool] = False,
               cap_net_admin: typing.Optional[bool] = False, restart: typing.Optional[str] = None,
               ipv4_forward: typing.Optional[bool] = False,
-              debug: typing.Optional[bool] = False) -> str:
+              debug: typing.Optional[bool] = False,
+              debug_volume: typing.Optional[bool] = False) -> str:
     '''Add a container'''
     containers = {}
     if debug:
@@ -364,6 +365,25 @@ def container(name: str, image: str, enable_ipv6: typing.Optional[bool] = False,
             "cap_add": ['NET_ADMIN',],
             "profiles": ['debug',],
         }
+        if debug_volume:
+            containers[f'{name}-debug']['volumes'] = [f'./volumes/{name}:/volume']
+            build, _ = build_and_template_dir()
+            build = os.path.join(build, f'./volumes/{name}')
+            os.makedirs(build, exist_ok=True)
+            try:
+                # set acl to allow current user to always be able to read
+                # and delete new files added in the volume
+                subprocess.run([
+                    'setfacl', '-dRm', f'u:{os.environ["USER"]}:rw',
+                    os.path.dirname(build)
+                    ],
+                               check=True,
+                               stdout=subprocess.DEVNULL,
+                               stderr=subprocess.DEVNULL
+                            )
+            except subprocess.CalledProcessError as exc:
+                raise(GenerationError(f'Could not set acl on directory {build}')) from exc
+
     containers[name] = {
         "container_name": name,
         "hostname": name,

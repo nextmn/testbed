@@ -10,6 +10,7 @@ The following Debian's packets are required (or their equivalent on your distrib
 - [`docker-compose-plugin`](https://docs.docker.com/compose/install/linux/#install-using-the-repository)
 - `j2cli`
 - `make`
+- `acl`
 
 >[!NOTE]
 > If you intend to use Free5GC’s UPF (with `make set/dataplane/free5gc`),
