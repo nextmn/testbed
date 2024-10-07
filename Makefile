@@ -186,8 +186,28 @@ ue/ping/%:
 	@# pings from ue1 to ue2
 	@TARGET=$(shell docker exec -it ue$(@F)-debug bash -c "ip --brief address show uesimtun0|awk '{print \$$3; exit}'|cut -d"/" -f 1");\
 	docker exec -it ue$(*D)-debug bash -c "ping $$TARGET"
+
 .PHONY: ue/switch-edge
 ue/switch-edge/%:
 	@# swich edge for ue
-	@UE_IP=$(shell docker exec -it ue$(@F)-debug bash -c "ip --brief address show uesimtun0|awk '{print \$$3; exit}'|cut -d"/" -f 1");\
+	@UE_IP=$(shell docker exec ue$(@F)-debug bash -c "ip --brief address show uesimtun0|awk '{print \$$3; exit}'|cut -d"/" -f 1");\
 	scripts/switch.py $(BCONFIG) $$UE_IP
+
+.PHONY: graph/latency-switch
+graph/latency-switch:
+	@echo "[1/6] Configuring testbed"
+	@$(MAKE) set/dataplane/nextmn-srv6
+	@$(MAKE) set/nb-ue/1
+	@$(MAKE) set/nb-edges/2
+	@echo "[2/6] Starting containers"
+	@$(MAKE) up
+	@echo "[3/6] Adding latency on instance s0"
+	@docker exec s0-debug bash -c "tc qdisc add dev edge-0 root netem delay 5ms"
+	@sleep 2
+	@docker exec ue1-debug bash -c "ping -c 1 10.4.0.1 > /dev/null" # check instance is reachable
+	@echo "[4/6] [$$(date --rfc-3339=seconds)] Scheduling instance switch in 30s"
+	@bash -c 'sleep 30 && $(MAKE) ue/switch-edge/1 && echo "[5.5/6] [$$(date --rfc-3339=seconds)] Switching to edge 1"' &
+	@echo "[5/6] [$$(date --rfc-3339=seconds)] Start ping for 60s"
+	@docker exec ue1-debug bash -c "ping -D -w 60 10.4.0.1 -i 0.1 > /volume/ping.txt"
+	@echo "[6/6] Stopping containers"
+	@$(MAKE) down
