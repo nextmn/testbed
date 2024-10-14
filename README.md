@@ -27,6 +27,7 @@ This can be done by adding the following in `/etc/docker/daemon.json`:
  ```json
 {
 	"ipv6": true,
+	"fixed-cidr-v6": "fdd4:95c2:f557::/64", // replace this prefix with your own IPv6 ULA prefix
 }
 ```
 
