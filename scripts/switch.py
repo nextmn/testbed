@@ -23,8 +23,8 @@ if __name__ == '__main__':
         r = requests.get(f'{srgw}/rules', timeout=1)
         rules = [None, None]
         for ruleid, rule in r.json().items():
-            if ipaddress.ip_address(args.ue_addr) in ipaddress.ip_network(
-                    rule['Match']['ue-ip-prefix']):
+            if ipaddress.ip_address(args.ue_addr) == ipaddress.ip_address(
+                    rule['Match']["gtp"]['inner-ip-src']):
                 if not rule['Enabled']:
                     rules[0] = ruleid
                 else:
