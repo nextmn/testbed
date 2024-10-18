@@ -211,3 +211,42 @@ graph/latency-switch:
 	@docker exec ue1-debug bash -c "ping -D -w 60 10.4.0.1 -i 0.1 > /volume/ping.txt"
 	@echo "[6/6] Stopping containers"
 	@$(MAKE) down
+
+.PHONY: graph/cp-delay
+graph/cp-delay:
+	@echo "Configuring testbed"
+	@$(MAKE) set/nb-ue/1
+	@$(MAKE) set/nb-edges/2
+	@echo "Setting dataplane to Free5GC"
+	@$(MAKE) set/dataplane/free5gc
+	@$(MAKE) build
+	@$(MAKE) graph/cp-delay/f5gc-1
+	@$(MAKE) graph/cp-delay/f5gc-2
+	@$(MAKE) graph/cp-delay/f5gc-3
+	@$(MAKE) graph/cp-delay/f5gc-4
+	@$(MAKE) graph/cp-delay/f5gc-5
+	@$(MAKE) graph/cp-delay/f5gc-6
+	@$(MAKE) graph/cp-delay/f5gc-7
+	@$(MAKE) graph/cp-delay/f5gc-8
+	@$(MAKE) graph/cp-delay/f5gc-9
+	@$(MAKE) graph/cp-delay/f5gc-10
+	@echo "Setting dataplane to NextMN-SRv6"
+	@$(MAKE) set/dataplane/nextmn-srv6
+	@$(MAKE) build
+	@$(MAKE) graph/cp-delay/srv6-1
+	@$(MAKE) graph/cp-delay/srv6-2
+	@$(MAKE) graph/cp-delay/srv6-3
+	@$(MAKE) graph/cp-delay/srv6-4
+	@$(MAKE) graph/cp-delay/srv6-5
+	@$(MAKE) graph/cp-delay/srv6-6
+	@$(MAKE) graph/cp-delay/srv6-7
+	@$(MAKE) graph/cp-delay/srv6-8
+	@$(MAKE) graph/cp-delay/srv6-9
+	@$(MAKE) graph/cp-delay/srv6-10
+
+graph/cp-delay/%:
+	@mkdir build/results -p
+	timeout --preserve-status -s TERM 15 tshark -i any -f sctp -w build/results/cp-delay-$(@F).pcapng &
+	@$(MAKE) up
+	@sleep 5
+	@$(MAKE) down
