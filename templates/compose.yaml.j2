@@ -191,6 +191,8 @@ services:
 
   {{ container_s(name='amf', image='louisroyer/dev-free5gc-amf', restart='always') }}
     depends_on:
+      smf:
+        condition: service_started
       nrf: # required to being able to deregister propertly
         condition: service_started
     environment:
@@ -384,6 +386,16 @@ services:
     depends_on:
       nrf: # required to being able to deregister propertly
         condition: service_started
+#~ if config["topology"]["dataplane"] == "nextmn-srv6"
+      r0:
+        condition: service_healthy
+      r1:
+        condition: service_healthy
+      rr:
+        condition: service_healthy
+      srgw0:
+        condition: service_healthy
+#~ endif
     environment:
       SBI_REGISTER_IP: "smf.sbi"
       SBI_BINDING_IP: "{{ ipv4('smf', 'sbi') }}"
@@ -794,7 +806,7 @@ services:
   {{ container_s(name='r0', image='louisroyer/dev-nextmn-srv6', restart='always', srv6=True, debug=True) }}
     depends_on:
       srv6-ctrl:
-        condition: service_started
+        condition: service_healthy
       r0-db:
         condition: service_healthy
     volumes:
@@ -857,7 +869,7 @@ services:
   {{ container_s(name='r1', image='louisroyer/dev-nextmn-srv6', restart='always', srv6=True, debug=True ) }}
     depends_on:
       srv6-ctrl:
-        condition: service_started
+        condition: service_healthy
       r1-db:
         condition: service_healthy
     volumes:
@@ -920,7 +932,7 @@ services:
   {{ container_s(name='rr', image='louisroyer/dev-nextmn-srv6', restart='always', srv6=True, debug=True ) }}
     depends_on:
       srv6-ctrl:
-        condition: service_started
+        condition: service_healthy
       rr-db:
         condition: service_healthy
     volumes:
@@ -974,7 +986,7 @@ services:
   {{ container_s(name='srgw0', image='louisroyer/dev-nextmn-srv6', restart='always', srv6=True, debug=True ) }}
     depends_on:
       srv6-ctrl:
-        condition: service_started
+        condition: service_healthy
       srgw0-db:
         condition: service_healthy
     volumes:
