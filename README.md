@@ -5,12 +5,15 @@
 ### Dependencies
 This testbed has been developped using Debian 12 (Bookworm), but it should also work on all other Linux distributions supported by Docker as long as a Linux kernel is used on the host system (incompatible with Microsoft WSL).
 
-The following Debian's packets are required (or their equivalent on your distribution):
+The following Debian's packages are required (or their equivalent on your distribution):
 - [`docker-ce`](https://docs.docker.com/engine/install/debian/#install-using-the-repository)
 - [`docker-compose-plugin`](https://docs.docker.com/compose/install/linux/#install-using-the-repository)
+- `python3`
+- `python3-yaml`
 - `j2cli`
 - `make`
 - `acl`
+- `openssl`
 
 >[!NOTE]
 > If you intend to use Free5GC’s UPF (with `make set/dataplane/free5gc`),
@@ -19,6 +22,9 @@ The following Debian's packets are required (or their equivalent on your distrib
 > Please note that you need to have Linux headers installed on the host to be able to install the module
 > (for example, the package `linux-headers-amd64` on Debian if you are on an amd64 architecture).
 
+The following Debian's packages are required for `make graph` subcommands only:
+- `python3-matplotlib`
+- `tshark`
 
 ### Usage
 > [!IMPORTANT]
