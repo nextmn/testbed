@@ -195,22 +195,23 @@ ue/switch-edge/%:
 
 .PHONY: graph/latency-switch
 graph/latency-switch:
-	@echo "[1/6] Configuring testbed"
+	@echo "[1/7] Configuring testbed"
 	@$(MAKE) set/dataplane/nextmn-srv6
 	@$(MAKE) set/nb-ue/1
 	@$(MAKE) set/nb-edges/2
-	@echo "[2/6] Starting containers"
+	@echo "[2/7] Starting containers"
 	@$(MAKE) up
-	@echo "[3/6] Adding latency on instance s0"
+	@echo "[3/7] Adding latency on instance s0"
 	@docker exec s0-debug bash -c "tc qdisc add dev edge-0 root netem delay 5ms"
 	@sleep 2
 	@docker exec ue1-debug bash -c "ping -c 1 10.4.0.1 > /dev/null" # check instance is reachable
-	@echo "[4/6] [$$(date --rfc-3339=seconds)] Scheduling instance switch in 30s"
+	@echo "[4/7] [$$(date --rfc-3339=seconds)] Scheduling instance switch in 30s"
 	@bash -c 'sleep 30 && $(MAKE) ue/switch-edge/1 && echo "[5.5/6] [$$(date --rfc-3339=seconds)] Switching to edge 1"' &
-	@echo "[5/6] [$$(date --rfc-3339=seconds)] Start ping for 60s"
+	@echo "[5/7] [$$(date --rfc-3339=seconds)] Start ping for 60s"
 	@docker exec ue1-debug bash -c "ping -D -w 60 10.4.0.1 -i 0.1 > /volume/ping.txt"
-	@echo "[6/6] Stopping containers"
+	@echo "[6/7] Stopping containers"
 	@$(MAKE) down
+	@echo "[7/7] Creating graph"
 	@scripts/graphs/latency_switch.py $(BUILD_DIR)/volumes/ue1/ping.txt
 
 .PHONY: graph/cp-delay
@@ -219,23 +220,26 @@ graph/cp-delay:
 
 .PHONY: graph/cp-delay/iter
 graph/cp-delay/iter/%:
-	@echo "Configuring testbed"
+	@echo "[1/4] Configuring testbed"
 	@$(MAKE) set/nb-ue/1
 	@$(MAKE) set/nb-edges/2
-	@echo "Setting dataplane to Free5GC"
+	@echo "[2/4] [$$(date --rfc-3339=seconds)] Setting dataplane to Free5GC"
 	@$(MAKE) set/dataplane/free5gc
 	@$(MAKE) build
 	@iter=1 ; while [ $$iter -le $(@F) ] ; do \
+		echo "[2/4] [$$iter/$(@F)] [$$(date --rfc-3339=seconds)] New Free5GC capture" ; \
 		$(MAKE) graph/cp-delay/f5gc-$$iter ; \
 		iter=$$(( iter  + 1)) ; \
 	done
-	@echo "Setting dataplane to NextMN-SRv6"
+	@echo "[3/4] [$$(date --rfc-3339=seconds)] Setting dataplane to NextMN-SRv6"
 	@$(MAKE) set/dataplane/nextmn-srv6
 	@$(MAKE) build
 	@iter=1 ; while [ $$iter -le $(@F) ] ; do \
+		echo "[3/4] [$$iter/$(@F)] [$$(date --rfc-3339=seconds)] New NextMN-SRv6 capture" ; \
 		$(MAKE) graph/cp-delay/srv6-$$iter ; \
 		iter=$$(( iter + 1)) ; \
 	done
+	@echo "[4/4] Creating graph"
 	@scripts/graphs/cp_delay.py $(@F) $(BUILD_DIR)/results
 
 graph/cp-delay/%:
