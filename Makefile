@@ -211,42 +211,37 @@ graph/latency-switch:
 	@docker exec ue1-debug bash -c "ping -D -w 60 10.4.0.1 -i 0.1 > /volume/ping.txt"
 	@echo "[6/6] Stopping containers"
 	@$(MAKE) down
+	@scripts/graphs/latency_switch.py $(BUILD_DIR)/volumes/ue1/ping.txt
 
 .PHONY: graph/cp-delay
 graph/cp-delay:
+	@$(MAKE) graph/cp-delay/iter/100
+
+.PHONY: graph/cp-delay/iter
+graph/cp-delay/iter/%:
 	@echo "Configuring testbed"
 	@$(MAKE) set/nb-ue/1
 	@$(MAKE) set/nb-edges/2
 	@echo "Setting dataplane to Free5GC"
 	@$(MAKE) set/dataplane/free5gc
 	@$(MAKE) build
-	@$(MAKE) graph/cp-delay/f5gc-1
-	@$(MAKE) graph/cp-delay/f5gc-2
-	@$(MAKE) graph/cp-delay/f5gc-3
-	@$(MAKE) graph/cp-delay/f5gc-4
-	@$(MAKE) graph/cp-delay/f5gc-5
-	@$(MAKE) graph/cp-delay/f5gc-6
-	@$(MAKE) graph/cp-delay/f5gc-7
-	@$(MAKE) graph/cp-delay/f5gc-8
-	@$(MAKE) graph/cp-delay/f5gc-9
-	@$(MAKE) graph/cp-delay/f5gc-10
+	@iter=1 ; while [ $$iter -le $(@F) ] ; do \
+		$(MAKE) graph/cp-delay/f5gc-$$iter ; \
+		iter=$$(( iter  + 1)) ; \
+	done
 	@echo "Setting dataplane to NextMN-SRv6"
 	@$(MAKE) set/dataplane/nextmn-srv6
 	@$(MAKE) build
-	@$(MAKE) graph/cp-delay/srv6-1
-	@$(MAKE) graph/cp-delay/srv6-2
-	@$(MAKE) graph/cp-delay/srv6-3
-	@$(MAKE) graph/cp-delay/srv6-4
-	@$(MAKE) graph/cp-delay/srv6-5
-	@$(MAKE) graph/cp-delay/srv6-6
-	@$(MAKE) graph/cp-delay/srv6-7
-	@$(MAKE) graph/cp-delay/srv6-8
-	@$(MAKE) graph/cp-delay/srv6-9
-	@$(MAKE) graph/cp-delay/srv6-10
+	@iter=1 ; while [ $$iter -le $(@F) ] ; do \
+		$(MAKE) graph/cp-delay/srv6-$$iter ; \
+		iter=$$(( iter + 1)) ; \
+	done
+	@scripts/graphs/cp_delay.py $(@F) $(BUILD_DIR)/results
 
 graph/cp-delay/%:
 	@mkdir build/results -p
-	timeout --preserve-status -s TERM 15 tshark -i any -f sctp -w build/results/cp-delay-$(@F).pcapng &
+	@tshark -i any -f sctp -w $(BUILD_DIR)/results/cp-delay-$(@F).pcapng & echo "$$!" > $(BUILD_DIR)/results/pid
 	@$(MAKE) up
 	@sleep 5
 	@$(MAKE) down
+	@kill -s TERM "$$(cat $(BUILD_DIR)/results/pid)" && rm $(BUILD_DIR)/results/pid
