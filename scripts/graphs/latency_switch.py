@@ -1,32 +1,44 @@
 #!/usr/bin/env python3
-'''create plot'''
-import sys
+'''Create plot for latency switch scenario'''
+# Copyright 2024 Louis Royer. All rights reserved.
+# Use of this source code is governed by a MIT-style license that can be
+# found in the LICENSE file.
+# SPDX-License-Identifier: MIT
+
+import argparse
+import os
+import pathlib
 import matplotlib.pyplot as plt
 
-class ArgumentError(Exception):
-    '''Missing argument'''
+def plot(arguments: argparse.Namespace):
+    '''Write plot'''
+    pqt = []
+    tsp = []
+    with open(arguments.input, 'r', encoding='utf8') as ping:
+        for i, line in enumerate(ping):
+            if 'time=' in line:
+                tsp.append(float  (line.split('[')[1].split('] ')[0]))
+                pqt.append(float(line.split('time='    )[1].split(' ms'  )[0]))
+    first = tsp[0]
+    for i, timestamp in enumerate(tsp):
+        tsp[i] = timestamp - first
+    _, axplt = plt.subplots()
+    axplt.set_xlabel('Time (s)')
+    axplt.set_ylabel('Latency (ms)')
+    axplt.plot(tsp, pqt)
+    axplt.autoscale_view()
+    plt.title('Latency evolution with instance switch')
+    plt.savefig(f'{os.path.splitext(arguments.input)[0]}.pdf')
+    print(f'plot saved in {os.path.splitext(arguments.input)[0]}.pdf')
 
-if len(sys.argv) != 2:
-    raise ArgumentError('Filename missing')
+if __name__ == '__main__':
+    parser = argparse.ArgumentParser(
+            prog='latency_switch',
+            description='Convert ping result into plot'
+        )
+    parser.set_defaults(func=plot)
+    parser.add_argument('input', type=pathlib.Path,
+            help='ping result file')
 
-pqt = []
-tsp = []
-with open(sys.argv[1], 'r', encoding='utf8') as ping:
-    for i, line in enumerate(ping):
-        if 'time=' in line:
-            tsp.append(float  (line.split('[')[1].split('] ')[0]))
-            pqt.append(float(line.split('time='    )[1].split(' ms'  )[0]))
-first = tsp[0]
-for i, timestamp in enumerate(tsp):
-    tsp[i] = timestamp - first
-
-
-fig, ax = plt.subplots()
-
-ax.set_xlabel('Time (s)')
-ax.set_ylabel('Latency (ms)')
-ax.plot(tsp, pqt)
-ax.autoscale_view()
-plt.title('Latency evolution with instance switch')
-#plt.show()
-plt.savefig(f'{sys.argv[1].split(".txt", maxsplit=1)[0]}.pdf')
+    args = parser.parse_args()
+    args.func(args)

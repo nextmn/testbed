@@ -1,55 +1,79 @@
 #!/usr/bin/env python3
-'''check control plane establishment delay'''
+'''Check control plane establishment delay'''
+# Copyright 2024 Louis Royer. All rights reserved.
+# Use of this source code is governed by a MIT-style license that can be
+# found in the LICENSE file.
+# SPDX-License-Identifier: MIT
 
 from os import path
+import argparse
+import os
+import pathlib
 import subprocess
-import sys
 import matplotlib.pyplot as plt
 
-class ArgumentError(Exception):
-    '''Missing argument'''
 class DataError(Exception):
     '''Issue with data'''
 
-if len(sys.argv) != 3:
-    raise ArgumentError('Help: ./cp_delay.py iteration results-dir')
+def convert(arguments: argparse.Namespace):
+    '''Convert .pcapng to .pcapng.txt'''
+    for file in os.listdir(arguments.dir):
+        filename = os.fsdecode(file)
+        if filename.endswith('.pcapng'):
+            with open(path.join(arguments.dir, f'{filename}.txt'), 'w', encoding='utf-8') as out:
+                subprocess.run(['tshark', '-r',
+                                path.join(arguments.dir, filename),
+                                '-Y', 'ngap'
+                                ],
+                               check=True,
+                               stdout=out,
+                               stderr=subprocess.DEVNULL
+                               )
 
+def plot(arguments: argparse.Namespace):
+    '''Write plot'''
+    data = []
+    for data_i, dataplane in enumerate(['f5gc', 'srv6']):
+        data.append([])
+        for i in range(1, arguments.num+1):
+            with open(path.join(arguments.dir, f'cp-delay-{dataplane}-{i}.pcapng.txt'),
+                      'r', encoding='utf-8') as input_file:
+                tmp = []
+                for line in input_file:
+                    if 'InitialUEMessage' in line:
+                        tmp.append(float(line.strip().split(' ')[1]))
+                    elif 'PDUSessionResourceSetupResponse' in line:
+                        tmp.append(float(line.strip().split(' ')[1]))
+                if len(tmp) != 2:
+                    raise DataError(f'{dataplane}-{i}: too many messages')
+                data[data_i].append((tmp[1] - tmp[0])*1000)
+    _, axplt = plt.subplots()
+    axplt.boxplot(data, labels=['UL-CL', 'SR4MEC'],
+                  patch_artist=True, boxprops={'facecolor': 'bisque'})
+    axplt.set_ylabel('Time (ms)')
+    axplt.autoscale_view()
+    plt.title('Comparison of PDU Session Establishment time')
+    plt.savefig(path.join(arguments.dir, 'cp-delay.pdf'))
+    print('plot saved in {path.join(arguments.dir, "cp-delay.pdf")}')
 
-MAX = int(sys.argv[1])
-DIR = sys.argv[2]
+if __name__ == '__main__':
+    parser = argparse.ArgumentParser(
+            prog='cp_delay',
+            description='Convert pcap of control plane delay into graph'
+        )
+    subparser = parser.add_subparsers(required=True)
+    parser_text = subparser.add_parser('text',
+            help='convert .pcapng files from the directory to .pcapng.txt files')
+    parser_text.set_defaults(func=convert)
+    parser_text.add_argument('dir', type=pathlib.Path,
+            help='directory containing .pcapng files to convert')
 
-for dataplane in ['f5gc', 'srv6']:
-    for i in range(1, MAX+1):
-        with open(path.join(DIR, f'cp-delay-{dataplane}-{i}.txt'), 'w', encoding='utf-8') as f:
-            subprocess.run(['tshark', '-r',
-                            path.join(DIR, f'cp-delay-{dataplane}-{i}.pcapng'),
-                            '-Y', 'ngap'
-                            ],
-                           check=True,
-                           stdout=f,
-                           stderr=subprocess.DEVNULL
-                           )
-data = []
-for data_i, dataplane in enumerate(['f5gc', 'srv6']):
-    data.append([])
-    for i in range(1, MAX+1):
-        with open(path.join(DIR, f'cp-delay-{dataplane}-{i}.txt'), 'r', encoding='utf-8') as f:
-            tmp = []
-            for j, line in enumerate(f):
-                if 'InitialUEMessage' in line:
-                    tmp.append(float(line.strip().split(' ')[1]))
-                elif 'PDUSessionResourceSetupResponse' in line:
-                    tmp.append(float(line.strip().split(' ')[1]))
-            if len(tmp) != 2:
-                raise DataError(f'{dataplane}-{i}: too many messages')
-            data[data_i].append((tmp[1] - tmp[0])*1000)
+    parser_plot = subparser.add_parser('plot', help='write plot from .pcapng.txt files')
+    parser_plot.set_defaults(func=plot)
+    parser_plot.add_argument('dir', type=pathlib.Path,
+            help='directory containing .pcapng.txt files')
+    parser_plot.add_argument('num', type=int,
+            help='number of .pcapng.txt files to use')
 
-
-print(data)
-fig, ax = plt.subplots()
-ax.boxplot(data, labels=['UL-CL', 'SR4MEC'],patch_artist=True, boxprops={'facecolor': 'bisque'})
-ax.set_ylabel('Time (ms)')
-ax.autoscale_view()
-plt.title('Comparison of PDU Session Establishment time')
-#plt.show()
-plt.savefig(path.join(DIR, 'cp-delay.pdf'))
+    args = parser.parse_args()
+    args.func(args)

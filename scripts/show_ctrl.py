@@ -11,7 +11,7 @@ import yaml
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(
-            prog='show-rules',
+            prog='show_rules',
             description='Show control plane rules'
         )
     parser.add_argument('config')

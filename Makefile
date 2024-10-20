@@ -240,7 +240,8 @@ graph/cp-delay/iter/%:
 		iter=$$(( iter + 1)) ; \
 	done
 	@echo "[4/4] Creating graph"
-	@scripts/graphs/cp_delay.py $(@F) $(BUILD_DIR)/results
+	@scripts/graphs/cp_delay.py text $(BUILD_DIR)/results
+	@scripts/graphs/cp_delay.py plot $(@F) $(BUILD_DIR)/results
 
 graph/cp-delay/%:
 	@mkdir build/results -p
