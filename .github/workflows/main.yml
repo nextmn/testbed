@@ -19,6 +19,6 @@ jobs:
         - name: Checkout
           uses: actions/checkout@v4
         - name: Install depends
-          run: sudo apt-get install -qy j2cli make pylint yamllint parallel
+          run: sudo apt-get install -qy j2cli make pylint yamllint parallel python3-matplotlib
         - name: Run tests
           run: make test
