@@ -58,7 +58,7 @@ def plot(arguments: argparse.Namespace):
     axplt.autoscale_view()
     plt.title('Comparison of PDU Session Establishment time')
     plt.savefig(path.join(arguments.dir, 'cp-delay.pdf'))
-    print('plot saved in {path.join(arguments.dir, "cp-delay.pdf")}')
+    print(f'plot saved in {path.join(arguments.dir, "cp-delay.pdf")}')
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(
