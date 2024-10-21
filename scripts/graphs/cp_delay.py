@@ -45,8 +45,12 @@ def plot(arguments: argparse.Namespace):
                     elif 'PDUSessionResourceSetupResponse' in line:
                         tmp.append(float(line.strip().split(' ')[1]))
                 if len(tmp) != 2:
-                    raise DataError(f'{dataplane}-{i}: too many messages')
-                data[data_i].append((tmp[1] - tmp[0])*1000)
+                    print(f'skip {dataplane}-{i}: {len(tmp)} messages instead of 2.')
+                    #raise DataError(f'{dataplane}-{i}: too many messages')
+                else:
+                    if (tmp[1] - tmp[0]) * 1000 > 500:
+                        print(f'more than 500ms: {dataplane}-{i}')
+                    data[data_i].append((tmp[1] - tmp[0])*1000)
     _, axplt = plt.subplots()
     axplt.boxplot(data, labels=['UL-CL', 'SR4MEC'],
                   patch_artist=True, boxprops={'facecolor': 'bisque'})

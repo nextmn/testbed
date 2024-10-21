@@ -228,7 +228,9 @@ graph/cp-delay/iter/%:
 	@$(MAKE) build
 	@iter=1 ; while [ $$iter -le $(@F) ] ; do \
 		echo "[2/4] [$$iter/$(@F)] [$$(date --rfc-3339=seconds)] New Free5GC capture" ; \
-		$(MAKE) graph/cp-delay/f5gc-$$iter ; \
+		success=false; while [ $$success = false ]; do \
+			{ $(MAKE) graph/cp-delay/f5gc-$$iter && success=true || { $(MAKE) down ; } ; }; \
+		done ; \
 		iter=$$(( iter  + 1)) ; \
 	done
 	@echo "[3/4] [$$(date --rfc-3339=seconds)] Setting dataplane to NextMN-SRv6"
@@ -236,17 +238,20 @@ graph/cp-delay/iter/%:
 	@$(MAKE) build
 	@iter=1 ; while [ $$iter -le $(@F) ] ; do \
 		echo "[3/4] [$$iter/$(@F)] [$$(date --rfc-3339=seconds)] New NextMN-SRv6 capture" ; \
-		$(MAKE) graph/cp-delay/srv6-$$iter ; \
+		success=false; while [ $$success = false ]; do \
+			{ $(MAKE) graph/cp-delay/srv6-$$iter && success=true || { $(MAKE) down ; } ; }; \
+		done ; \
 		iter=$$(( iter + 1)) ; \
 	done
 	@echo "[4/4] Creating graph"
 	@scripts/graphs/cp_delay.py text $(BUILD_DIR)/results
-	@scripts/graphs/cp_delay.py plot $(@F) $(BUILD_DIR)/results
+	@scripts/graphs/cp_delay.py plot $(BUILD_DIR)/results $(@F)
 
 graph/cp-delay/%:
 	@mkdir build/results -p
 	@tshark -i any -f sctp -w $(BUILD_DIR)/results/cp-delay-$(@F).pcapng & echo "$$!" > $(BUILD_DIR)/results/pid
 	@$(MAKE) up
 	@sleep 5
+	@docker exec ue1-debug bash -c "ping 10.4.0.1 -c1"
 	@$(MAKE) down
 	@kill -s TERM "$$(cat $(BUILD_DIR)/results/pid)" && rm $(BUILD_DIR)/results/pid
