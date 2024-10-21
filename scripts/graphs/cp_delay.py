@@ -33,7 +33,7 @@ def convert(arguments: argparse.Namespace):
 def plot(arguments: argparse.Namespace):
     '''Write plot'''
     data = []
-    for data_i, dataplane in enumerate(['f5gc', 'nextmn-upf', 'srv6']):
+    for data_i, dataplane in enumerate(['f5gc', 'srv6']):
         data.append([])
         for i in range(1, arguments.num+1):
             with open(path.join(arguments.dir, f'cp-delay-{dataplane}-{i}.pcapng.txt'),
@@ -52,7 +52,7 @@ def plot(arguments: argparse.Namespace):
                         print(f'more than 500ms: {dataplane}-{i}')
                     data[data_i].append((tmp[1] - tmp[0])*1000)
     _, axplt = plt.subplots()
-    axplt.boxplot(data, labels=['UL-CL (Free5GC)', 'UL-CL (NextMN)', 'SR4MEC'],
+    axplt.boxplot(data, labels=['UL-CL', 'SR4MEC'],
                   patch_artist=True, boxprops={'facecolor': 'bisque'})
     axplt.set_ylabel('Time (ms)')
     axplt.autoscale_view()

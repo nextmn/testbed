@@ -220,40 +220,30 @@ graph/cp-delay:
 
 .PHONY: graph/cp-delay/iter
 graph/cp-delay/iter/%:
-	@echo "[1/5] Configuring testbed"
+	@echo "[1/4] Configuring testbed"
 	@$(MAKE) set/nb-ue/1
 	@$(MAKE) set/nb-edges/2
-	@echo "[2/5] [$$(date --rfc-3339=seconds)] Setting dataplane to Free5GC"
+	@echo "[2/4] [$$(date --rfc-3339=seconds)] Setting dataplane to Free5GC"
 	@$(MAKE) set/dataplane/free5gc
 	@$(MAKE) build
 	@iter=1 ; while [ $$iter -le $(@F) ] ; do \
 		echo "[2/4] [$$iter/$(@F)] [$$(date --rfc-3339=seconds)] New Free5GC capture" ; \
 		success=false; while [ $$success = false ]; do \
-			{ $(MAKE) graph/cp-delay/f5gc-$$iter && success=true || { $(MAKE) down ; kill -s TERM "$$(cat $(BUILD_DIR)/results/pid)" && rm $(BUILD_DIR)/results/pid ; } ; }; \
+			{ $(MAKE) graph/cp-delay/f5gc-$$iter && success=true || { $(MAKE) down ; kill -s TERM "$$(cat $(BUILD_DIR)/results/pid)" && rm $(BUILD_DIR)/results/pid && rm -f $(BUILD_DIR)/results/cp-delay-f5gc-$$iter.pcapng ; } ; }; \
 		done ; \
 		iter=$$(( iter  + 1)) ; \
 	done
-	@echo "[3/5] [$$(date --rfc-3339=seconds)] Setting dataplane to NextMN-UPF"
-	@$(MAKE) set/dataplane/nextmn-upf
-	@$(MAKE) build
-	@iter=1 ; while [ $$iter -le $(@F) ] ; do \
-		echo "[3/4] [$$iter/$(@F)] [$$(date --rfc-3339=seconds)] New NextMN-UPF capture" ; \
-		success=false; while [ $$success = false ]; do \
-			{ $(MAKE) graph/cp-delay/nextmn-upf-$$iter && success=true || { $(MAKE) down ; kill -s TERM "$$(cat $(BUILD_DIR)/results/pid)" && rm $(BUILD_DIR)/results/pid ; } ; }; \
-		done ; \
-		iter=$$(( iter + 1)) ; \
-	done
-	@echo "[4/5] [$$(date --rfc-3339=seconds)] Setting dataplane to NextMN-SRv6"
+	@echo "[3/4] [$$(date --rfc-3339=seconds)] Setting dataplane to NextMN-SRv6"
 	@$(MAKE) set/dataplane/nextmn-srv6
 	@$(MAKE) build
 	@iter=1 ; while [ $$iter -le $(@F) ] ; do \
 		echo "[3/4] [$$iter/$(@F)] [$$(date --rfc-3339=seconds)] New NextMN-SRv6 capture" ; \
 		success=false; while [ $$success = false ]; do \
-			{ $(MAKE) graph/cp-delay/srv6-$$iter && success=true || { $(MAKE) down ; kill -s TERM "$$(cat $(BUILD_DIR)/results/pid)" && rm $(BUILD_DIR)/results/pid ; } ; }; \
+			{ $(MAKE) graph/cp-delay/srv6-$$iter && success=true || { $(MAKE) down ; kill -s TERM "$$(cat $(BUILD_DIR)/results/pid)" && rm $(BUILD_DIR)/results/pid && rm -f $(BUILD_DIR)/results/cp-delay-srv6-$$iter.pcapng ; } ; }; \
 		done ; \
 		iter=$$(( iter + 1)) ; \
 	done
-	@echo "[5/5] Creating graph"
+	@echo "[4/4] Creating graph"
 	@scripts/graphs/cp_delay.py text $(BUILD_DIR)/results
 	@scripts/graphs/cp_delay.py plot $(BUILD_DIR)/results $(@F)
 
