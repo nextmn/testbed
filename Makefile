@@ -229,7 +229,7 @@ graph/cp-delay/iter/%:
 	@iter=1 ; while [ $$iter -le $(@F) ] ; do \
 		echo "[2/4] [$$iter/$(@F)] [$$(date --rfc-3339=seconds)] New Free5GC capture" ; \
 		success=false; while [ $$success = false ]; do \
-			{ $(MAKE) graph/cp-delay/f5gc-$$iter && success=true || { $(MAKE) down ; } ; }; \
+			{ $(MAKE) graph/cp-delay/f5gc-$$iter && success=true || { $(MAKE) down ; kill -s TERM "$$(cat $(BUILD_DIR)/results/pid)" && rm $(BUILD_DIR)/results/pid}} ; }; \
 		done ; \
 		iter=$$(( iter  + 1)) ; \
 	done
@@ -239,7 +239,7 @@ graph/cp-delay/iter/%:
 	@iter=1 ; while [ $$iter -le $(@F) ] ; do \
 		echo "[3/4] [$$iter/$(@F)] [$$(date --rfc-3339=seconds)] New NextMN-SRv6 capture" ; \
 		success=false; while [ $$success = false ]; do \
-			{ $(MAKE) graph/cp-delay/srv6-$$iter && success=true || { $(MAKE) down ; } ; }; \
+			{ $(MAKE) graph/cp-delay/srv6-$$iter && success=true || { $(MAKE) down ; kill -s TERM "$$(cat $(BUILD_DIR)/results/pid)" && rm $(BUILD_DIR)/results/pid} ; }; \
 		done ; \
 		iter=$$(( iter + 1)) ; \
 	done
