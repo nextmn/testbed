@@ -6,6 +6,9 @@ name: "nextmn-testbed"
 
 services:
   {{ container_s(name='ue1', image='louisroyer/ueransim-ue', enable_ipv6=True, debug=True, debug_volume=True, iface_tun=True, cap_net_admin=True, init=True) }}
+    depends_on:
+      amf:
+        condition: service_started
     environment:
       MSISDN: "0000000001"
       GNBS: |-
@@ -57,6 +60,9 @@ services:
 
 #~ if config["topology"]["nb_ue"] > 1
   {{ container_s(name='ue2', image='louisroyer/ueransim-ue', enable_ipv6=True, debug=True, iface_tun=True, cap_net_admin=True, init=True) }}
+    depends_on:
+      amf:
+        condition: service_started
     environment:
       MSISDN: "0000000002"
       GNBS: |-
