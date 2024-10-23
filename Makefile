@@ -76,6 +76,16 @@ set/nb-ue/%: $(BCONFIG)
 	@echo Set number of ue to $(@F)
 	@./scripts/config_edit.py $(BCONFIG) --nb-ue=$(@F)
 
+.PHONY: set/log-level
+set/log-level/%: $(BCONFIG)
+	@echo Set log level to $(@F)
+	@./scripts/config_edit.py $(BCONFIG) --log-level=$(@F)
+
+.PHONY: set/full-debug
+set/full-debug/%: $(BCONFIG)
+	@echo Set full-debug to $(@F)
+	@./scripts/config_edit.py $(BCONFIG) --full-debug=$(@F)
+
 .PHONY: clean
 clean:
 	@rm -rf $(BUILD_DIR)
@@ -199,6 +209,8 @@ graph/latency-switch:
 	@$(MAKE) set/dataplane/nextmn-srv6
 	@$(MAKE) set/nb-ue/1
 	@$(MAKE) set/nb-edges/2
+	@$(MAKE) set/full-debug/false
+	@$(MAKE) set/log-level/info
 	@echo "[2/7] Starting containers"
 	@$(MAKE) up
 	@echo "[3/7] Adding latency on instance s0"
@@ -223,6 +235,8 @@ graph/cp-delay/iter/%:
 	@echo "[1/4] Configuring testbed"
 	@$(MAKE) set/nb-ue/1
 	@$(MAKE) set/nb-edges/2
+	@$(MAKE) set/full-debug/false
+	@$(MAKE) set/log-level/info
 	@echo "[2/4] [$$(date --rfc-3339=seconds)] Setting dataplane to Free5GC"
 	@$(MAKE) set/dataplane/free5gc
 	@$(MAKE) build

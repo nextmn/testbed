@@ -7,6 +7,8 @@ config:
     nb_edges: 2
     nb_ue: 1
     dataplane: nextmn-srv6 # ( nextmn-srv6 | free5gc | nextmn-upf)
+    log_level: "info"
+    full_debug: false
 
 subnets:
   ran:

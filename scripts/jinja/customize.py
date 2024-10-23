@@ -303,6 +303,15 @@ def openssl_secret_pem(host: str, subnet: str) -> str:
     return f'/run/secrets/openssl_{host}_{subnet}_pem'
 
 @j2_function
+def log_level(_context: _Context) -> str:
+    '''Get global log level'''
+    try:
+        ret = _context.dict['config']['topology']['log_level']
+    except KeyError:
+        return 'info' # default log level
+    return ret
+
+@j2_function
 def ipv4(host: str, subnet: str, _context: _Context) -> str:
     '''Get IPv4 Address'''
     try:
@@ -348,16 +357,18 @@ def ipv6_prefix(name: str, subnet: str, _context: _Context) -> str:
     return addr
 
 @j2_function(output='json')
-def container(name: str, image: str, enable_ipv6: typing.Optional[bool] = False, # pylint: disable=too-many-arguments, disable=too-many-branches, disable=too-many-locals
+def container(name: str, image: str, _context: _Context, enable_ipv6: typing.Optional[bool] = False, # pylint: disable=too-many-arguments, disable=too-many-branches, disable=too-many-locals
               srv6: typing.Optional[bool] = False, iface_tun: typing.Optional[bool] = False,
               command: typing.Optional[str|bool] = None, init: typing.Optional[bool] = False,
               cap_net_admin: typing.Optional[bool] = False, restart: typing.Optional[str] = None,
               ipv4_forward: typing.Optional[bool] = False,
-              debug: typing.Optional[bool] = False,
-              debug_volume: typing.Optional[bool] = False) -> str:
+              debug: typing.Optional[str] = 'never',
+              debug_volume: typing.Optional[bool] = False,
+              ) -> str:
     '''Add a container'''
     containers = {}
-    if debug:
+    if debug == 'always' or (
+        debug =='allow' and _context.dict['config']['topology']['full_debug']) :
         containers[f'{name}-debug'] = {
             "container_name": f'{name}-debug',
             "network_mode": f'service:{name}',
