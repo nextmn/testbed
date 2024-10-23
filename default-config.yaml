@@ -139,11 +139,13 @@ subnets:
     subnet:
       ipv6_address: fc00:2::/32
     end-dx4:
+      ipv6_address: "fc00:2:1::"
       ipv6_prefix: fc00:2:1::/48
   r1:
     subnet:
       ipv6_address: fc00:3::/32
     end-dx4:
+      ipv6_address: "fc00:3:1::"
       ipv6_prefix: fc00:3:1::/48
   rr:
     subnet:

@@ -1073,6 +1073,28 @@ services:
       HTTP_PORT: "8080"
       LOG_LEVEL: "{{ log_level() }}"
       GIN_MODE: "release"
+      DOWNLINK: |-
+        - control-uri: "http://[{{ ipv6('r0', 'control') }}]:8080"
+          enabled: true
+          segments-list:
+            - "{{ ipv6_prefix('end-m-gtp4-e', 'srgw0') }}"
+#~ if config["topology"]["nb_edges"] > 1
+        - control-uri: "http://[{{ ipv6('r1', 'control') }}]:8080"
+          enabled: true
+          segments-list:
+            - "{{ ipv6_prefix('end-m-gtp4-e', 'srgw0') }}"
+#~ endif
+      UPLINK: |-
+        - control-uri: "http://[{{ ipv6('srgw0', 'control') }}]:8080"
+          enabled: true
+          segments-list:
+            - "{{ ipv6('end-dx4', 'r0') }}"
+#~ if config["topology"]["nb_edges"] > 1
+        - control-uri: "http://[{{ ipv6('srgw0', 'control') }}]:8080"
+          enabled: false
+          segments-list:
+            - "{{ ipv6('end-dx4', 'r1') }}"
+#~ endif
     networks:
       control:
         ipv4_address: "{{ ipv4('srv6-ctrl', 'control') }}"
