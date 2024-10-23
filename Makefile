@@ -205,26 +205,42 @@ ue/switch-edge/%:
 
 .PHONY: graph/latency-switch
 graph/latency-switch:
-	@echo "[1/7] Configuring testbed"
+	@echo "[1/3] [1/6] Configuring testbed with NextMN-SRv6"
 	@$(MAKE) set/dataplane/nextmn-srv6
 	@$(MAKE) set/nb-ue/1
 	@$(MAKE) set/nb-edges/2
 	@$(MAKE) set/full-debug/false
 	@$(MAKE) set/log-level/info
-	@echo "[2/7] Starting containers"
+	@echo "[1/3] [2/6] Starting containers"
 	@$(MAKE) up
-	@echo "[3/7] Adding latency on instance s0"
+	@echo "[1/3] [3/6] Adding latency on instance s0"
 	@docker exec s0-debug bash -c "tc qdisc add dev edge-0 root netem delay 5ms"
 	@sleep 2
 	@docker exec ue1-debug bash -c "ping -c 1 10.4.0.1 > /dev/null" # check instance is reachable
-	@echo "[4/7] [$$(date --rfc-3339=seconds)] Scheduling instance switch in 30s"
+	@echo "[1/3] [4/6] [$$(date --rfc-3339=seconds)] Scheduling instance switch in 30s"
 	@bash -c 'sleep 30 && $(MAKE) ue/switch-edge/1 && echo "[5.5/6] [$$(date --rfc-3339=seconds)] Switching to edge 1"' &
-	@echo "[5/7] [$$(date --rfc-3339=seconds)] Start ping for 60s"
-	@docker exec ue1-debug bash -c "ping -D -w 60 10.4.0.1 -i 0.1 > /volume/ping.txt"
-	@echo "[6/7] Stopping containers"
+	@echo "[1/3] [5/6] [$$(date --rfc-3339=seconds)] Start ping for 60s"
+	@docker exec ue1-debug bash -c "ping -D -w 60 10.4.0.1 -i 0.1 > /volume/ping-sr4mec.txt"
+	@echo "[1/3] [6/6] Stopping containers"
 	@$(MAKE) down
-	@echo "[7/7] Creating graph"
-	@scripts/graphs/latency_switch.py $(BUILD_DIR)/volumes/ue1/ping.txt
+	@echo "[2/3] [1/5] Configuring testbed with Free5GC"
+	@$(MAKE) set/dataplane/free5gc
+	@$(MAKE) set/nb-ue/1
+	@$(MAKE) set/nb-edges/2
+	@$(MAKE) set/full-debug/false
+	@$(MAKE) set/log-level/info
+	@echo "[2/3] [2/5] Starting containers"
+	@$(MAKE) up
+	@echo "[2/3] [3/5] Adding latency on instance s0"
+	@docker exec s0-debug bash -c "tc qdisc add dev edge-0 root netem delay 5ms"
+	@sleep 2
+	@docker exec ue1-debug bash -c "ping -c 1 10.4.0.1 > /dev/null" # check instance is reachable
+	@echo "[2/3] [4/5] [$$(date --rfc-3339=seconds)] Start ping for 60s"
+	@docker exec ue1-debug bash -c "ping -D -w 60 10.4.0.1 -i 0.1 > /volume/ping-ulcl.txt"
+	@echo "[2/3] [5/5] Stopping containers"
+	@$(MAKE) down
+	@echo "[3/3] Creating graph"
+	@scripts/graphs/latency_switch.py $(BUILD_DIR)/volumes/ue1/ping-sr4mec.txt $(BUILD_DIR)/volumes/ue1/ping-ulcl.txt $(BUILD_DIR)/volumes/ue1/plot.pdf
 
 .PHONY: graph/cp-delay
 graph/cp-delay:
