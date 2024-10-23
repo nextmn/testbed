@@ -835,13 +835,13 @@ services:
         - prefix: "{{ ipv6_prefix('end-dx4', 'r0') }}"
           provider: "Linux"
           behavior: "End.DX4"
-      LINUX_HEADEND_SET_SOURCE_ADDRESS: "{{ ipv6('end-dx4', 'r0') }}"
       IPV4_HEADEND_PREFIX: "{{ ipv4_subnet('slice0') }}"
       HEADENDS: |-
         - name: "downlink (controlled)"
           to: "{{ ipv4_subnet('slice0') }}"
           provider: "NextMN-ctrl"
           behavior: "H.Encaps"
+          source-address-prefix: "{{ ipv6_prefix('end-dx4', 'r0') }}"
       POSTGRES_PASSWORD_FILE: /run/secrets/r0_db_password
       POSTGRES_HOST: "r0-db.nextmndb"
       POSTGRES_UNIX_SOCKET_PATH: "/var/run/postgresql/"
@@ -899,13 +899,13 @@ services:
         - prefix: "{{ ipv6_prefix('end-dx4', 'r1') }}"
           provider: "Linux"
           behavior: "End.DX4"
-      LINUX_HEADEND_SET_SOURCE_ADDRESS: "{{ ipv6('end-dx4', 'r1') }}"
       IPV4_HEADEND_PREFIX: "{{ ipv4_subnet('slice0') }}"
       HEADENDS: |-
         - name: "downlink (controlled)"
           to: "{{ ipv4_subnet('slice0') }}"
           provider: "NextMN-ctrl"
           behavior: "H.Encaps"
+          source-address-prefix: "{{ ipv6_prefix('end-dx4', 'r1') }}"
       POSTGRES_PASSWORD_FILE: /run/secrets/r1_db_password
       POSTGRES_HOST: "r1-db.nextmndb"
       POSTGRES_UNIX_SOCKET_PATH: "/var/run/postgresql"
@@ -1020,6 +1020,7 @@ services:
           to: "{{ ipv4('srgw0', 'srgw0') }}/32"
           provider: "NextMN-Ctrl"
           behavior: "H.M.GTP4.D"
+          source-address-prefix: "{{ ipv6_prefix('end-m-gtp4-e', 'srgw0') }}"
       ENDPOINTS: |-
         - prefix: "{{ ipv6_prefix('end-m-gtp4-e', 'srgw0') }}"
           provider: "NextMN"
