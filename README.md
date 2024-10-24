@@ -14,6 +14,7 @@ The following Debian's packages are required (or their equivalent on your distri
 - `make`
 - `acl`
 - `openssl`
+- `python3-matplotlib`
 
 >[!NOTE]
 > If you intend to use Free5GC’s UPF (with `make set/dataplane/free5gc`),
@@ -21,10 +22,6 @@ The following Debian's packages are required (or their equivalent on your distri
 > Until [upstream issue](https://github.com/free5gc/go-upf/issues/53) is fixed, and this repository updated, use version v0.8.10 of the driver.
 > Please note that you need to have Linux headers installed on the host to be able to install the module
 > (for example, the package `linux-headers-amd64` on Debian if you are on an amd64 architecture).
-
-The following Debian's packages are required for `make graph` subcommands only:
-- `python3-matplotlib`
-- `tshark`
 
 ### Usage
 > [!IMPORTANT]

@@ -203,8 +203,8 @@ ue/switch-edge/%:
 	@UE_IP=$(shell docker exec ue$(@F)-debug bash -c "ip --brief address show uesimtun0|awk '{print \$$3; exit}'|cut -d"/" -f 1");\
 	scripts/switch.py $(BCONFIG) $$UE_IP
 
-.PHONY: graph/latency-switch
-graph/latency-switch:
+.PHONY: plot/latency-switch
+plot/latency-switch:
 	@echo "[1/3] [1/6] Configuring testbed with NextMN-SRv6"
 	@$(MAKE) set/dataplane/nextmn-srv6
 	@$(MAKE) set/nb-ue/1
@@ -239,49 +239,5 @@ graph/latency-switch:
 	@docker exec ue1-debug bash -c "ping -D -w 60 10.4.0.1 -i 0.1 > /volume/ping-ulcl.txt"
 	@echo "[2/3] [5/5] Stopping containers"
 	@$(MAKE) down
-	@echo "[3/3] Creating graph"
-	@scripts/graphs/latency_switch.py $(BUILD_DIR)/volumes/ue1/ping-sr4mec.txt $(BUILD_DIR)/volumes/ue1/ping-ulcl.txt $(BUILD_DIR)/volumes/ue1/plot.pdf
-
-.PHONY: graph/cp-delay
-graph/cp-delay:
-	@$(MAKE) graph/cp-delay/iter/100
-
-.PHONY: graph/cp-delay/iter
-graph/cp-delay/iter/%:
-	@echo "[1/4] Configuring testbed"
-	@$(MAKE) set/nb-ue/1
-	@$(MAKE) set/nb-edges/2
-	@$(MAKE) set/full-debug/false
-	@$(MAKE) set/log-level/info
-	@echo "[2/4] [$$(date --rfc-3339=seconds)] Setting dataplane to Free5GC"
-	@$(MAKE) set/dataplane/free5gc
-	@$(MAKE) build
-	@iter=1 ; while [ $$iter -le $(@F) ] ; do \
-		echo "[2/4] [$$iter/$(@F)] [$$(date --rfc-3339=seconds)] New Free5GC capture" ; \
-		success=false; while [ $$success = false ]; do \
-			{ $(MAKE) graph/cp-delay/f5gc-$$iter && success=true || { $(MAKE) down ; kill -s TERM "$$(cat $(BUILD_DIR)/results/pid)" && rm $(BUILD_DIR)/results/pid && rm -f $(BUILD_DIR)/results/cp-delay-f5gc-$$iter.pcapng ; } ; }; \
-		done ; \
-		iter=$$(( iter  + 1)) ; \
-	done
-	@echo "[3/4] [$$(date --rfc-3339=seconds)] Setting dataplane to NextMN-SRv6"
-	@$(MAKE) set/dataplane/nextmn-srv6
-	@$(MAKE) build
-	@iter=1 ; while [ $$iter -le $(@F) ] ; do \
-		echo "[3/4] [$$iter/$(@F)] [$$(date --rfc-3339=seconds)] New NextMN-SRv6 capture" ; \
-		success=false; while [ $$success = false ]; do \
-			{ $(MAKE) graph/cp-delay/srv6-$$iter && success=true || { $(MAKE) down ; kill -s TERM "$$(cat $(BUILD_DIR)/results/pid)" && rm $(BUILD_DIR)/results/pid && rm -f $(BUILD_DIR)/results/cp-delay-srv6-$$iter.pcapng ; } ; }; \
-		done ; \
-		iter=$$(( iter + 1)) ; \
-	done
-	@echo "[4/4] Creating graph"
-	@scripts/graphs/cp_delay.py text $(BUILD_DIR)/results
-	@scripts/graphs/cp_delay.py plot $(BUILD_DIR)/results $(@F)
-
-graph/cp-delay/%:
-	@mkdir build/results -p
-	@tshark -i any -f sctp -w $(BUILD_DIR)/results/cp-delay-$(@F).pcapng & echo "$$!" > $(BUILD_DIR)/results/pid
-	@$(MAKE) up
-	@sleep 5
-	@docker exec ue1-debug bash -c "ping 10.4.0.1 -c1"
-	@$(MAKE) down
-	@kill -s TERM "$$(cat $(BUILD_DIR)/results/pid)" && rm $(BUILD_DIR)/results/pid
+	@echo "[3/3] Plotting data"
+	@scripts/plots/latency_switch.py $(BUILD_DIR)/volumes/ue1/ping-sr4mec.txt $(BUILD_DIR)/volumes/ue1/ping-ulcl.txt $(BUILD_DIR)/volumes/ue1/plot.pdf
