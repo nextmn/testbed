@@ -32,8 +32,10 @@ def plot(arguments: argparse.Namespace):
     _, axplt = plt.subplots()
     axplt.set_xlabel('Time (s)')
     axplt.set_ylabel('RTT (ms)')
-    axplt.plot(res[0]['tsp'], res[0]['pqt'], color='tab:red', label='UE1 in Area A accessing service S')
-    axplt.plot(res[1]['tsp'], res[1]['pqt'], color='tab:blue', label='UE2 in Area B accessing service S')
+    axplt.plot(res[0]['tsp'], res[0]['pqt'], color='tab:red',
+               label='UE1 in Area A accessing service S')
+    axplt.plot(res[1]['tsp'], res[1]['pqt'], color='tab:blue',
+               label='UE2 in Area B accessing service S')
     axplt.autoscale_view()
     axplt.legend()
     plt.savefig(arguments.output)
