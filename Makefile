@@ -260,10 +260,10 @@ plot/latency-switch:
 	@echo "[2/3] [3/5] Adding latency on instance s0"
 	@docker exec s0-debug bash -c "tc qdisc add dev edge-0 root netem delay 5ms"
 	@sleep 2
-	@docker exec ue1-debug bash -c "ping -c 1 10.4.0.1 > /dev/null" # check instance is reachable
+	@docker exec ue3-debug bash -c "ping -c 1 10.4.0.1 > /dev/null" # check instance is reachable
 	@echo "[2/3] [4/5] [$$(date --rfc-3339=seconds)] Start ping for 60s"
-	@docker exec ue1-debug bash -c "ping -D -w 60 10.4.0.1 -i 0.1 > /volume/ping-ulcl.txt"
+	@docker exec ue3-debug bash -c "ping -D -w 60 10.4.0.1 -i 0.1 > /volume/ping-ulcl.txt"
 	@echo "[2/3] [5/5] Stopping containers"
 	@$(MAKE) down
 	@echo "[3/3] Plotting data"
-	@scripts/plots/latency_switch.py $(BUILD_DIR)/volumes/ue1/ping-sr4mec.txt $(BUILD_DIR)/volumes/ue1/ping-ulcl.txt $(BUILD_DIR)/volumes/ue1/plot-latency-switch.pdf
+	@scripts/plots/latency_switch.py $(BUILD_DIR)/volumes/ue1/ping-sr4mec.txt $(BUILD_DIR)/volumes/ue3/ping-ulcl.txt $(BUILD_DIR)/volumes/ue1/plot-latency-switch.pdf

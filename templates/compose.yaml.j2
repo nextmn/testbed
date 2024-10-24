@@ -5,6 +5,7 @@
 name: "nextmn-testbed"
 
 services:
+#~ if "nextmn-srv6" in config["topology"]["dataplane"]
   {{ container_s(name='ue1', image='louisroyer/ueransim-ue', enable_ipv6=True, debug='always', debug_volume=True, iface_tun=True, cap_net_admin=True, init=True) }}
     depends_on:
       amf:
@@ -14,51 +15,21 @@ services:
       GNBS: |-
         - "{{ ipv6('gnb1', 'ran') }}"
       CONFIGURED_NSSAI: |-
-#~ if "nextmn-srv6" in config["topology"]["dataplane"]
         - sst: 1
           sd: 000001
-#~ elif "free5gc" in config["topology"]["dataplane"]
-        - sst: 1
-          sd: 000002
-#~ elif "nextmn-upf" in config["topology"]["dataplane"]
-        - sst: 1
-          sd: 000003
-#~ endif
       DEFAULT_NSSAI: |-
-#~ if "nextmn-srv6" in config["topology"]["dataplane"]
         - sst: 1
           sd: 000001
-#~ elif "free5gc" in config["topology"]["dataplane"]
-        - sst: 1
-          sd: 000002
-#~ elif "nextmn-upf" in config["topology"]["dataplane"]
-        - sst: 1
-          sd: 000003
-#~ endif
       SESSIONS: |-
-#~ if "nextmn-srv6" in config["topology"]["dataplane"]
         - type: "IPv4"
           apn: "srv6"
           slice:
             sst: 1
             sd: 000001
-#~ elif "free5gc" in config["topology"]["dataplane"]
-        - type: "IPv4"
-          apn: "free5gc"
-          slice:
-            sst: 1
-            sd: 000002
-#~ elif "nextmn-upf" in config["topology"]["dataplane"]
-        - type: "IPv4"
-          apn: "nextmn-upf"
-          slice:
-            sst: 1
-            sd: 000003
-#~ endif
     networks:
       ran: # automatic allocation by docker compose
 
-#~ if config["topology"]["nb_ue"] > 1
+  #~ if config["topology"]["nb_ue"] > 1
   {{ container_s(name='ue2', image='louisroyer/ueransim-ue', enable_ipv6=True, debug='always', debug_volume=True, iface_tun=True, cap_net_admin=True, init=True) }}
     depends_on:
       amf:
@@ -68,49 +39,120 @@ services:
       GNBS: |-
         - "{{ ipv6('gnb2', 'ran') }}"
       CONFIGURED_NSSAI: |-
-  #~ if "nextmn-srv6" in config["topology"]["dataplane"]
         - sst: 1
           sd: 000001
-  #~ elif "free5gc" in config["topology"]["dataplane"]
-        - sst: 1
-          sd: 000002
-  #~ elif "nextmn-upf" in config["topology"]["dataplane"]
-        - sst: 1
-          sd: 000003
-  #~ endif
       DEFAULT_NSSAI: |-
-  #~ if "nextmn-srv6" in config["topology"]["dataplane"]
         - sst: 1
           sd: 000001
-  #~ elif "free5gc" in config["topology"]["dataplane"]
-        - sst: 1
-          sd: 000002
-  #~ elif "nextmn-upf" in config["topology"]["dataplane"]
-        - sst: 1
-          sd: 000003
-  #~ endif
       SESSIONS: |-
-  #~ if "nextmn-srv6" in config["topology"]["dataplane"]
         - type: "IPv4"
           apn: "srv6"
           slice:
             sst: 1
             sd: 000001
-  #~ elif "free5gc" in config["topology"]["dataplane"]
+    networks:
+      ran: # automatic allocation by docker compose
+  #~ endif
+#~ endif
+
+#~ if "free5gc" in config["topology"]["dataplane"]
+  {{ container_s(name='ue3', image='louisroyer/ueransim-ue', enable_ipv6=True, debug='always', debug_volume=True, iface_tun=True, cap_net_admin=True, init=True) }}
+    depends_on:
+      amf:
+        condition: service_started
+    environment:
+      MSISDN: "0000000003"
+      GNBS: |-
+        - "{{ ipv6('gnb1', 'ran') }}"
+      CONFIGURED_NSSAI: |-
+        - sst: 1
+          sd: 000002
+      DEFAULT_NSSAI: |-
+        - sst: 1
+          sd: 000002
+      SESSIONS: |-
         - type: "IPv4"
           apn: "free5gc"
           slice:
             sst: 1
             sd: 000002
-  #~ elif "nextmn-upf" in config["topology"]["dataplane"]
+    networks:
+      ran: # automatic allocation by docker compose
+
+  #~ if config["topology"]["nb_ue"] > 1
+  {{ container_s(name='ue4', image='louisroyer/ueransim-ue', enable_ipv6=True, debug='always', debug_volume=True, iface_tun=True, cap_net_admin=True, init=True) }}
+    depends_on:
+      amf:
+        condition: service_started
+    environment:
+      MSISDN: "0000000004"
+      GNBS: |-
+        - "{{ ipv6('gnb2', 'ran') }}"
+      CONFIGURED_NSSAI: |-
+        - sst: 1
+          sd: 000002
+      DEFAULT_NSSAI: |-
+        - sst: 1
+          sd: 000002
+      SESSIONS: |-
+        - type: "IPv4"
+          apn: "free5gc"
+          slice:
+            sst: 1
+            sd: 000002
+    networks:
+      ran: # automatic allocation by docker compose
+  #~ endif
+#~ endif
+
+#~ if "nextmn-upf" in config["topology"]["dataplane"]
+  {{ container_s(name='ue5', image='louisroyer/ueransim-ue', enable_ipv6=True, debug='always', debug_volume=True, iface_tun=True, cap_net_admin=True, init=True) }}
+    depends_on:
+      amf:
+        condition: service_started
+    environment:
+      MSISDN: "0000000005"
+      GNBS: |-
+        - "{{ ipv6('gnb1', 'ran') }}"
+      CONFIGURED_NSSAI: |-
+        - sst: 1
+          sd: 000003
+      DEFAULT_NSSAI: |-
+        - sst: 1
+          sd: 000003
+      SESSIONS: |-
         - type: "IPv4"
           apn: "nextmn-upf"
           slice:
             sst: 1
             sd: 000003
-  #~ endif
     networks:
       ran: # automatic allocation by docker compose
+
+  #~ if config["topology"]["nb_ue"] > 1
+  {{ container_s(name='ue6', image='louisroyer/ueransim-ue', enable_ipv6=True, debug='always', debug_volume=True, iface_tun=True, cap_net_admin=True, init=True) }}
+    depends_on:
+      amf:
+        condition: service_started
+    environment:
+      MSISDN: "0000000006"
+      GNBS: |-
+        - "{{ ipv6('gnb2', 'ran') }}"
+      CONFIGURED_NSSAI: |-
+        - sst: 1
+          sd: 000003
+      DEFAULT_NSSAI: |-
+        - sst: 1
+          sd: 000003
+      SESSIONS: |-
+        - type: "IPv4"
+          apn: "nextmn-upf"
+          slice:
+            sst: 1
+            sd: 000003
+    networks:
+      ran: # automatic allocation by docker compose
+  #~ endif
 #~ endif
 
   {{ container_s(name='gnb1', image='louisroyer/ueransim-gnb', enable_ipv6=True, restart='always', iface_tun=True, cap_net_admin=True, debug='allow') }}
@@ -639,9 +681,23 @@ services:
       UEROUTING_INFO: |-
         none1:
           members:
+#~ if "nextmn-srv6" in config["topology"]["dataplane"]
             - imsi-001010000000001
-#~ if config["topology"]["nb_ue"] > 1
+  #~ if config["topology"]["nb_ue"] > 1
             - imsi-001010000000002
+  #~ endif
+#~ endif
+#~ if "free5gc" in config["topology"]["dataplane"]
+            - imsi-001010000000003
+  #~ if config["topology"]["nb_ue"] > 1
+            - imsi-001010000000004
+  #~ endif
+#~ endif
+#~ if "nextmn-upf" in config["topology"]["dataplane"]
+            - imsi-001010000000005
+  #~ if config["topology"]["nb_ue"] > 1
+            - imsi-001010000000006
+  #~ endif
 #~ endif
           topology:
 #~ if "nextmn-srv6" in config["topology"]["dataplane"]
@@ -656,11 +712,6 @@ services:
   #~ if config["topology"]["nb_edges"] > 1
             - A: UPFI_F5GC
               B: UPFA2_F5GC
-          specificPath:
-            - dest: 10.4.0.1/32
-              path: [UPFI_F5GC, UPFA1_F5GC]
-            - dest: 10.4.0.2/32
-              path: [UPFI_F5GC, UPFA2_F5GC]
   #~ endif
 #~ endif
 #~ if "nextmn-upf" in config["topology"]["dataplane"]
@@ -671,7 +722,17 @@ services:
   #~ if config["topology"]["nb_edges"] > 1
             - A: UPFI_NEXTMNUPF
               B: UPFA2_NEXTMNUPF
+  #~ endif
+#~ endif
+#~ if config["topology"]["nb_edges"] > 1
           specificPath:
+  #~ if "free5gc" in config["topology"]["dataplane"]
+            - dest: 10.4.0.1/32
+              path: [UPFI_F5GC, UPFA1_F5GC]
+            - dest: 10.4.0.2/32
+              path: [UPFI_F5GC, UPFA2_F5GC]
+  #~ endif
+  #~ if "nextmn-upf" in config["topology"]["dataplane"]
             - dest: 10.4.0.1/32
               path: [UPFI_NEXTMNUPF, UPFA1_NEXTMNUPF]
             - dest: 10.4.0.2/32
@@ -713,9 +774,23 @@ services:
           dnn: nextmn-upf
 #~ endif
       IMSI: |-
+#~ if "nextmn-srv6" in config["topology"]["dataplane"]
         - imsi-001010000000001
-#~ if config["topology"]["nb_ue"] > 1
+  #~ if config["topology"]["nb_ue"] > 1
         - imsi-001010000000002
+  #~ endif
+#~ endif
+#~ if "free5gc" in config["topology"]["dataplane"]
+        - imsi-001010000000003
+  #~ if config["topology"]["nb_ue"] > 1
+        - imsi-001010000000004
+  #~ endif
+#~ endif
+#~ if "nextmn-upf" in config["topology"]["dataplane"]
+        - imsi-001010000000005
+  #~ if config["topology"]["nb_ue"] > 1
+        - imsi-001010000000006
+  #~ endif
 #~ endif
     networks:
       db:

@@ -26,8 +26,12 @@ if __name__ == '__main__':
     dataplane = ('free5gc', 'nextmn-upf', 'nextmn-srv6')
     log_levels = ('trace', 'debug', 'info', 'warning', 'error', 'fatal', 'panic')
     try:
-        if args.dataplane and args.dataplane not in dataplane:
-            raise ConfigException(f'Invalid dataplane value: use one from {dataplane}')
+        if args.dataplane:
+            dp = args.dataplane.split('+')
+            for d in dp:
+                if d not in dataplane:
+                    raise ConfigException(
+                         f'Invalid dataplane value: use values from {dataplane} (separated by `+`)')
         if args.nb_ue and (int(args.nb_ue) > 2 or int(args.nb_ue) < 1):
             raise ConfigException('Too many UEs: use 1 or 2')
         if args.nb_edges and (int(args.nb_edges) > 2 or int(args.nb_edges) < 1):
@@ -43,7 +47,8 @@ if __name__ == '__main__':
     with open(args.buildconfig, "r", encoding='utf-8') as f:
         c = yaml.safe_load(f)
         if args.dataplane:
-            c['config']['topology']['dataplane'] = [args.dataplane]
+            dp = args.dataplane.split('+')
+            c['config']['topology']['dataplane'] = dp
         if args.nb_ue:
             c['config']['topology']['nb_ue'] = int(args.nb_ue)
         if args.nb_edges:

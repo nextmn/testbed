@@ -4,7 +4,8 @@
   - `make set/dataplane/nextmn-srv6`: use NextMN SRv6 (default)
   - `make set/dataplane/nextmn-upf`: use NextMN UPFs
   - `make set/dataplane/free5gc`: use Free5GC's UPFs
-- number of UEs: `make set/nb-ue/<number>` (max: 2)
+  - To use multiple dataplane (each on a different slice) simultaneously, separate values with `+`: e.g. `make set/dataplane/free5gc+nextmn-srv6`
+- number of UEs per slice: `make set/nb-ue/<number>` (max: 2)
 - number of Edges: `make set/nb-edges/<number>` (max: 2)
 
 ## Pull

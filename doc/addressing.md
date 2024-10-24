@@ -38,9 +38,17 @@
 | Name       | Image                               | Network   | IPv4 address    | IPv6 address            | Comment                                                             |
 |------------|-------------------------------------|-----------|-----------------|-------------------------|---------------------------------------------------------------------|
 | ue1        | `louisroyer/ueransim-ue`            | ran       | auto            | auto                    |                                                                     |
-| ue1        | `louisroyer/ueransim-ue`            | slice0    | `10.2.0.1`      | disabled                |                                                                     |
+| ue1        | `louisroyer/ueransim-ue`            | slice0    | auto            | disabled                | Only Slice 0 (SR4MEC) is available on this UE. Uses gNB1.           |
 | ue2        | `louisroyer/ueransim-ue`            | ran       | auto            | auto                    |                                                                     |
-| ue2        | `louisroyer/ueransim-ue`            | slice0    | `10.2.0.2`      | disabled                |                                                                     |
+| ue2        | `louisroyer/ueransim-ue`            | slice0    | auto            | disabled                | Only Slice 0 (SR4MEC) is available on this UE. Uses gNB2.           |
+| ue3        | `louisroyer/ueransim-ue`            | ran       | auto            | auto                    |                                                                     |
+| ue3        | `louisroyer/ueransim-ue`            | slice1    | auto            | disabled                | Only Slice 1 (ULCL Free5GC) is available on this UE. Uses gNB1.     |
+| ue4        | `louisroyer/ueransim-ue`            | ran       | auto            | auto                    |                                                                     |
+| ue4        | `louisroyer/ueransim-ue`            | slice1    | auto            | disabled                | Only Slice 1 (ULCL Free5GC) is available on this UE. Uses gNB2.     |
+| ue5        | `louisroyer/ueransim-ue`            | ran       | auto            | auto                    |                                                                     |
+| ue5        | `louisroyer/ueransim-ue`            | slice2    | auto            | disabled                | Only Slice 2 (ULCL NextMN) is available on this UE. Uses gNB1.      |
+| ue6        | `louisroyer/ueransim-ue`            | ran       | auto            | auto                    |                                                                     |
+| ue6        | `louisroyer/ueransim-ue`            | slice2    | auto            | disabled                | Only Slice 2 (ULCL NextMN) is available on this UE. Uses gNB2.      |
 | gnb1       | `louisroyer/ueransim-gnb`           | ran       | `10.1.0.129`    | `fd00:0:0:0:1:8000:0:2` |                                                                     |
 | gnb1       | `louisroyer/ueransim-gnb`           | control   | `10.1.3.129`    | auto                    |                                                                     |
 | gnb1       | `louisroyer/ueransim-gnb`           | dataplane | `10.1.4.129`    | auto (not used)         | Route to srgw0                                                      |
