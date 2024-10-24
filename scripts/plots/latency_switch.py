@@ -24,10 +24,9 @@ def plot(arguments: argparse.Namespace):
             if 'time=' in line:
                 res[1]['tsp'].append(float  (line.split('[')[1].split('] ')[0]))
                 res[1]['pqt'].append(float(line.split('time='    )[1].split(' ms'  )[0]))
-    first = res[0]['tsp'][0]
+    first = min(res[0]['tsp'][0], res[1]['tsp'][0])
     for i, timestamp in enumerate(res[0]['tsp']):
         res[0]['tsp'][i] = timestamp - first
-    first = res[1]['tsp'][0]
     for i, timestamp in enumerate(res[1]['tsp']):
         res[1]['tsp'][i] = timestamp - first
     _, axplt = plt.subplots()
