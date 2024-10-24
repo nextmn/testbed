@@ -100,14 +100,14 @@
 | upfa2-f5gc | `louisroyer/dev-free5gc-upf`        | control   | `10.1.3.137`    | auto                    |                                                                     |
 | upfa2-f5gc | `louisroyer/dev-free5gc-upf`        | dataplane | `10.1.4.134`    | auto (not used)         |                                                                     |
 | upfa2-f5gc | `louisroyer/dev-free5gc-upf`        | edge      | `10.1.5.134`    | auto (not used)         |                                                                     |
-| upfi-nmn   | `louisroyer/dev-free5gc-upf`        | control   | `10.1.3.138`    | auto                    |                                                                     |
-| upfi-nmn   | `louisroyer/dev-free5gc-upf`        | dataplane | `10.1.4.135`    | auto (not used)         |                                                                     |
-| upfa1-nmn  | `louisroyer/dev-free5gc-upf`        | control   | `10.1.3.139`    | auto                    |                                                                     |
-| upfa1-nmn  | `louisroyer/dev-free5gc-upf`        | dataplane | `10.1.4.136`    | auto (not used)         |                                                                     |
-| upfa1-nmn  | `louisroyer/dev-free5gc-upf`        | edge      | `10.1.5.135`    | auto (not used)         |                                                                     |
-| upfa2-nmn  | `louisroyer/dev-free5gc-upf`        | control   | `10.1.3.140`    | auto                    |                                                                     |
-| upfa2-nmn  | `louisroyer/dev-free5gc-upf`        | dataplane | `10.1.4.137`    | auto (not used)         |                                                                     |
-| upfa2-nmn  | `louisroyer/dev-free5gc-upf`        | edge      | `10.1.5.136`    | auto (not used)         |                                                                     |
+| upfi-nmn   | `louisroyer/dev-nextmn-upf`         | control   | `10.1.3.138`    | auto                    |                                                                     |
+| upfi-nmn   | `louisroyer/dev-nextmn-upf`         | dataplane | `10.1.4.135`    | auto (not used)         |                                                                     |
+| upfa1-nmn  | `louisroyer/dev-nextmn-upf`         | control   | `10.1.3.139`    | auto                    |                                                                     |
+| upfa1-nmn  | `louisroyer/dev-nextmn-upf`         | dataplane | `10.1.4.136`    | auto (not used)         |                                                                     |
+| upfa1-nmn  | `louisroyer/dev-nextmn-upf`         | edge      | `10.1.5.135`    | auto (not used)         |                                                                     |
+| upfa2-nmn  | `louisroyer/dev-nextmn-upf`         | control   | `10.1.3.140`    | auto                    |                                                                     |
+| upfa2-nmn  | `louisroyer/dev-nextmn-upf`         | dataplane | `10.1.4.137`    | auto (not used)         |                                                                     |
+| upfa2-nmn  | `louisroyer/dev-nextmn-upf`         | edge      | `10.1.5.136`    | auto (not used)         |                                                                     |
 | populate   | `louisroyer/free5gc-populate`       | db        | auto            | disabled                |                                                                     |
 | mongodb    | `mongodb`                           | db        | auto            | disabled                |                                                                     |
 | nextmndb   | `postgres`                          | nextmndb  | auto            | auto                    |                                                                     |
