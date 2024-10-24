@@ -51,8 +51,6 @@ subnets:
     srv6-ctrl:
       ipv4_address: 10.1.3.132
       ipv6_address: fd00:0:0:0:2:8000:0:6
-    rr:
-      ipv6_address: fd00:0:0:0:2:8000:0:3
     r0:
       ipv6_address: fd00:0:0:0:2:8000:0:4
     r1:
@@ -61,12 +59,18 @@ subnets:
       ipv4_address: 10.1.3.133
     smf:
       ipv4_address: 10.1.3.134
-    upfi:
+    upfi-f5gc:
       ipv4_address: 10.1.3.135
-    upfa1:
+    upfa1-f5gc:
       ipv4_address: 10.1.3.136
-    upfa2:
+    upfa2-f5gc:
       ipv4_address: 10.1.3.137
+    upfi-nmn:
+      ipv4_address: 10.1.3.138
+    upfa1-nmn:
+      ipv4_address: 10.1.3.139
+    upfa2-nmn:
+      ipv4_address: 10.1.3.140
   dataplane:
     gnb1:
       ipv4_address: 10.1.4.129
@@ -79,14 +83,18 @@ subnets:
       ipv6_address: fd00:0:0:0:3:8000:0:3
     r1:
       ipv6_address: fd00:0:0:0:3:8000:0:4
-    rr:
-      ipv6_address: fd00:0:0:0:3:8000:0:5
-    upfi:
+    upfi-f5gc:
       ipv4_address: 10.1.4.132
-    upfa1:
+    upfa1-f5gc:
       ipv4_address: 10.1.4.133
-    upfa2:
+    upfa2-f5gc:
       ipv4_address: 10.1.4.134
+    upfi-nmn:
+      ipv4_address: 10.1.4.135
+    upfa1-nmn:
+      ipv4_address: 10.1.4.136
+    upfa2-nmn:
+      ipv4_address: 10.1.4.137
   edge:
     r0:
       ipv4_address: 10.1.5.129
@@ -96,10 +104,14 @@ subnets:
       ipv4_address: 10.1.5.131
     s1:
       ipv4_address: 10.1.5.132
-    upfa1:
+    upfa1-f5gc:
       ipv4_address: 10.1.5.133
-    upfa2:
+    upfa2-f5gc:
       ipv4_address: 10.1.5.134
+    upfa1-nmn:
+      ipv4_address: 10.1.5.135
+    upfa2-nmn:
+      ipv4_address: 10.1.5.136
   service:
     s:
       ipv4_address: 10.4.0.1
@@ -124,6 +136,21 @@ subnets:
   slice1-e2-static:
     subnet:
       ipv4_address: 10.2.1.192/26
+  slice2:
+    subnet:
+      ipv4_address: 10.2.2.0/24
+  slice2-e1:
+    subnet:
+      ipv4_address: 10.2.2.0/26
+  slice2-e1-static:
+    subnet:
+      ipv4_address: 10.2.2.64/26
+  slice2-e2:
+    subnet:
+      ipv4_address: 10.2.2.128/26
+  slice2-e2-static:
+    subnet:
+      ipv4_address: 10.2.2.192/26
   srgw0:
     subnet:
       ipv6_address: fc00:1::/32
@@ -148,9 +175,3 @@ subnets:
     end-dx4:
       ipv6_address: "fc00:3:1::"
       ipv6_prefix: fc00:3:1::/48
-  rr:
-    subnet:
-      ipv6_address: fc00:4::/32
-    end:
-      ipv6_prefix: fc00:4:1::/48
-      ipv6_address: "fc00:4:1::"
