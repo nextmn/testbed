@@ -43,7 +43,7 @@ if __name__ == '__main__':
     with open(args.buildconfig, "r", encoding='utf-8') as f:
         c = yaml.safe_load(f)
         if args.dataplane:
-            c['config']['topology']['dataplane'] = args.dataplane
+            c['config']['topology']['dataplane'] = [args.dataplane]
         if args.nb_ue:
             c['config']['topology']['nb_ue'] = int(args.nb_ue)
         if args.nb_edges:
