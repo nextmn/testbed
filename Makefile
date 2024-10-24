@@ -202,6 +202,32 @@ ue/switch-edge/%:
 	@# swich edge for ue
 	@UE_IP=$(shell docker exec ue$(@F)-debug bash -c "ip --brief address show uesimtun0|awk '{print \$$3; exit}'|cut -d"/" -f 1");\
 	scripts/switch.py $(BCONFIG) $$UE_IP
+.PHONY: plot/policy-diff
+plot/policy-diff:
+	@echo "[1/2] [1/6] Configuring testbed with NextMN-SRv6"
+	@$(MAKE) set/dataplane/nextmn-srv6
+	@$(MAKE) set/nb-ue/2
+	@$(MAKE) set/nb-edges/2
+	@$(MAKE) set/full-debug/false
+	@$(MAKE) set/log-level/info
+	@echo "[1/2] [2/6] Starting containers"
+	@$(MAKE) up
+	@echo "[1/2] [3/6] Adding latency on instance s0"
+	@docker exec s0-debug bash -c "tc qdisc add dev edge-0 root netem delay 5ms"
+	@sleep 2
+	@docker exec ue1-debug bash -c "ping -c 1 10.4.0.1 > /dev/null" # check instance is reachable
+	@docker exec ue2-debug bash -c "ping -c 1 10.4.0.1 > /dev/null" # check instance is reachable
+	@echo "[1/2] [4/6] Setting UE2 on edge 1"
+	@$(MAKE) ue/switch-edge/2
+	@echo "[1/2] [5/6] [$$(date --rfc-3339=seconds)] Starting ping from ue1 and ue2 (60s + 5s margin)"
+	@bash -c 'docker exec ue1-debug bash -c "ping -D -w 60 10.4.0.1 -i 0.1 > /volume/ping-policy-diff-sliceA.txt"' &
+	@bash -c 'docker exec ue2-debug bash -c "ping -D -w 60 10.4.0.1 -i 0.1 > /volume/ping-policy-diff-sliceB.txt"' &
+	@sleep 65
+	@echo "[1/2] [6/6] Stopping containers"
+	@$(MAKE) down
+	@echo "[2/2] Plotting data"
+	@scripts/plots/policy_diff.py $(BUILD_DIR)/volumes/ue1/ping-policy-diff-sliceA.txt $(BUILD_DIR)/volumes/ue2/ping-policy-diff-sliceB.txt $(BUILD_DIR)/volumes/ue1/plot-policy-diff.pdf
+
 
 .PHONY: plot/latency-switch
 plot/latency-switch:
@@ -240,4 +266,4 @@ plot/latency-switch:
 	@echo "[2/3] [5/5] Stopping containers"
 	@$(MAKE) down
 	@echo "[3/3] Plotting data"
-	@scripts/plots/latency_switch.py $(BUILD_DIR)/volumes/ue1/ping-sr4mec.txt $(BUILD_DIR)/volumes/ue1/ping-ulcl.txt $(BUILD_DIR)/volumes/ue1/plot.pdf
+	@scripts/plots/latency_switch.py $(BUILD_DIR)/volumes/ue1/ping-sr4mec.txt $(BUILD_DIR)/volumes/ue1/ping-ulcl.txt $(BUILD_DIR)/volumes/ue1/plot-latency-switch.pdf

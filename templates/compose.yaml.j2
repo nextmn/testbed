@@ -59,7 +59,7 @@ services:
       ran: # automatic allocation by docker compose
 
 #~ if config["topology"]["nb_ue"] > 1
-  {{ container_s(name='ue2', image='louisroyer/ueransim-ue', enable_ipv6=True, debug='always', iface_tun=True, cap_net_admin=True, init=True) }}
+  {{ container_s(name='ue2', image='louisroyer/ueransim-ue', enable_ipv6=True, debug='always', debug_volume=True, iface_tun=True, cap_net_admin=True, init=True) }}
     depends_on:
       amf:
         condition: service_started
