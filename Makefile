@@ -220,13 +220,13 @@ plot/policy-diff:
 	@echo "[1/2] [4/6] Setting UE2 on edge 1"
 	@$(MAKE) ue/switch-edge/2
 	@echo "[1/2] [5/6] [$$(date --rfc-3339=seconds)] Starting ping from ue1 and ue2 (60s + 5s margin)"
-	@bash -c 'docker exec ue1-debug bash -c "ping -D -w 60 10.4.0.1 -i 0.1 > /volume/ping-policy-diff-sliceA.txt"' &
-	@bash -c 'docker exec ue2-debug bash -c "ping -D -w 60 10.4.0.1 -i 0.1 > /volume/ping-policy-diff-sliceB.txt"' &
+	@bash -c 'docker exec ue1-debug bash -c "ping -D -w 60 10.4.0.1 -i 0.1 > /volume/ping-policy-diff-areaA.txt"' &
+	@bash -c 'docker exec ue2-debug bash -c "ping -D -w 60 10.4.0.1 -i 0.1 > /volume/ping-policy-diff-areaB.txt"' &
 	@sleep 65
 	@echo "[1/2] [6/6] Stopping containers"
 	@$(MAKE) down
 	@echo "[2/2] Plotting data"
-	@scripts/plots/policy_diff.py $(BUILD_DIR)/volumes/ue1/ping-policy-diff-sliceA.txt $(BUILD_DIR)/volumes/ue2/ping-policy-diff-sliceB.txt $(BUILD_DIR)/volumes/ue1/plot-policy-diff.pdf
+	@scripts/plots/policy_diff.py $(BUILD_DIR)/volumes/ue1/ping-policy-diff-areaA.txt $(BUILD_DIR)/volumes/ue2/ping-policy-diff-areaB.txt $(BUILD_DIR)/volumes/ue1/plot-policy-diff.pdf
 
 
 .PHONY: plot/latency-switch
