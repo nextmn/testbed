@@ -11,6 +11,11 @@ import yaml
 class ConfigException(Exception):
     '''Configuration issue'''
 
+class Dumper(yaml.Dumper): #pylint: disable=too-many-ancestors
+    '''yaml dumper'''
+    def increase_indent(self, flow=False, indentless=False):
+        return super().increase_indent(flow, False)
+
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(
             prog='config-edit',
@@ -58,4 +63,4 @@ if __name__ == '__main__':
         if args.full_debug is not None:
             c['config']['topology']['full_debug'] = args.full_debug.lower() == 'true'
         with open(args.buildconfig, 'w', encoding='utf-8') as f2:
-            yaml.dump(c, f2)
+            yaml.dump(c, f2, Dumper, default_flow_style=False)
