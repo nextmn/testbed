@@ -86,6 +86,20 @@ set/full-debug/%: $(BCONFIG)
 	@echo Set full-debug to $(@F)
 	@./scripts/config_edit.py $(BCONFIG) --full-debug=$(@F)
 
+.PHONY: set/ran
+set/ran/%: $(BCONFIG)
+	@echo Set ran to $(@F)
+	@./scripts/config_edit.py $(BCONFIG) --ran=$(@F)
+
+.PHONY: set/handover
+set/handover:
+	@$(MAKE) set/dataplane/free5gc
+	@$(MAKE) set/nb-ue/2
+	@$(MAKE) set/nb-edges/1
+	@$(MAKE) set/log-level/debug
+	@$(MAKE) set/full-debug/true
+	@$(MAKE) set/ran/dev
+
 .PHONY: clean
 clean:
 	@rm -rf $(BUILD_DIR)

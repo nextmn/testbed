@@ -10,6 +10,11 @@ services:
     depends_on:
       amf:
         condition: service_started
+  #~ if config["topology"]["ran"]["version"] == "dev"
+    volumes:
+      - ../{{ config.topology.ran.dev_build_path }}/nr-ue:/usr/bin/nr-ue:ro
+      - ../{{ config.topology.ran.dev_build_path }}/nr-cli:/usr/bin/nr-cli:ro
+  #~ endif
     environment:
       MSISDN: "0000000001"
       GNBS: |-
@@ -34,6 +39,11 @@ services:
     depends_on:
       amf:
         condition: service_started
+    #~ if config["topology"]["ran"]["version"] == "dev"
+    volumes:
+      - ../{{ config.topology.ran.dev_build_path }}/nr-ue:/usr/bin/nr-ue:ro
+      - ../{{ config.topology.ran.dev_build_path }}/nr-cli:/usr/bin/nr-cli:ro
+    #~ endif
     environment:
       MSISDN: "0000000002"
       GNBS: |-
@@ -60,6 +70,11 @@ services:
     depends_on:
       amf:
         condition: service_started
+  #~ if config["topology"]["ran"]["version"] == "dev"
+    volumes:
+      - ../{{ config.topology.ran.dev_build_path }}/nr-ue:/usr/bin/nr-ue:ro
+      - ../{{ config.topology.ran.dev_build_path }}/nr-cli:/usr/bin/nr-cli:ro
+  #~ endif
     environment:
       MSISDN: "0000000003"
       GNBS: |-
@@ -84,6 +99,11 @@ services:
     depends_on:
       amf:
         condition: service_started
+    #~ if config["topology"]["ran"]["version"] == "dev"
+    volumes:
+      - ../{{ config.topology.ran.dev_build_path }}/nr-ue:/usr/bin/nr-ue:ro
+      - ../{{ config.topology.ran.dev_build_path }}/nr-cli:/usr/bin/nr-cli:ro
+    #~ endif
     environment:
       MSISDN: "0000000004"
       GNBS: |-
@@ -110,6 +130,11 @@ services:
     depends_on:
       amf:
         condition: service_started
+  #~ if config["topology"]["ran"]["version"] == "dev"
+    volumes:
+      - ../{{ config.topology.ran.dev_build_path }}/nr-ue:/usr/bin/nr-ue:ro
+      - ../{{ config.topology.ran.dev_build_path }}/nr-cli:/usr/bin/nr-cli:ro
+  #~ endif
     environment:
       MSISDN: "0000000005"
       GNBS: |-
@@ -134,6 +159,11 @@ services:
     depends_on:
       amf:
         condition: service_started
+    #~ if config["topology"]["ran"]["version"] == "dev"
+    volumes:
+      - ../{{ config.topology.ran.dev_build_path }}/nr-ue:/usr/bin/nr-ue:ro
+      - ../{{ config.topology.ran.dev_build_path }}/nr-cli:/usr/bin/nr-cli:ro
+    #~ endif
     environment:
       MSISDN: "0000000006"
       GNBS: |-
@@ -159,6 +189,11 @@ services:
     depends_on:
       amf:
         condition: service_started
+#~ if config["topology"]["ran"]["version"] == "dev"
+    volumes:
+      - ../{{ config.topology.ran.dev_build_path }}/nr-gnb:/usr/bin/nr-gnb:ro
+      - ../{{ config.topology.ran.dev_build_path }}/nr-cli:/usr/bin/nr-cli:ro
+#~ endif
     environment:
       NCI: 000000001
       RLS_IP: "{{ ipv6('gnb1', 'ran') }}"
@@ -200,6 +235,11 @@ services:
     depends_on:
       amf:
         condition: service_started
+  #~ if config["topology"]["ran"]["version"] == "dev"
+    volumes:
+      - ../{{ config.topology.ran.dev_build_path }}/nr-gnb:/usr/bin/nr-gnb:ro
+      - ../{{ config.topology.ran.dev_build_path }}/nr-cli:/usr/bin/nr-cli:ro
+  #~ endif
     environment:
       NCI: 000000002
       RLS_IP: "{{ ipv6('gnb2', 'ran') }}"

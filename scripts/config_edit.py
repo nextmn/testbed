@@ -27,7 +27,9 @@ if __name__ == '__main__':
     parser.add_argument('--nb-edges')
     parser.add_argument('--log-level')
     parser.add_argument('--full-debug')
+    parser.add_argument('--ran')
     args = parser.parse_args()
+    ran = ('stable', 'dev')
     dataplane = ('free5gc', 'nextmn-upf', 'nextmn-srv6')
     log_levels = ('trace', 'debug', 'info', 'warning', 'error', 'fatal', 'panic')
     try:
@@ -45,6 +47,8 @@ if __name__ == '__main__':
             raise ConfigException(f'Invalid log level: use one from {log_levels}')
         if args.full_debug and (args.full_debug.lower() not in ('true', 'false')):
             raise ConfigException('Invalid value for full debug: must be a boolean')
+        if args.ran and (args.ran not in ran):
+            raise ConfigException(f'Invalid ran config: use one from {ran}')
     except ConfigException as e:
         print(f'Error: {e}', file=sys.stderr)
         sys.exit(1)
@@ -62,5 +66,7 @@ if __name__ == '__main__':
             c['config']['topology']['log_level'] = args.log_level
         if args.full_debug is not None:
             c['config']['topology']['full_debug'] = args.full_debug.lower() == 'true'
+        if args.ran:
+            c['config']['topology']['ran']['version'] = args.ran
         with open(args.buildconfig, 'w', encoding='utf-8') as f2:
             yaml.dump(c, f2, Dumper, default_flow_style=False)
