@@ -12,15 +12,15 @@ PROJECT_DIRECTORY = --project-directory $(BUILD_DIR)
 MAKE = make --no-print-directory
 
 
-$(BCONFIG): default-config.yaml
-	@echo Copying default-config.yaml into $(BCONFIG)
-	@mkdir -p $$(dirname $(BCONFIG))
-	@cp default-config.yaml $(BCONFIG)
-
 $(BCOMPOSE): templates/compose.yaml.j2 scripts/jinja/customize.py $(BCONFIG)
 	@echo Building $(BCOMPOSE) from jinja template
 	@mkdir -p $$(dirname $(BCOMPOSE))
 	@j2 --customize scripts/jinja/customize.py -o $(BCOMPOSE) templates/compose.yaml.j2 $(BCONFIG)
+
+$(BCONFIG): default-config.yaml
+	@echo Copying default-config.yaml into $(BCONFIG)
+	@mkdir -p $$(dirname $(BCONFIG))
+	@cp default-config.yaml $(BCONFIG)
 
 .PHONY: test
 test:
