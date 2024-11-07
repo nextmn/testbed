@@ -195,7 +195,7 @@ services:
       - ../{{ config.topology.ran.dev_build_path }}/nr-cli:/usr/bin/nr-cli:ro
 #~ endif
     environment:
-      NCI: 000000001
+      NCI: "0x000000010"
       RLS_IP: "{{ ipv6('gnb1', 'ran') }}"
       N2_IP: "{{ ipv4('gnb1', 'control') }}"
       N3_IP: "{{ ipv4('gnb1', 'dataplane') }}"
@@ -241,7 +241,7 @@ services:
       - ../{{ config.topology.ran.dev_build_path }}/nr-cli:/usr/bin/nr-cli:ro
   #~ endif
     environment:
-      NCI: 000000002
+      NCI: "0x000000020"
       RLS_IP: "{{ ipv6('gnb2', 'ran') }}"
       N2_IP: "{{ ipv4('gnb2', 'control') }}"
       N3_IP: "{{ ipv4('gnb2', 'dataplane') }}"
