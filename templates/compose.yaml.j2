@@ -284,6 +284,7 @@ services:
       nrf: # required to being able to deregister propertly
         condition: service_started
     environment:
+      LOG_LEVEL: "{{ log_level() }}"
       GIN_MODE: "release"
       N2: "{{ ipv4('amf', 'control') }}"
       SBI_REGISTER_IP: "amf.sbi"
@@ -337,6 +338,7 @@ services:
       mongodb: # required to being able to deregister propertly
         condition: service_started
     environment:
+      LOG_LEVEL: "{{ log_level() }}"
       GIN_MODE: "release"
       MONGO_HOST: "mongodb.db"
       SBI_REGISTER_IP: "nrf.sbi"
@@ -358,6 +360,7 @@ services:
       nrf: # required to being able to deregister propertly
         condition: service_started
     environment:
+      LOG_LEVEL: "{{ log_level() }}"
       GIN_MODE: "release"
       SBI_REGISTER_IP: "ausf.sbi"
       SBI_BINDING_IP: "{{ ipv4('ausf', 'sbi') }}"
@@ -377,6 +380,7 @@ services:
       nrf: # required to being able to deregister propertly
         condition: service_started
     environment:
+      LOG_LEVEL: "{{ log_level() }}"
       GIN_MODE: "release"
       SBI_REGISTER_IP: "udm.sbi"
       SBI_BINDING_IP: "{{ ipv4('udm', 'sbi') }}"
@@ -397,6 +401,7 @@ services:
       nrf: # required to being able to deregister propertly
         condition: service_started
     environment:
+      LOG_LEVEL: "{{ log_level() }}"
       GIN_MODE: "release"
       MONGO_HOST: "mongodb.db"
       SBI_REGISTER_IP: "udr.sbi"
@@ -419,6 +424,7 @@ services:
       nrf: # required to being able to deregister propertly
         condition: service_started
     environment:
+      LOG_LEVEL: "{{ log_level() }}"
       GIN_MODE: "release"
       MONGO_HOST: "mongodb.db"
       SBI_REGISTER_IP: "pcf.sbi"
@@ -443,6 +449,7 @@ services:
       webconsole:
         condition: service_started
     environment:
+      LOG_LEVEL: "{{ log_level() }}"
       GIN_MODE: "release"
       MONGO_HOST: "mongodb.db"
       SBI_REGISTER_IP: "chf.sbi"
@@ -467,6 +474,7 @@ services:
       nrf: # required to being able to deregister propertly
         condition: service_started
     environment:
+      LOG_LEVEL: "{{ log_level() }}"
       GIN_MODE: "release"
       MONGO_HOST: "mongodb.db"
       NRF: "nrf.sbi:8000"
@@ -495,6 +503,7 @@ services:
         condition: service_healthy
 #~ endif
     environment:
+      LOG_LEVEL: "{{ log_level() }}"
       GIN_MODE: "release"
       SBI_REGISTER_IP: "smf.sbi"
       SBI_BINDING_IP: "{{ ipv4('smf', 'sbi') }}"
@@ -840,6 +849,7 @@ services:
       nrf: # required to being able to deregister propertly
         condition: service_started
     environment:
+      LOG_LEVEL: "{{ log_level() }}"
       GIN_MODE: "release"
       SBI_REGISTER_IP: "nssf.sbi"
       SBI_BINDING_IP: "{{ ipv4('nssf', 'sbi') }}"
@@ -1270,6 +1280,7 @@ services:
 #~ if "free5gc" in config["topology"]["dataplane"]
   {{ container_s(name='upfi-f5gc', image='louisroyer/dev-free5gc-upf', restart='always', cap_net_admin=True, debug='allow') }}
     environment:
+      LOG_LEVEL: "{{ log_level() }}"
       N4: "{{ ipv4('upfi-f5gc', 'control') }}"
       IF_LIST: |-
         - addr: "{{ ipv4('upfi-f5gc', 'dataplane') }}"
@@ -1286,6 +1297,7 @@ services:
         ipv4_address: "{{ ipv4('upfi-f5gc', 'dataplane') }}"
   {{ container_s(name='upfa1-f5gc', image='louisroyer/dev-free5gc-upf', restart='always', cap_net_admin=True, debug='allow') }}
     environment:
+      LOG_LEVEL: "{{ log_level() }}"
       N4: "{{ ipv4('upfa1-f5gc', 'control') }}"
       IF_LIST: |-
         - addr: "{{ ipv4('upfa1-f5gc', 'dataplane') }}"
@@ -1305,6 +1317,7 @@ services:
   #~ if config["topology"]["nb_edges"] > 1
   {{ container_s(name='upfa2-f5gc', image='louisroyer/dev-free5gc-upf', restart='always', cap_net_admin=True, debug='allow') }}
     environment:
+      LOG_LEVEL: "{{ log_level() }}"
       N4: "{{ ipv4('upfa2-f5gc', 'control') }}"
       IF_LIST: |-
         - addr: "{{ ipv4('upfa2-f5gc', 'dataplane') }}"
