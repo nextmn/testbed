@@ -19,6 +19,9 @@ services:
       MSISDN: "0000000001"
       GNBS: |-
         - "{{ ipv6('gnb1', 'ran') }}"
+  #~ if config["topology"]["ran"]["handover"]
+        - "{{ ipv6('gnb2', 'ran') }}"
+  #~ endif
       CONFIGURED_NSSAI: |-
         - sst: 1
           sd: 000001
@@ -79,6 +82,9 @@ services:
       MSISDN: "0000000003"
       GNBS: |-
         - "{{ ipv6('gnb1', 'ran') }}"
+  #~ if config["topology"]["ran"]["handover"]
+        - "{{ ipv6('gnb2', 'ran') }}"
+  #~ endif
       CONFIGURED_NSSAI: |-
         - sst: 1
           sd: 000002
@@ -139,6 +145,9 @@ services:
       MSISDN: "0000000005"
       GNBS: |-
         - "{{ ipv6('gnb1', 'ran') }}"
+  #~ if config["topology"]["ran"]["handover"]
+        - "{{ ipv6('gnb2', 'ran') }}"
+  #~ endif
       CONFIGURED_NSSAI: |-
         - sst: 1
           sd: 000003

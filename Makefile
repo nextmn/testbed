@@ -92,7 +92,9 @@ set/ran/%: $(BCONFIG)
 	@./scripts/config_edit.py $(BCONFIG) --ran=$(@F)
 
 .PHONY: set/handover
-set/handover:
+set/handover: $(BCONFIG)
+	@echo Set handover to true
+	@./scripts/config_edit.py $(BCONFIG) --handover=true
 	@$(MAKE) set/dataplane/free5gc
 	@$(MAKE) set/nb-ue/2
 	@$(MAKE) set/nb-edges/1
@@ -160,6 +162,11 @@ restart:
 e/%:
 	@# enter container
 	docker exec -it $(@F) bash
+
+.PHONY: ran
+ran/%:
+	@# exec nr-cli inside container
+	docker exec -it $(@F) bash -c 'nr-cli $$(nr-cli --dump)'
 
 .PHONY: db
 db/%:

@@ -10,6 +10,7 @@ config:
     ran:
       version: "stable" # ( stable | dev )
       dev_build_path: ../../ueransim/build/ # relative to the root of the testbed, not to the testbed build directory
+      handover: false
     dataplane: # ( nextmn-srv6 | free5gc | nextmn-upf)
       - "nextmn-srv6"
     log_level: "info"

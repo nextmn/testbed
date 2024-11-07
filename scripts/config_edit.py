@@ -28,6 +28,7 @@ if __name__ == '__main__':
     parser.add_argument('--log-level')
     parser.add_argument('--full-debug')
     parser.add_argument('--ran')
+    parser.add_argument('--handover')
     args = parser.parse_args()
     ran = ('stable', 'dev')
     dataplane = ('free5gc', 'nextmn-upf', 'nextmn-srv6')
@@ -47,6 +48,8 @@ if __name__ == '__main__':
             raise ConfigException(f'Invalid log level: use one from {log_levels}')
         if args.full_debug and (args.full_debug.lower() not in ('true', 'false')):
             raise ConfigException('Invalid value for full debug: must be a boolean')
+        if args.handover and (args.handover.lower() not in ('true', 'false')):
+            raise ConfigException('Invalid value for handover: must be a boolean')
         if args.ran and (args.ran not in ran):
             raise ConfigException(f'Invalid ran config: use one from {ran}')
     except ConfigException as e:
@@ -66,6 +69,8 @@ if __name__ == '__main__':
             c['config']['topology']['log_level'] = args.log_level
         if args.full_debug is not None:
             c['config']['topology']['full_debug'] = args.full_debug.lower() == 'true'
+        if args.handover is not None:
+            c['config']['topology']['ran']['handover'] = args.handover.lower() == 'true'
         if args.ran:
             c['config']['topology']['ran']['version'] = args.ran
         with open(args.buildconfig, 'w', encoding='utf-8') as f2:
