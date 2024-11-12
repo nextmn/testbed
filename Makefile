@@ -96,7 +96,7 @@ set/handover: $(BCONFIG)
 	@echo Set handover to true
 	@./scripts/config_edit.py $(BCONFIG) --handover=true
 	@$(MAKE) set/dataplane/free5gc
-	@$(MAKE) set/nb-ue/2
+	@$(MAKE) set/nb-ue/1
 	@$(MAKE) set/nb-edges/1
 	@$(MAKE) set/log-level/debug
 	@$(MAKE) set/full-debug/true

@@ -239,7 +239,7 @@ services:
       dataplane:
         ipv4_address: "{{ ipv4('gnb1', 'dataplane') }}"
 
-#~ if config["topology"]["nb_ue"] > 1
+#~ if (config["topology"]["nb_ue"] > 1) or (config["topology"]["ran"]["handover"])
   {{ container_s(name='gnb2', image='louisroyer/ueransim-gnb', enable_ipv6=True, restart='always', iface_tun=True, cap_net_admin=True, debug='allow') }}
     depends_on:
       amf:
