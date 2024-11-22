@@ -6,7 +6,7 @@ name: "nextmn-testbed"
 
 services:
 #~ if "nextmn-srv6" in config["topology"]["dataplane"]
-  {{ container_s(name='ue1', image='louisroyer/ueransim-ue', enable_ipv6=True, debug='always', debug_volume=True, iface_tun=True, cap_net_admin=True, init=True) }}
+  {{ container_s(name='ue1', image='docker.io/louisroyer/ueransim-ue', enable_ipv6=True, debug='always', debug_volume=True, iface_tun=True, cap_net_admin=True, init=True) }}
     depends_on:
       amf:
         condition: service_started
@@ -38,7 +38,7 @@ services:
       ran: # automatic allocation by docker compose
 
   #~ if config["topology"]["nb_ue"] > 1
-  {{ container_s(name='ue2', image='louisroyer/ueransim-ue', enable_ipv6=True, debug='always', debug_volume=True, iface_tun=True, cap_net_admin=True, init=True) }}
+  {{ container_s(name='ue2', image='docker.io/louisroyer/ueransim-ue', enable_ipv6=True, debug='always', debug_volume=True, iface_tun=True, cap_net_admin=True, init=True) }}
     depends_on:
       amf:
         condition: service_started
@@ -69,7 +69,7 @@ services:
 #~ endif
 
 #~ if "free5gc" in config["topology"]["dataplane"]
-  {{ container_s(name='ue3', image='louisroyer/ueransim-ue', enable_ipv6=True, debug='always', debug_volume=True, iface_tun=True, cap_net_admin=True, init=True) }}
+  {{ container_s(name='ue3', image='docker.io/louisroyer/ueransim-ue', enable_ipv6=True, debug='always', debug_volume=True, iface_tun=True, cap_net_admin=True, init=True) }}
     depends_on:
       amf:
         condition: service_started
@@ -101,7 +101,7 @@ services:
       ran: # automatic allocation by docker compose
 
   #~ if config["topology"]["nb_ue"] > 1
-  {{ container_s(name='ue4', image='louisroyer/ueransim-ue', enable_ipv6=True, debug='always', debug_volume=True, iface_tun=True, cap_net_admin=True, init=True) }}
+  {{ container_s(name='ue4', image='docker.io/louisroyer/ueransim-ue', enable_ipv6=True, debug='always', debug_volume=True, iface_tun=True, cap_net_admin=True, init=True) }}
     depends_on:
       amf:
         condition: service_started
@@ -132,7 +132,7 @@ services:
 #~ endif
 
 #~ if "nextmn-upf" in config["topology"]["dataplane"]
-  {{ container_s(name='ue5', image='louisroyer/ueransim-ue', enable_ipv6=True, debug='always', debug_volume=True, iface_tun=True, cap_net_admin=True, init=True) }}
+  {{ container_s(name='ue5', image='docker.io/louisroyer/ueransim-ue', enable_ipv6=True, debug='always', debug_volume=True, iface_tun=True, cap_net_admin=True, init=True) }}
     depends_on:
       amf:
         condition: service_started
@@ -164,7 +164,7 @@ services:
       ran: # automatic allocation by docker compose
 
   #~ if config["topology"]["nb_ue"] > 1
-  {{ container_s(name='ue6', image='louisroyer/ueransim-ue', enable_ipv6=True, debug='always', debug_volume=True, iface_tun=True, cap_net_admin=True, init=True) }}
+  {{ container_s(name='ue6', image='docker.io/louisroyer/ueransim-ue', enable_ipv6=True, debug='always', debug_volume=True, iface_tun=True, cap_net_admin=True, init=True) }}
     depends_on:
       amf:
         condition: service_started
@@ -194,7 +194,7 @@ services:
   #~ endif
 #~ endif
 
-  {{ container_s(name='gnb1', image='louisroyer/ueransim-gnb', enable_ipv6=True, restart='always', iface_tun=True, cap_net_admin=True, debug='allow') }}
+  {{ container_s(name='gnb1', image='docker.io/louisroyer/ueransim-gnb', enable_ipv6=True, restart='always', iface_tun=True, cap_net_admin=True, debug='allow') }}
     depends_on:
       amf:
         condition: service_started
@@ -240,7 +240,7 @@ services:
         ipv4_address: "{{ ipv4('gnb1', 'dataplane') }}"
 
 #~ if (config["topology"]["nb_ue"] > 1) or (config["topology"]["ran"]["handover"])
-  {{ container_s(name='gnb2', image='louisroyer/ueransim-gnb', enable_ipv6=True, restart='always', iface_tun=True, cap_net_admin=True, debug='allow') }}
+  {{ container_s(name='gnb2', image='docker.io/louisroyer/ueransim-gnb', enable_ipv6=True, restart='always', iface_tun=True, cap_net_admin=True, debug='allow') }}
     depends_on:
       amf:
         condition: service_started
@@ -286,7 +286,7 @@ services:
         ipv4_address: "{{ ipv4('gnb2', 'dataplane') }}"
 #~ endif
 
-  {{ container_s(name='amf', image='louisroyer/dev-free5gc-amf', restart='always') }}
+  {{ container_s(name='amf', image='docker.io/louisroyer/dev-free5gc-amf', restart='always') }}
     depends_on:
       smf:
         condition: service_started
@@ -338,11 +338,11 @@ services:
       sbi:
         ipv4_address: "{{ ipv4('amf', 'sbi') }}"
 
-  {{ container_s(name='mongodb', image='mongo', restart='always', command='mongod --port 27017 --bind_ip_all') }}
+  {{ container_s(name='mongodb', image='docker.io/library/mongo', restart='always', command='mongod --port 27017 --bind_ip_all') }}
     networks:
       db:
 
-  {{ container_s(name='nrf', image='louisroyer/dev-free5gc-nrf', restart='always') }}
+  {{ container_s(name='nrf', image='docker.io/louisroyer/dev-free5gc-nrf', restart='always') }}
     depends_on:
       mongodb: # required to being able to deregister propertly
         condition: service_started
@@ -364,7 +364,7 @@ services:
       sbi:
         ipv4_address: "{{ ipv4('nrf', 'sbi') }}"
 
-  {{ container_s(name='ausf', image='louisroyer/dev-free5gc-ausf', restart='always') }}
+  {{ container_s(name='ausf', image='docker.io/louisroyer/dev-free5gc-ausf', restart='always') }}
     depends_on:
       nrf: # required to being able to deregister propertly
         condition: service_started
@@ -384,7 +384,7 @@ services:
       sbi:
         ipv4_address: "{{ ipv4('ausf', 'sbi') }}"
 
-  {{ container_s(name='udm', image='louisroyer/dev-free5gc-udm', restart='always') }}
+  {{ container_s(name='udm', image='docker.io/louisroyer/dev-free5gc-udm', restart='always') }}
     depends_on:
       nrf: # required to being able to deregister propertly
         condition: service_started
@@ -405,7 +405,7 @@ services:
       sbi:
         ipv4_address: "{{ ipv4('udm', 'sbi') }}"
 
-  {{ container_s(name='udr', image='louisroyer/dev-free5gc-udr', restart='always') }}
+  {{ container_s(name='udr', image='docker.io/louisroyer/dev-free5gc-udr', restart='always') }}
     depends_on:
       nrf: # required to being able to deregister propertly
         condition: service_started
@@ -428,7 +428,7 @@ services:
       sbi:
         ipv4_address: "{{ ipv4('udr', 'sbi') }}"
 
-  {{ container_s(name='pcf', image='louisroyer/dev-free5gc-pcf', restart='always') }}
+  {{ container_s(name='pcf', image='docker.io/louisroyer/dev-free5gc-pcf', restart='always') }}
     depends_on:
       nrf: # required to being able to deregister propertly
         condition: service_started
@@ -451,7 +451,7 @@ services:
       sbi:
         ipv4_address: "{{ ipv4('pcf', 'sbi') }}"
 
-  {{ container_s(name='chf', image='louisroyer/dev-free5gc-chf', restart='always') }}
+  {{ container_s(name='chf', image='docker.io/louisroyer/dev-free5gc-chf', restart='always') }}
     depends_on:
       nrf: # required to being able to deregister propertly
         condition: service_started
@@ -478,7 +478,7 @@ services:
       sbi:
         ipv4_address: "{{ ipv4('chf', 'sbi') }}"
 
-  {{ container_s(name='webconsole', image='louisroyer/dev-free5gc-webconsole', restart='always') }}
+  {{ container_s(name='webconsole', image='docker.io/louisroyer/dev-free5gc-webconsole', restart='always') }}
     depends_on:
       nrf: # required to being able to deregister propertly
         condition: service_started
@@ -499,7 +499,7 @@ services:
       sbi:
         ipv4_address: "{{ ipv4('webconsole', 'sbi') }}"
 
-  {{ container_s(name='smf', image='louisroyer/dev-free5gc-smf', restart='always') }}
+  {{ container_s(name='smf', image='docker.io/louisroyer/dev-free5gc-smf', restart='always') }}
     depends_on:
       nrf: # required to being able to deregister propertly
         condition: service_started
@@ -806,7 +806,7 @@ services:
       sbi:
         ipv4_address: "{{ ipv4('smf', 'sbi') }}"
 
-  {{ container_s(name='populate', image='louisroyer/free5gc-populate', restart='no') }}
+  {{ container_s(name='populate', image='docker.io/louisroyer/free5gc-populate', restart='no') }}
     depends_on:
       mongodb: # required to being able to deregister propertly
         condition: service_started
@@ -853,7 +853,7 @@ services:
     networks:
       db:
 
-  {{ container_s(name='nssf', image='louisroyer/dev-free5gc-nssf', restart='always') }}
+  {{ container_s(name='nssf', image='docker.io/louisroyer/dev-free5gc-nssf', restart='always') }}
     depends_on:
       nrf: # required to being able to deregister propertly
         condition: service_started
@@ -998,7 +998,7 @@ services:
         ipv4_address: "{{ ipv4('nssf', 'sbi') }}"
 
 #~ if "nextmn-srv6" in config["topology"]["dataplane"]
-  {{ container_s(name='r0', image='louisroyer/dev-nextmn-srv6', restart='always', srv6=True, debug='allow') }}
+  {{ container_s(name='r0', image='docker.io/louisroyer/dev-nextmn-srv6', restart='always', srv6=True, debug='allow') }}
     depends_on:
       srv6-ctrl:
         condition: service_healthy
@@ -1045,7 +1045,7 @@ services:
         ipv4_address: "{{ ipv4('r0', 'edge') }}"
       nextmndb:
 
-  {{ container_s(name='r0-db', image='postgres', restart='always', command=False) }}
+  {{ container_s(name='r0-db', image='docker.io/library/postgres', restart='always', command=False) }}
     healthcheck:
       test: ["CMD", "pg_isready", "-U", "postgres", "-d", "postgres"]
       start_interval: 1s
@@ -1062,7 +1062,7 @@ services:
     networks:
       nextmndb:
 
-  {{ container_s(name='r1', image='louisroyer/dev-nextmn-srv6', restart='always', srv6=True, debug='allow' ) }}
+  {{ container_s(name='r1', image='docker.io/louisroyer/dev-nextmn-srv6', restart='always', srv6=True, debug='allow' ) }}
     depends_on:
       srv6-ctrl:
         condition: service_healthy
@@ -1109,7 +1109,7 @@ services:
         ipv4_address: "{{ ipv4('r1', 'edge') }}"
       nextmndb:
 
-  {{ container_s(name='r1-db', image='postgres', restart='always', command=False) }}
+  {{ container_s(name='r1-db', image='docker.io/library/postgres', restart='always', command=False) }}
     healthcheck:
       test: ["CMD", "pg_isready", "-U", "postgres", "-d", "postgres"]
       start_interval: 1s
@@ -1127,7 +1127,7 @@ services:
       nextmndb:
 
 
-  {{ container_s(name='srgw0', image='louisroyer/dev-nextmn-srv6', restart='always', srv6=True, debug='allow' ) }}
+  {{ container_s(name='srgw0', image='docker.io/louisroyer/dev-nextmn-srv6', restart='always', srv6=True, debug='allow' ) }}
     depends_on:
       srv6-ctrl:
         condition: service_healthy
@@ -1174,7 +1174,7 @@ services:
         ipv6_address: "{{ ipv6('srgw0', 'dataplane') }}"
       nextmndb:
 
-  {{ container_s(name='srgw0-db', image='postgres', restart='always', command=False) }}
+  {{ container_s(name='srgw0-db', image='docker.io/library/postgres', restart='always', command=False) }}
     healthcheck:
       test: ["CMD", "pg_isready", "-U", "postgres", "-d", "postgres"]
       start_interval: 1s
@@ -1191,7 +1191,7 @@ services:
     networks:
       nextmndb:
 
-  {{ container_s(name='srv6-ctrl', image='louisroyer/dev-nextmn-srv6-ctrl', restart='always') }}
+  {{ container_s(name='srv6-ctrl', image='docker.io/louisroyer/dev-nextmn-srv6-ctrl', restart='always') }}
     environment:
       N4: "{{ ipv4('srv6-ctrl', 'control') }}"
       HTTP_ADDRESS: "{{ ipv6('srv6-ctrl', 'control') }}"
@@ -1245,7 +1245,7 @@ services:
       PRE_INIT_HOOK_2: "{{ ipv4('s', 'service') }}"
       PRE_INIT_HOOK_3: "dev"
       PRE_INIT_HOOK_4: "edge-0"
-  {{ container_s(name='s0', image='nginx', command=False, debug='always') }}
+  {{ container_s(name='s0', image='docker.io/library/nginx', command=False, debug='always') }}
     volumes:
       {{ volume_ro('nginx/instance.conf.template', '/etc/nginx/templates/instance.conf.template') }}
     environment:
@@ -1275,7 +1275,7 @@ services:
       PRE_INIT_HOOK_2: "{{ ipv4('s', 'service') }}"
       PRE_INIT_HOOK_3: "dev"
       PRE_INIT_HOOK_4: "edge-0"
-  {{ container_s(name='s1', image='nginx', command=False, debug='always') }}
+  {{ container_s(name='s1', image='docker.io/library/nginx', command=False, debug='always') }}
     volumes:
       {{ volume_ro('nginx/instance.conf.template', '/etc/nginx/templates/instance.conf.template') }}
     environment:
@@ -1287,7 +1287,7 @@ services:
         ipv4_address: "{{ ipv4('s1', 'edge') }}"
 
 #~ if "free5gc" in config["topology"]["dataplane"]
-  {{ container_s(name='upfi-f5gc', image='louisroyer/dev-free5gc-upf', restart='always', cap_net_admin=True, debug='allow') }}
+  {{ container_s(name='upfi-f5gc', image='docker.io/louisroyer/dev-free5gc-upf', restart='always', cap_net_admin=True, debug='allow') }}
     environment:
       LOG_LEVEL: "{{ log_level() }}"
       N4: "{{ ipv4('upfi-f5gc', 'control') }}"
@@ -1304,7 +1304,7 @@ services:
         ipv4_address: "{{ ipv4('upfi-f5gc', 'control') }}"
       dataplane:
         ipv4_address: "{{ ipv4('upfi-f5gc', 'dataplane') }}"
-  {{ container_s(name='upfa1-f5gc', image='louisroyer/dev-free5gc-upf', restart='always', cap_net_admin=True, debug='allow') }}
+  {{ container_s(name='upfa1-f5gc', image='docker.io/louisroyer/dev-free5gc-upf', restart='always', cap_net_admin=True, debug='allow') }}
     environment:
       LOG_LEVEL: "{{ log_level() }}"
       N4: "{{ ipv4('upfa1-f5gc', 'control') }}"
@@ -1324,7 +1324,7 @@ services:
       edge:
         ipv4_address: "{{ ipv4('upfa1-f5gc', 'edge') }}"
   #~ if config["topology"]["nb_edges"] > 1
-  {{ container_s(name='upfa2-f5gc', image='louisroyer/dev-free5gc-upf', restart='always', cap_net_admin=True, debug='allow') }}
+  {{ container_s(name='upfa2-f5gc', image='docker.io/louisroyer/dev-free5gc-upf', restart='always', cap_net_admin=True, debug='allow') }}
     environment:
       LOG_LEVEL: "{{ log_level() }}"
       N4: "{{ ipv4('upfa2-f5gc', 'control') }}"
@@ -1347,7 +1347,7 @@ services:
 #~ endif
 
 #~ if "nextmn-upf" in config["topology"]["dataplane"]
-  {{ container_s(name='upfi-nmn', image='louisroyer/dev-nextmn-upf', restart='always', iface_tun=True, ipv4_forward=True, cap_net_admin=True, debug='allow') }}
+  {{ container_s(name='upfi-nmn', image='docker.io/louisroyer/dev-nextmn-upf', restart='always', iface_tun=True, ipv4_forward=True, cap_net_admin=True, debug='allow') }}
     environment:
       N4: "{{ ipv4('upfi-nmn', 'control') }}"
       IF_LIST: |-
@@ -1364,7 +1364,7 @@ services:
         ipv4_address: "{{ ipv4('upfi-nmn', 'control') }}"
       dataplane:
         ipv4_address: "{{ ipv4('upfi-nmn', 'dataplane') }}"
-  {{ container_s(name='upfa1-nmn', image='louisroyer/dev-nextmn-upf', restart='always', iface_tun=True, ipv4_forward=True, cap_net_admin=True, debug='allow') }}
+  {{ container_s(name='upfa1-nmn', image='docker.io/louisroyer/dev-nextmn-upf', restart='always', iface_tun=True, ipv4_forward=True, cap_net_admin=True, debug='allow') }}
     environment:
       N4: "{{ ipv4('upfa1-nmn', 'control') }}"
       IF_LIST: |-
@@ -1384,7 +1384,7 @@ services:
       edge:
         ipv4_address: "{{ ipv4('upfa1-nmn', 'edge') }}"
   #~ if config["topology"]["nb_edges"] > 1
-  {{ container_s(name='upfa2-nmn', image='louisroyer/dev-nextmn-upf', restart='always', iface_tun=True, ipv4_forward=True, cap_net_admin=True, debug='allow') }}
+  {{ container_s(name='upfa2-nmn', image='docker.io/louisroyer/dev-nextmn-upf', restart='always', iface_tun=True, ipv4_forward=True, cap_net_admin=True, debug='allow') }}
     environment:
       N4: "{{ ipv4('upfa2-nmn', 'control') }}"
       IF_LIST: |-
