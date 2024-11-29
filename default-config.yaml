@@ -13,6 +13,7 @@ config:
       handover: false
     dataplane: # ( nextmn-srv6 | free5gc | nextmn-upf)
       - "nextmn-srv6"
+    controlplane: "free5gc" # ( free5gc | nextmn-lite )
     log_level: "info"
     full_debug: false
 
@@ -24,6 +25,15 @@ subnets:
     gnb2:
       ipv4_address: 10.1.0.130
       ipv6_address: fd00:0:0:0:1:8000:0:3
+    uel1:
+      ipv4_address: 10.1.0.131
+      ipv6_address: fd00:0:0:0:1:8000:0:4
+    gnbl1:
+      ipv4_address: 10.1.0.132
+      ipv6_address: fd00:0:0:0:1:8000:0:5
+    gnbl2:
+      ipv4_address: 10.1.0.133
+      ipv6_address: fd00:0:0:0:1:8000:0:6
   sbi:
     amf:
       ipv4_address: 10.1.1.129
@@ -76,6 +86,18 @@ subnets:
       ipv4_address: 10.1.3.139
     upfa2-nmn:
       ipv4_address: 10.1.3.140
+    gnbl1:
+      ipv4_address: 10.1.3.141
+      ipv6_address: fd00:0:0:0:2:8000:0:7
+    gnbl2:
+      ipv4_address: 10.1.3.142
+      ipv6_address: fd00:0:0:0:2:8000:0:8
+    uel1:
+      ipv4_address: 10.1.3.143
+      ipv6_address: fd00:0:0:0:2:8000:0:9
+    cp-lite:
+      ipv4_address: 10.1.3.144
+      ipv6_address: fd00:0:0:0:2:8000:0:10
   dataplane:
     gnb1:
       ipv4_address: 10.1.4.129
@@ -100,6 +122,10 @@ subnets:
       ipv4_address: 10.1.4.136
     upfa2-nmn:
       ipv4_address: 10.1.4.137
+    gnbl1:
+      ipv4_address: 10.1.4.138
+    gnbl2:
+      ipv4_address: 10.1.4.139
   edge:
     r0:
       ipv4_address: 10.1.5.129

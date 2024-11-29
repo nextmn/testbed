@@ -1,44 +1,50 @@
 name: "nextmn-testbed-pull-images"
 services:
   mongo:
-    image: mongo
+    image: docker.io/library/mongo
   postgres:
-    image: postgres
+    image: docker.io/library/postgres
   nginx:
-    image: nginx
+    image: docker.io/library/nginx
   ue:
-    image: louisroyer/ueransim-ue
+    image: docker.io/louisroyer/ueransim-ue
   gnb:
-    image: louisroyer/ueransim-gnb
+    image: docker.io/louisroyer/ueransim-gnb
   debug:
-    image: louisroyer/network-debug
+    image: docker.io/louisroyer/network-debug
   docker-setup:
-    image: louisroyer/docker-setup
+    image: docker.io/louisroyer/docker-setup
   free5gc-upf:
-    image: louisroyer/dev-free5gc-upf
+    image: docker.io/louisroyer/dev-free5gc-upf
   nextmn-upf:
-    image: louisroyer/dev-nextmn-upf
+    image: docker.io/louisroyer/dev-nextmn-upf
   nextmn-srv6:
-    image: louisroyer/dev-nextmn-srv6
+    image: docker.io/louisroyer/dev-nextmn-srv6
   nextmn-srv6-ctrl:
-    image: louisroyer/dev-nextmn-srv6-ctrl
+    image: docker.io/louisroyer/dev-nextmn-srv6-ctrl
+  nextmn-ue-lite:
+    image: docker.io/louisroyer/dev-nextmn-ue-lite
+  nextmn-gnb-lite:
+    image: docker.io/louisroyer/dev-nextmn-gnb-lite
+  nextmn-cp-lite:
+    image: docker.io/louisroyer/dev-nextmn-cp-lite
   amf:
-    image: louisroyer/dev-free5gc-amf
+    image: docker.io/louisroyer/dev-free5gc-amf
   ausf:
-    image: louisroyer/dev-free5gc-ausf
+    image: docker.io/louisroyer/dev-free5gc-ausf
   chf:
-    image: louisroyer/dev-free5gc-chf
+    image: docker.io/louisroyer/dev-free5gc-chf
   nrf:
-    image: louisroyer/dev-free5gc-nrf
+    image: docker.io/louisroyer/dev-free5gc-nrf
   nssf:
-    image: louisroyer/dev-free5gc-nssf
+    image: docker.io/louisroyer/dev-free5gc-nssf
   pcf:
-    image: louisroyer/dev-free5gc-pcf
+    image: docker.io/louisroyer/dev-free5gc-pcf
   smf:
-    image: louisroyer/dev-free5gc-smf
+    image: docker.io/louisroyer/dev-free5gc-smf
   udm:
-    image: louisroyer/dev-free5gc-udm
+    image: docker.io/louisroyer/dev-free5gc-udm
   udr:
-    image: louisroyer/dev-free5gc-udr
+    image: docker.io/louisroyer/dev-free5gc-udr
   webconsole:
-    image: louisroyer/dev-free5gc-webconsole
+    image: docker.io/louisroyer/dev-free5gc-webconsole

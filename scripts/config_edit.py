@@ -23,6 +23,7 @@ if __name__ == '__main__':
         )
     parser.add_argument('buildconfig')
     parser.add_argument('--dataplane')
+    parser.add_argument('--controlplane')
     parser.add_argument('--nb-ue')
     parser.add_argument('--nb-edges')
     parser.add_argument('--log-level')
@@ -31,6 +32,7 @@ if __name__ == '__main__':
     parser.add_argument('--handover')
     args = parser.parse_args()
     ran = ('stable', 'dev')
+    controlplane = ('free5gc', 'nextmn-lite')
     dataplane = ('free5gc', 'nextmn-upf', 'nextmn-srv6')
     log_levels = ('trace', 'debug', 'info', 'warning', 'error', 'fatal', 'panic')
     try:
@@ -52,6 +54,8 @@ if __name__ == '__main__':
             raise ConfigException('Invalid value for handover: must be a boolean')
         if args.ran and (args.ran not in ran):
             raise ConfigException(f'Invalid ran config: use one from {ran}')
+        if args.controlplane and (args.controlplane not in controlplane):
+            raise ConfigException(f'Invalid controlplane config: use one from {controlplane}')
     except ConfigException as e:
         print(f'Error: {e}', file=sys.stderr)
         sys.exit(1)
@@ -61,6 +65,8 @@ if __name__ == '__main__':
         if args.dataplane:
             dp = args.dataplane.split('+')
             c['config']['topology']['dataplane'] = dp
+        if args.controlplane:
+            c['config']['topology']['controlplane'] = args.controlplane
         if args.nb_ue:
             c['config']['topology']['nb_ue'] = int(args.nb_ue)
         if args.nb_edges:

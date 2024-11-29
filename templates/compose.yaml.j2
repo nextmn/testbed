@@ -5,7 +5,7 @@
 name: "nextmn-testbed"
 
 services:
-#~ if "nextmn-srv6" in config["topology"]["dataplane"]
+#~ if ("nextmn-srv6" in config["topology"]["dataplane"]) and (config["topology"]["controlplane"] == "free5gc")
   {{ container_s(name='ue1', image='docker.io/louisroyer/ueransim-ue', enable_ipv6=True, debug='always', debug_volume=True, iface_tun=True, cap_net_admin=True, init=True) }}
     depends_on:
       amf:
@@ -68,7 +68,7 @@ services:
   #~ endif
 #~ endif
 
-#~ if "free5gc" in config["topology"]["dataplane"]
+#~ if ("free5gc" in config["topology"]["dataplane"]) and (config["topology"]["controlplane"] == "free5gc")
   {{ container_s(name='ue3', image='docker.io/louisroyer/ueransim-ue', enable_ipv6=True, debug='always', debug_volume=True, iface_tun=True, cap_net_admin=True, init=True) }}
     depends_on:
       amf:
@@ -131,7 +131,7 @@ services:
   #~ endif
 #~ endif
 
-#~ if "nextmn-upf" in config["topology"]["dataplane"]
+#~ if ("nextmn-upf" in config["topology"]["dataplane"]) and (config["topology"]["controlplane"] == "free5gc")
   {{ container_s(name='ue5', image='docker.io/louisroyer/ueransim-ue', enable_ipv6=True, debug='always', debug_volume=True, iface_tun=True, cap_net_admin=True, init=True) }}
     depends_on:
       amf:
@@ -194,53 +194,8 @@ services:
   #~ endif
 #~ endif
 
+#~ if config["topology"]["controlplane"] == "free5gc"
   {{ container_s(name='gnb1', image='docker.io/louisroyer/ueransim-gnb', enable_ipv6=True, restart='always', iface_tun=True, cap_net_admin=True, debug='allow') }}
-    depends_on:
-      amf:
-        condition: service_started
-#~ if config["topology"]["ran"]["version"] == "dev"
-    volumes:
-      - ../{{ config.topology.ran.dev_build_path }}/nr-gnb:/usr/bin/nr-gnb:ro
-      - ../{{ config.topology.ran.dev_build_path }}/nr-cli:/usr/bin/nr-cli:ro
-#~ endif
-    environment:
-      NCI: "0x000000010"
-      RLS_IP: "{{ ipv6('gnb1', 'ran') }}"
-      N2_IP: "{{ ipv4('gnb1', 'control') }}"
-      N3_IP: "{{ ipv4('gnb1', 'dataplane') }}"
-      SUPPORTED_NSSAIS: |-
-#~ if "nextmn-srv6" in config["topology"]["dataplane"]
-        - sst: 1
-          sd: 000001
-#~ elif "free5gc" in config["topology"]["dataplane"]
-        - sst: 1
-          sd: 000002
-#~ elif "nextmn-upf" in config["topology"]["dataplane"]
-        - sst: 1
-          sd: 000003
-#~ endif
-      MCC: "001"
-      MNC: "01"
-      ID_LEN: 32
-      TAC: 1
-      AMF_CONFIGS: |-
-        - address: "{{ ipv4('amf', 'control') }}"
-          port: 38412
-#~ if "nextmn-srv6" in config["topology"]["dataplane"]
-      ROUTES_INIT: |-
-        - add {{ ipv4('srgw0', 'srgw0') }} via {{ ipv4('srgw0', 'dataplane') }}
-#~ endif
-    networks:
-      ran:
-        ipv4_address: "{{ ipv4('gnb1', 'ran') }}"
-        ipv6_address: "{{ ipv6('gnb1', 'ran') }}"
-      control:
-        ipv4_address: "{{ ipv4('gnb1', 'control') }}"
-      dataplane:
-        ipv4_address: "{{ ipv4('gnb1', 'dataplane') }}"
-
-#~ if (config["topology"]["nb_ue"] > 1) or (config["topology"]["ran"]["handover"])
-  {{ container_s(name='gnb2', image='docker.io/louisroyer/ueransim-gnb', enable_ipv6=True, restart='always', iface_tun=True, cap_net_admin=True, debug='allow') }}
     depends_on:
       amf:
         condition: service_started
@@ -250,21 +205,21 @@ services:
       - ../{{ config.topology.ran.dev_build_path }}/nr-cli:/usr/bin/nr-cli:ro
   #~ endif
     environment:
-      NCI: "0x000000020"
-      RLS_IP: "{{ ipv6('gnb2', 'ran') }}"
-      N2_IP: "{{ ipv4('gnb2', 'control') }}"
-      N3_IP: "{{ ipv4('gnb2', 'dataplane') }}"
+      NCI: "0x000000010"
+      RLS_IP: "{{ ipv6('gnb1', 'ran') }}"
+      N2_IP: "{{ ipv4('gnb1', 'control') }}"
+      N3_IP: "{{ ipv4('gnb1', 'dataplane') }}"
       SUPPORTED_NSSAIS: |-
-#~ if "nextmn-srv6" in config["topology"]["dataplane"]
+  #~ if "nextmn-srv6" in config["topology"]["dataplane"]
         - sst: 1
           sd: 000001
-#~ elif "free5gc" in config["topology"]["dataplane"]
+  #~ elif "free5gc" in config["topology"]["dataplane"]
         - sst: 1
           sd: 000002
-#~ elif "nextmn-upf" in config["topology"]["dataplane"]
+  #~ elif "nextmn-upf" in config["topology"]["dataplane"]
         - sst: 1
           sd: 000003
-#~ endif
+  #~ endif
       MCC: "001"
       MNC: "01"
       ID_LEN: 32
@@ -272,10 +227,56 @@ services:
       AMF_CONFIGS: |-
         - address: "{{ ipv4('amf', 'control') }}"
           port: 38412
-#~ if "nextmn-srv6" in config["topology"]["dataplane"]
+  #~ if "nextmn-srv6" in config["topology"]["dataplane"]
       ROUTES_INIT: |-
         - add {{ ipv4('srgw0', 'srgw0') }} via {{ ipv4('srgw0', 'dataplane') }}
-#~ endif
+  #~ endif
+    networks:
+      ran:
+        ipv4_address: "{{ ipv4('gnb1', 'ran') }}"
+        ipv6_address: "{{ ipv6('gnb1', 'ran') }}"
+      control:
+        ipv4_address: "{{ ipv4('gnb1', 'control') }}"
+      dataplane:
+        ipv4_address: "{{ ipv4('gnb1', 'dataplane') }}"
+
+  #~ if (config["topology"]["nb_ue"] > 1) or (config["topology"]["ran"]["handover"])
+  {{ container_s(name='gnb2', image='docker.io/louisroyer/ueransim-gnb', enable_ipv6=True, restart='always', iface_tun=True, cap_net_admin=True, debug='allow') }}
+    depends_on:
+      amf:
+        condition: service_started
+    #~ if config["topology"]["ran"]["version"] == "dev"
+    volumes:
+      - ../{{ config.topology.ran.dev_build_path }}/nr-gnb:/usr/bin/nr-gnb:ro
+      - ../{{ config.topology.ran.dev_build_path }}/nr-cli:/usr/bin/nr-cli:ro
+    #~ endif
+    environment:
+      NCI: "0x000000020"
+      RLS_IP: "{{ ipv6('gnb2', 'ran') }}"
+      N2_IP: "{{ ipv4('gnb2', 'control') }}"
+      N3_IP: "{{ ipv4('gnb2', 'dataplane') }}"
+      SUPPORTED_NSSAIS: |-
+  #~ if "nextmn-srv6" in config["topology"]["dataplane"]
+        - sst: 1
+          sd: 000001
+  #~ elif "free5gc" in config["topology"]["dataplane"]
+        - sst: 1
+          sd: 000002
+  #~ elif "nextmn-upf" in config["topology"]["dataplane"]
+        - sst: 1
+          sd: 000003
+  #~ endif
+      MCC: "001"
+      MNC: "01"
+      ID_LEN: 32
+      TAC: 1
+      AMF_CONFIGS: |-
+        - address: "{{ ipv4('amf', 'control') }}"
+          port: 38412
+  #~ if "nextmn-srv6" in config["topology"]["dataplane"]
+      ROUTES_INIT: |-
+        - add {{ ipv4('srgw0', 'srgw0') }} via {{ ipv4('srgw0', 'dataplane') }}
+  #~ endif
     networks:
       ran:
         ipv4_address: "{{ ipv4('gnb2', 'ran') }}"
@@ -284,8 +285,10 @@ services:
         ipv4_address: "{{ ipv4('gnb2', 'control') }}"
       dataplane:
         ipv4_address: "{{ ipv4('gnb2', 'dataplane') }}"
+  #~ endif
 #~ endif
 
+#~ if config["topology"]["controlplane"] == "free5gc"
   {{ container_s(name='amf', image='docker.io/louisroyer/dev-free5gc-amf', restart='always') }}
     depends_on:
       smf:
@@ -306,28 +309,28 @@ services:
       AMF_PEM: "{{ openssl_secret_pem('amf', 'sbi') }}"
       AMF_KEY: "{{ openssl_secret_key('amf', 'sbi') }}"
       SUPPORT_DNN_LIST: |-
-#~ if "nextmn-srv6" in config["topology"]["dataplane"]
+  #~ if "nextmn-srv6" in config["topology"]["dataplane"]
         - srv6
-#~ endif
-#~ if "free5gc" in config["topology"]["dataplane"]
+  #~ endif
+  #~ if "free5gc" in config["topology"]["dataplane"]
         - free5gc
-#~ endif
-#~ if "nextmn-upf" in config["topology"]["dataplane"]
+  #~ endif
+  #~ if "nextmn-upf" in config["topology"]["dataplane"]
         - nextmn-upf
-#~ endif
+  #~ endif
       SNSSAI_LIST: |-
-#~ if "nextmn-srv6" in config["topology"]["dataplane"]
+  #~ if "nextmn-srv6" in config["topology"]["dataplane"]
         - sst: 1
           sd: 000001
-#~ endif
-#~ if "free5gc" in config["topology"]["dataplane"]
+  #~ endif
+  #~ if "free5gc" in config["topology"]["dataplane"]
         - sst: 1
           sd: 000002
-#~ endif
-#~ if "nextmn-upf" in config["topology"]["dataplane"]
+  #~ endif
+  #~ if "nextmn-upf" in config["topology"]["dataplane"]
         - sst: 1
           sd: 000003
-#~ endif
+  #~ endif
       TAC: "000001"
     secrets:
       {{ openssl_secrets_pem_s('nrf', 'sbi') | indent(2) }}
@@ -503,14 +506,14 @@ services:
     depends_on:
       nrf: # required to being able to deregister propertly
         condition: service_started
-#~ if "nextmn-srv6" in config["topology"]["dataplane"]
+  #~ if "nextmn-srv6" in config["topology"]["dataplane"]
       r0:
         condition: service_healthy
       r1:
         condition: service_healthy
       srgw0:
         condition: service_healthy
-#~ endif
+  #~ endif
     environment:
       LOG_LEVEL: "{{ log_level() }}"
       GIN_MODE: "release"
@@ -525,7 +528,7 @@ services:
       MCC: "001"
       MNC: "01"
       SNSSAI_INFOS: |-
-#~ if "nextmn-srv6" in config["topology"]["dataplane"]
+  #~ if "nextmn-srv6" in config["topology"]["dataplane"]
         - sNssai:
             sst: 1
             sd: 000001
@@ -534,8 +537,8 @@ services:
               dns:
                 ipv4: 9.9.9.9 # TODO: replace with local dns
                 ipv6: 2620:fe::fe
-#~ endif
-#~ if "free5gc" in config["topology"]["dataplane"]
+  #~ endif
+  #~ if "free5gc" in config["topology"]["dataplane"]
         - sNssai:
             sst: 1
             sd: 000002
@@ -544,8 +547,8 @@ services:
               dns:
                 ipv4: 9.9.9.9 # TODO: replace with local dns
                 ipv6: 2620:fe::fe
-#~ endif
-#~ if "nextmn-upf" in config["topology"]["dataplane"]
+  #~ endif
+  #~ if "nextmn-upf" in config["topology"]["dataplane"]
         - sNssai:
             sst: 1
             sd: 000003
@@ -554,11 +557,11 @@ services:
               dns:
                 ipv4: 9.9.9.9 # TODO: replace with local dns
                 ipv6: 2620:fe::fe
-#~ endif
+  #~ endif
       UP_NODES: |-
         GNB:
           type: AN
-#~ if "nextmn-srv6" in config["topology"]["dataplane"]
+  #~ if "nextmn-srv6" in config["topology"]["dataplane"]
         UPF_SRV6:
           type: UPF
           nodeID: "{{ ipv4('srv6-ctrl', 'control') }}"
@@ -579,8 +582,8 @@ services:
                 - {{ ipv4('srgw0', 'srgw0') }}
               networkInstances:
                 - srv6
-#~ endif
-#~ if "free5gc" in config["topology"]["dataplane"]
+  #~ endif
+  #~ if "free5gc" in config["topology"]["dataplane"]
         UPFI_F5GC:
           type: UPF
           nodeID: "{{ ipv4('upfi-f5gc', 'control') }}"
@@ -622,7 +625,7 @@ services:
                 - {{ ipv4('upfa1-f5gc', 'dataplane') }}
               networkInstances:
                 - free5gc
-  #~ if config["topology"]["nb_edges"] > 1
+    #~ if config["topology"]["nb_edges"] > 1
         UPFA2_F5GC:
           type: UPF
           nodeID: "{{ ipv4('upfa2-f5gc', 'control') }}"
@@ -643,9 +646,9 @@ services:
                 - {{ ipv4('upfa2-f5gc', 'dataplane') }}
               networkInstances:
                 - free5gc
+    #~ endif
   #~ endif
-#~ endif
-#~ if "nextmn-upf" in config["topology"]["dataplane"]
+  #~ if "nextmn-upf" in config["topology"]["dataplane"]
         UPFI_NEXTMNUPF:
           type: UPF
           nodeID: "{{ ipv4('upfi-nmn', 'control') }}"
@@ -687,7 +690,7 @@ services:
                 - {{ ipv4('upfa1-nmn', 'dataplane') }}
               networkInstances:
                 - nextmn-upf
-  #~ if config["topology"]["nb_edges"] > 1
+    #~ if config["topology"]["nb_edges"] > 1
         UPFA2_NEXTMNUPF:
           type: UPF
           nodeID: "{{ ipv4('upfa2-nmn', 'control') }}"
@@ -708,95 +711,95 @@ services:
                 - {{ ipv4('upfa2-nmn', 'dataplane') }}
               networkInstances:
                 - nextmn-upf
+    #~ endif
   #~ endif
-#~ endif
       ULCL: "true"
       LINKS: |-
-#~ if "nextmn-srv6" in config["topology"]["dataplane"]
+  #~ if "nextmn-srv6" in config["topology"]["dataplane"]
         - A: GNB
           B: UPF_SRV6
-#~endif
-#~ if "free5gc" in config["topology"]["dataplane"]
+  #~endif
+  #~ if "free5gc" in config["topology"]["dataplane"]
         - A: GNB
           B: UPFI_F5GC
         - A: UPFI_F5GC
           B: UPFA1_F5GC
-  #~ if config["topology"]["nb_edges"] > 1
+    #~ if config["topology"]["nb_edges"] > 1
         - A: UPFI_F5GC
           B: UPFA2_F5GC
+    #~ endif
   #~ endif
-#~ endif
-#~ if "nextmn-upf" in config["topology"]["dataplane"]
+  #~ if "nextmn-upf" in config["topology"]["dataplane"]
         - A: GNB
           B: UPFI_NEXTMNUPF
         - A: UPFI_NEXTMNUPF
           B: UPFA1_NEXTMNUPF
-  #~ if config["topology"]["nb_edges"] > 1
+    #~ if config["topology"]["nb_edges"] > 1
         - A: UPFI_NEXTMNUPF
           B: UPFA2_NEXTMNUPF
+    #~ endif
   #~ endif
-#~ endif
       UEROUTING_INFO: |-
         none1:
           members:
-#~ if "nextmn-srv6" in config["topology"]["dataplane"]
+  #~ if "nextmn-srv6" in config["topology"]["dataplane"]
             - imsi-001010000000001
-  #~ if config["topology"]["nb_ue"] > 1
+    #~ if config["topology"]["nb_ue"] > 1
             - imsi-001010000000002
+    #~ endif
   #~ endif
-#~ endif
-#~ if "free5gc" in config["topology"]["dataplane"]
+  #~ if "free5gc" in config["topology"]["dataplane"]
             - imsi-001010000000003
-  #~ if config["topology"]["nb_ue"] > 1
+    #~ if config["topology"]["nb_ue"] > 1
             - imsi-001010000000004
+    #~ endif
   #~ endif
-#~ endif
-#~ if "nextmn-upf" in config["topology"]["dataplane"]
+  #~ if "nextmn-upf" in config["topology"]["dataplane"]
             - imsi-001010000000005
-  #~ if config["topology"]["nb_ue"] > 1
+    #~ if config["topology"]["nb_ue"] > 1
             - imsi-001010000000006
+    #~ endif
   #~ endif
-#~ endif
           topology:
-#~ if "nextmn-srv6" in config["topology"]["dataplane"]
+  #~ if "nextmn-srv6" in config["topology"]["dataplane"]
             - A: GNB
               B: UPF_SRV6
-#~ endif
-#~ if "free5gc" in config["topology"]["dataplane"]
+  #~ endif
+  #~ if "free5gc" in config["topology"]["dataplane"]
             - A: GNB
               B: UPFI_F5GC
             - A: UPFI_F5GC
               B: UPFA1_F5GC
-  #~ if config["topology"]["nb_edges"] > 1
+    #~ if config["topology"]["nb_edges"] > 1
             - A: UPFI_F5GC
               B: UPFA2_F5GC
+    #~ endif
   #~ endif
-#~ endif
-#~ if "nextmn-upf" in config["topology"]["dataplane"]
+  #~ if "nextmn-upf" in config["topology"]["dataplane"]
             - A: GNB
               B: UPFI_NEXTMNUPF
             - A: UPFI_NEXTMNUPF
               B: UPFA1_NEXTMNUPF
-  #~ if config["topology"]["nb_edges"] > 1
+    #~ if config["topology"]["nb_edges"] > 1
             - A: UPFI_NEXTMNUPF
               B: UPFA2_NEXTMNUPF
+    #~ endif
   #~ endif
-#~ endif
-#~ if config["topology"]["nb_edges"] > 1
+  #~ if config["topology"]["nb_edges"] > 1
           specificPath:
-  #~ if "free5gc" in config["topology"]["dataplane"]
+    #~ if "free5gc" in config["topology"]["dataplane"]
             - dest: 10.4.0.1/32
               path: [UPFI_F5GC, UPFA1_F5GC]
             - dest: 10.4.0.2/32
               path: [UPFI_F5GC, UPFA2_F5GC]
-  #~ endif
-  #~ if "nextmn-upf" in config["topology"]["dataplane"]
+    #~ endif
+    #~ if "nextmn-upf" in config["topology"]["dataplane"]
             - dest: 10.4.0.1/32
               path: [UPFI_NEXTMNUPF, UPFA1_NEXTMNUPF]
             - dest: 10.4.0.2/32
               path: [UPFI_NEXTMNUPF, UPFA2_NEXTMNUPF]
+    #~ endif
   #~ endif
-#~ endif
     secrets:
       {{ openssl_secrets_pem_s('nrf', 'sbi') | indent(2) }}
       {{ openssl_secrets_s('smf', 'sbi') | indent(2) }}
@@ -813,43 +816,43 @@ services:
     environment:
       MONGO_HOST: "mongodb.db"
       SLICES: |-
-#~ if "nextmn-srv6" in config["topology"]["dataplane"]
+  #~ if "nextmn-srv6" in config["topology"]["dataplane"]
         - sst: 1
           sd: 000001
           varqi: 9
           dnn: srv6
-#~ endif
-#~ if "free5gc" in config["topology"]["dataplane"]
+  #~ endif
+  #~ if "free5gc" in config["topology"]["dataplane"]
         - sst: 1
           sd: 000002
           varqi: 9
           dnn: free5gc
-#~ endif
-#~ if "nextmn-upf" in config["topology"]["dataplane"]
+  #~ endif
+  #~ if "nextmn-upf" in config["topology"]["dataplane"]
         - sst: 1
           sd: 000003
           varqi: 9
           dnn: nextmn-upf
-#~ endif
+  #~ endif
       IMSI: |-
-#~ if "nextmn-srv6" in config["topology"]["dataplane"]
+  #~ if "nextmn-srv6" in config["topology"]["dataplane"]
         - imsi-001010000000001
-  #~ if config["topology"]["nb_ue"] > 1
+    #~ if config["topology"]["nb_ue"] > 1
         - imsi-001010000000002
+    #~ endif
   #~ endif
-#~ endif
-#~ if "free5gc" in config["topology"]["dataplane"]
+  #~ if "free5gc" in config["topology"]["dataplane"]
         - imsi-001010000000003
-  #~ if config["topology"]["nb_ue"] > 1
+    #~ if config["topology"]["nb_ue"] > 1
         - imsi-001010000000004
+    #~ endif
   #~ endif
-#~ endif
-#~ if "nextmn-upf" in config["topology"]["dataplane"]
+  #~ if "nextmn-upf" in config["topology"]["dataplane"]
         - imsi-001010000000005
-  #~ if config["topology"]["nb_ue"] > 1
+    #~ if config["topology"]["nb_ue"] > 1
         - imsi-001010000000006
+    #~ endif
   #~ endif
-#~ endif
     networks:
       db:
 
@@ -875,18 +878,18 @@ services:
             mcc: 001
             mnc: 01
           supportedSnssaiList:
-#~ if "nextmn-srv6" in config["topology"]["dataplane"]
+  #~ if "nextmn-srv6" in config["topology"]["dataplane"]
             - sst: 1
               sd: 000001
-#~ endif
-#~ if "free5gc" in config["topology"]["dataplane"]
+  #~ endif
+  #~ if "free5gc" in config["topology"]["dataplane"]
             - sst: 1
               sd: 000002
-#~ endif
-#~ if "nextmn-upf" in config["topology"]["dataplane"]
+  #~ endif
+  #~ if "nextmn-upf" in config["topology"]["dataplane"]
             - sst: 1
               sd: 000003
-#~ endif
+  #~ endif
       NSI_LIST: |-
         - snssai:
             sst: 1
@@ -905,18 +908,18 @@ services:
                   mnc: 01
                 tac: 0000001
               supportedSnssaiList:
-#~ if "nextmn-srv6" in config["topology"]["dataplane"]
+  #~ if "nextmn-srv6" in config["topology"]["dataplane"]
                 - sst: 1
                   sd: 000001
-#~ endif
-#~ if "free5gc" in config["topology"]["dataplane"]
+  #~ endif
+  #~ if "free5gc" in config["topology"]["dataplane"]
                 - sst: 1
                   sd: 000002
-#~endif
-#~ if "nextmn-upf" in config["topology"]["dataplane"]
+  #~endif
+  #~ if "nextmn-upf" in config["topology"]["dataplane"]
                 - sst: 1
                   sd: 000003
-#~ endif
+  #~ endif
       AMF_LIST: |-
         - nfId: 469de254-2fe5-4ca0-8381-af3f500af77c
           supportedNssaiAvailabilityData:
@@ -926,18 +929,18 @@ services:
                   mnc: 01
                 tac: 000001
               supportedSnssaiList:
-#~ if "nextmn-srv6" in config["topology"]["dataplane"]
+  #~ if "nextmn-srv6" in config["topology"]["dataplane"]
                 - sst: 1
                   sd: 000001
-#~ endif
-#~ if "free5gc" in config["topology"]["dataplane"]
+  #~ endif
+  #~ if "free5gc" in config["topology"]["dataplane"]
                 - sst: 1
                   sd: 000002
-#~ endif
-#~ if "nextmn-upf" in config["topology"]["dataplane"]
+  #~ endif
+  #~ if "nextmn-upf" in config["topology"]["dataplane"]
                 - sst: 1
                   sd: 000003
-#~ endif
+  #~ endif
 
       TA_LIST: |-
         - tai:
@@ -947,18 +950,18 @@ services:
             tac: 000001
           accessType: 3GPP_ACCESS
           supportedSnssaiList:
-#~ if "nextmn-srv6" in config["topology"]["dataplane"]
+  #~ if "nextmn-srv6" in config["topology"]["dataplane"]
             - sst: 1
               sd: 000001
-#~ endif
-#~ if "free5gc" in config["topology"]["dataplane"]
+  #~ endif
+  #~ if "free5gc" in config["topology"]["dataplane"]
             - sst: 1
               sd: 000002
-#~ endif
-#~ if "nextmn-upf" in config["topology"]["dataplane"]
+  #~ endif
+  #~ if "nextmn-upf" in config["topology"]["dataplane"]
             - sst: 1
               sd: 000003
-#~ endif
+  #~ endif
 
       MAPPING_LIST_FROM_PLMN: |-
         - operatorName: dummyoperator
@@ -966,36 +969,37 @@ services:
             mcc: 001
             mnc: 02
           mappingOfSnssai:
-#~ if "nextmn-srv6" in config["topology"]["dataplane"]
+  #~ if "nextmn-srv6" in config["topology"]["dataplane"]
             - servingSnssai:
                 sst: 1
                 sd: 00001
               homeSnssai:
                 sst: 1
                 sd: 00001
-#~ endif
-#~ if "free5gc" in config["topology"]["dataplane"]
+  #~ endif
+  #~ if "free5gc" in config["topology"]["dataplane"]
             - servingSnssai:
                 sst: 1
                 sd: 00002
               homeSnssai:
                 sst: 1
                 sd: 00002
-#~ endif
-#~ if "nextmn-upf" in config["topology"]["dataplane"]
+  #~ endif
+  #~ if "nextmn-upf" in config["topology"]["dataplane"]
             - servingSnssai:
                 sst: 1
                 sd: 00003
               homeSnssai:
                 sst: 1
                 sd: 00003
-#~ endif
+  #~ endif
     secrets:
       {{ openssl_secrets_pem_s('nrf', 'sbi') | indent(2) }}
       {{ openssl_secrets_s('nssf', 'sbi') | indent(2) }}
     networks:
       sbi:
         ipv4_address: "{{ ipv4('nssf', 'sbi') }}"
+#~ endif
 
 #~ if "nextmn-srv6" in config["topology"]["dataplane"]
   {{ container_s(name='r0', image='docker.io/louisroyer/dev-nextmn-srv6', restart='always', srv6=True, debug='allow') }}
@@ -1191,7 +1195,7 @@ services:
     networks:
       nextmndb:
 
-  {{ container_s(name='srv6-ctrl', image='docker.io/louisroyer/dev-nextmn-srv6-ctrl', restart='always') }}
+  {{ container_s(name='srv6-ctrl', image='docker.io/louisroyer/dev-nextmn-srv6-ctrl', debug='allow', restart='always') }}
     environment:
       N4: "{{ ipv4('srv6-ctrl', 'control') }}"
       HTTP_ADDRESS: "{{ ipv6('srv6-ctrl', 'control') }}"
@@ -1405,7 +1409,117 @@ services:
         ipv4_address: "{{ ipv4('upfa2-nmn', 'edge') }}"
   #~ endif
 #~ endif
+
+#~ if config["topology"]["controlplane"] == "nextmn-lite"
+  {{ container_s(name='uel1', image='docker.io/louisroyer/dev-nextmn-ue-lite', enable_ipv6=True, debug='always', debug_volume=False, iface_tun=True, cap_net_admin=True) }}
+    depends_on:
+      gnbl1:
+        condition: service_started
+    environment:
+      GIN_MODE: "release"
+      HTTP_ADDRESS: "{{ ipv6('uel1', 'control') }}"
+      HTTP_PORT: "8080"
+      RAN: |-
+        bind-addr: "[{{ ipv6('uel1', 'ran') }}]:1234"
+        gnbs:
+          - "http://[{{ ipv6('gnbl1', 'control') }}]:8080"
+        pdu-sessions:
+          - gnb: "http://[{{ ipv6('gnbl1', 'control') }}]:8080"
+            dnn: "srv6"
+      LOG_LEVEL: "{{ log_level() }}"
+    networks:
+      ran:
+        ipv4_address: "{{ ipv4('uel1', 'ran') }}"
+        ipv6_address: "{{ ipv6('uel1', 'ran') }}"
+      control:
+        ipv4_address: "{{ ipv4('uel1', 'control') }}"
+        ipv6_address: "{{ ipv6('uel1', 'control') }}"
+
+  {{ container_s(name='gnbl1', image='docker.io/louisroyer/dev-nextmn-gnb-lite', enable_ipv6=True, debug='always', debug_volume=False, cap_net_admin=True) }}
+    depends_on:
+      cp-lite:
+        condition: service_started
+    environment:
+      GIN_MODE: "release"
+      HTTP_ADDRESS: "{{ ipv6('gnbl1', 'control') }}"
+      HTTP_PORT: "8080"
+      CP: "http://[{{ ipv6('cp-lite', 'control') }}]:8080"
+      N3: "{{ ipv4('gnbl1', 'dataplane') }}"
+      RAN: |-
+        bind-addr: "[{{ ipv6('gnbl1', 'ran') }}]:1234"
+      LOG_LEVEL: "{{ log_level() }}"
+      ROUTES_INIT: |-
+        - add {{ ipv4('srgw0', 'srgw0') }} via {{ ipv4('srgw0', 'dataplane') }}
+    networks:
+      ran:
+        ipv4_address: "{{ ipv4('gnbl1', 'ran') }}"
+        ipv6_address: "{{ ipv6('gnbl1', 'ran') }}"
+      control:
+        ipv4_address: "{{ ipv4('gnbl1', 'control') }}"
+        ipv6_address: "{{ ipv6('gnbl1', 'control') }}"
+      dataplane:
+        ipv4_address: "{{ ipv4('gnbl1', 'dataplane') }}"
+
+  {{ container_s(name='gnbl2', image='docker.io/louisroyer/dev-nextmn-gnb-lite', enable_ipv6=True, debug='always', debug_volume=False, cap_net_admin=True) }}
+    depends_on:
+      cp-lite:
+        condition: service_started
+    environment:
+      GIN_MODE: "release"
+      HTTP_ADDRESS: "{{ ipv6('gnbl2', 'control') }}"
+      HTTP_PORT: "8080"
+      CP: "http://[{{ ipv6('cp-lite', 'control') }}]:8080"
+      N3: "{{ ipv4('gnbl2', 'dataplane') }}"
+      RAN: |-
+        bind-addr: "[{{ ipv6('gnbl2', 'ran') }}]:1234"
+      LOG_LEVEL: "{{ log_level() }}"
+      ROUTES_INIT: |-
+        - add {{ ipv4('srgw0', 'srgw0') }} via {{ ipv4('srgw0', 'dataplane') }}
+    networks:
+      ran:
+        ipv4_address: "{{ ipv4('gnbl2', 'ran') }}"
+        ipv6_address: "{{ ipv6('gnbl2', 'ran') }}"
+      control:
+        ipv4_address: "{{ ipv4('gnbl2', 'control') }}"
+        ipv6_address: "{{ ipv6('gnbl2', 'control') }}"
+      dataplane:
+        ipv4_address: "{{ ipv4('gnbl2', 'dataplane') }}"
+
+  {{ container_s(name='cp-lite', image='docker.io/louisroyer/dev-nextmn-cp-lite', enable_ipv6=True, debug='allow', debug_volume=False, cap_net_admin=True) }}
+    depends_on:
+      srv6-ctrl:
+        condition: service_started
+      srgw0:
+        condition: service_started
+      r0:
+        condition: service_started
+      r1:
+        condition: service_started
+    environment:
+      GIN_MODE: "release"
+      N4: "{{ ipv4('cp-lite', 'control') }}"
+      HTTP_ADDRESS: "{{ ipv6('cp-lite', 'control') }}"
+      HTTP_PORT: "8080"
+      SLICES: |-
+        srv6:
+            pool: "{{ ipv4_subnet('slice0') }}"
+            upfs:
+              - node-id: "{{ ipv4('srv6-ctrl', 'control') }}"
+                interfaces:
+                  - type: "N3"
+                    addr: "{{ ipv4('srgw0', 'srgw0') }}"
+      LOG_LEVEL: "{{ log_level() }}"
+    networks:
+      control:
+        ipv4_address: "{{ ipv4('cp-lite', 'control') }}"
+        ipv6_address: "{{ ipv6('cp-lite', 'control') }}"
+
+#~ endif
+
+#~ if (config["topology"]["controlplane"] == "free5gc") or ("nextmn-srv6" in config["topology"]["dataplane"])
 secrets:
+#~ endif
+#~ if config["topology"]["controlplane"] == "free5gc"
   {{ openssl_s('amf', 'sbi') }}
   {{ openssl_s('ausf', 'sbi') }}
   {{ openssl_s('chf', 'sbi') }}
@@ -1415,6 +1529,7 @@ secrets:
   {{ openssl_s('smf', 'sbi') }}
   {{ openssl_s('udm', 'sbi') }}
   {{ openssl_s('udr', 'sbi') }}
+#~ endif
 #~ if "nextmn-srv6" in config["topology"]["dataplane"]
   r0_db_password:
     file: "{{ secret('r0_db_password.txt') }}"
@@ -1424,10 +1539,12 @@ secrets:
     file: "{{ secret('srgw0_db_password.txt') }}"
 #~ endif
 
+#~ if "nextmn-srv6" in config["topology"]["dataplane"]
 volumes:
   r0_db_volume:
   r1_db_volume:
   srgw0_db_volume:
+#~ endif
 
 networks:
   ran:
@@ -1446,6 +1563,7 @@ networks:
         - subnet: fd00:0:0:0:1::/80
           ip_range: fd00:0:0:0:1::/81
           gateway: fd00::1:8000:0:1
+#~ if config["topology"]["controlplane"] == "free5gc"
   sbi:
     name: sbi
     enable_ipv6: false
@@ -1472,6 +1590,7 @@ networks:
         - subnet: 10.1.2.0/24
           ip_range: 10.1.2.0/25
           gateway: 10.1.2.254
+#~ endif
   control:
     name: control
     enable_ipv6: true

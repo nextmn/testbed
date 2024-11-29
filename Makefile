@@ -66,6 +66,13 @@ set/dataplane/%: $(BCONFIG)
 	@echo Set dataplane to $(@F)
 	@./scripts/config_edit.py $(BCONFIG) --dataplane=$(@F)
 
+.PHONY: set/controlplane
+set/controlplane/%: $(BCONFIG)
+	@echo Set controlplane to $(@F)
+	@./scripts/config_edit.py $(BCONFIG) --controlplane=$(@F)
+	@# not yet implemented for free5gc/nextmn-upf => we set dataplane to nextmn-srv6
+	@$(MAKE) set/dataplane/nextmn-srv6
+
 .PHONY: set/nb-edges
 set/nb-edges/%: $(BCONFIG)
 	@echo Set number of edges to $(@F)
