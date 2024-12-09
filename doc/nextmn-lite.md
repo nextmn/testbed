@@ -39,4 +39,34 @@ end
 UE<<-->>+UPF: PDUs
 ```
 
-## N2 Handover
+## N2 Handover Scenario 1 (single SRGW, preserve Anchor)
+```mermaid
+%%{init: { 'sequence': {'noteAlign': 'left'} }}%%
+sequenceDiagram
+actor User
+participant UE
+participant gNB1
+participant gNB2
+participant CP
+participant SRv6Ctrl
+participant SRGW
+participant Anchor
+
+note over UE, gNB2: gNB1 initiate N2 Handover
+rect green
+    gNB1->>+CP: HandoverRequired
+    CP->>+SRv6Ctrl: PFCP Session Establishment(uplinkPDR, uplinkFAR)
+    SRv6Ctrl->>+SRGW: create rule (match on new FTEID, same path)
+    CP->>+gNB2: HandoverRequest
+    gNB2->>+CP: HandoverRequestACK
+    CP->>+SRv6Ctrl: PFCP Session Modification(downlinkPDR, downlinkPDR)
+    SRv6Ctrl->>+Anchor: create rule (match on same UE, create SRH using gNB2 FTEID, desactivated)
+    CP->>+gNB1: HandoverCommand
+    gNB1->>+UE: HandoverCommand
+    UE->>+gNB2: HandoverConfirm
+    gNB2->>+CP: HandoverNotify
+    CP->>+SRv6Ctrl: PFCP Session Modification[update FAR from BUFF to FORW]
+    SRv6Ctrl->>+SRGW: create temporary downlink redirect(oldFTEID, newFTEID)
+    SRv6Ctrl->>+Anchor: update rule (desactivate old rule, activate new rule)
+end
+```
