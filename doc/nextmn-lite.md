@@ -15,7 +15,7 @@ rect LightBlue
     CP->>+UPF: PFCP Association Setup Request
     UPF->>+CP: PFCP Association Setup Response
 end
-rect LightOrange
+rect Orange
     User->>+UE: POST cli/radio/peer(gNBControl)
     note over User,UE: {<br>"gnb": "http://gnb1.example.org/",<br>}
 end
@@ -24,7 +24,7 @@ rect Plum
     UE->>+gNB: Radio Peer(dl endpoint)
     gNB->>+UE: Radio Peer(ul endpoint)
 end
-rect LightOrange
+rect Orange
     User->>+UE: POST cli/ps/establish(gNBControl, dnn)
     note over User,UE: {<br>"gnb": "http://gnb1.example.org/",<br>"dnn": "srv6",<br>}
 end
