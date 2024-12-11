@@ -3,7 +3,7 @@
 ## PDU Session Establishment procedure
 
 ```mermaid
-%%{init: { 'sequence': {'noteAlign': 'left'} }}%%
+%%{init: { 'sequence': {'noteAlign': 'left'} , 'themeVariables':{'actorLineColor': '#333333', 'signalColor': '#000000', 'signalTextColor':'#000000'} }}%%
 sequenceDiagram
 actor User
 participant UE
@@ -15,15 +15,19 @@ rect LightBlue
     CP->>+UPF: PFCP Association Setup Request
     UPF->>+CP: PFCP Association Setup Response
 end
-User->>+UE: POST cli/radio/peer(gNBControl)
-note over User,UE: {<br>"gnb": "http://gnb1.example.org/",<br>}
+rect LightOrange
+    User->>+UE: POST cli/radio/peer(gNBControl)
+    note over User,UE: {<br>"gnb": "http://gnb1.example.org/",<br>}
+end
 rect Plum
     note over UE, gNB: RadioSim Link Establishment
     UE->>+gNB: Radio Peer(dl endpoint)
     gNB->>+UE: Radio Peer(ul endpoint)
 end
-User->>+UE: POST cli/ps/establish(gNBControl, dnn)
-note over User,UE: {<br>"gnb": "http://gnb1.example.org/",<br>"dnn": "srv6",<br>}
+rect LightOrange
+    User->>+UE: POST cli/ps/establish(gNBControl, dnn)
+    note over User,UE: {<br>"gnb": "http://gnb1.example.org/",<br>"dnn": "srv6",<br>}
+end
 rect LightGreen
     note over UE,UPF: PDU Session Establishment
     UE->>+gNB: PDU Session Estab. Req.(UEControl)
@@ -41,7 +45,7 @@ UE<<-->>+UPF: PDUs
 
 ## N2 Handover Scenario 1 (preserve SRGW, preserve Anchor)
 ```mermaid
-%%{init: { 'sequence': {'noteAlign': 'left'} }}%%
+%%{init: { 'sequence': {'noteAlign': 'left'} , 'themeVariables':{'actorLineColor': '#333333', 'signalColor': '#000000', 'signalTextColor':'#000000'} }}%%
 sequenceDiagram
 actor User
 participant UE
@@ -73,7 +77,7 @@ end
 
 ## N2 Handover Scenario 2 (SRGW update, preserve Anchor)
 ```mermaid
-%%{init: { 'sequence': {'noteAlign': 'left'} }}%%
+%%{init: { 'sequence': {'noteAlign': 'left'} , 'themeVariables':{'actorLineColor': '#333333', 'signalColor': '#000000', 'signalTextColor':'#000000'} }}%%
 sequenceDiagram
 actor User
 participant UE
@@ -106,7 +110,7 @@ end
 
 ## N2 Handover Scenario 3 (preserve SRGW, Anchor update)
 ```mermaid
-%%{init: { 'sequence': {'noteAlign': 'left'} }}%%
+%%{init: { 'sequence': {'noteAlign': 'left'} , 'themeVariables':{'actorLineColor': '#333333', 'signalColor': '#000000', 'signalTextColor':'#000000'} }}%%
 sequenceDiagram
 actor User
 participant UE
@@ -140,7 +144,7 @@ end
 
 ## N2 Handover Scenario 4 (SRGW update, Anchor update)
 ```mermaid
-%%{init: { 'sequence': {'noteAlign': 'left'} }}%%
+%%{init: { 'sequence': {'noteAlign': 'left'} , 'themeVariables':{'actorLineColor': '#333333', 'signalColor': '#000000', 'signalTextColor':'#000000'} }}%%
 sequenceDiagram
 actor User
 participant UE
