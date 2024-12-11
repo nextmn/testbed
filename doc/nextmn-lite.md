@@ -10,14 +10,14 @@ participant UE
 participant gNB
 participant CP
 participant UPF
-rect blue
+rect LightBlue
     note over CP,UPF: PFCP Association
     CP->>+UPF: PFCP Association Setup Request
     UPF->>+CP: PFCP Association Setup Response
 end
 User->>+UE: POST cli/radio/peer(gNBControl)
 note over User,UE: {<br>"gnb": "http://gnb1.example.org/",<br>}
-rect purple
+rect Plum
     note over UE, gNB: RadioSim Link Establishment
     UE->>+gNB: Radio Peer(dl endpoint)
     gNB->>+UE: Radio Peer(ul endpoint)
@@ -53,7 +53,7 @@ participant SRGW
 participant Anchor
 
 note over UE, gNB2: gNB1 initiate N2 Handover
-rect green
+rect LightGreen
     gNB1->>+CP: HandoverRequired
     CP->>+SRv6Ctrl: PFCP Session Establishment(uplinkPDR, uplinkFAR)
     SRv6Ctrl->>+SRGW: create UL rule (match on new FTEID, same path)
@@ -86,7 +86,7 @@ participant SRGW2
 participant Anchor
 
 note over UE, gNB2: gNB1 initiate N2 Handover
-rect green
+rect LightGreen
     gNB1->>+CP: HandoverRequired
     CP->>+SRv6Ctrl: PFCP Session Establishment(uplinkPDR, uplinkFAR)
     SRv6Ctrl->>+SRGW2: create UL rule (match on new FTEID, path to Anchor)
@@ -119,7 +119,7 @@ participant Anchor1
 participant Anchor2
 
 note over UE, gNB2: gNB1 initiate N2 Handover
-rect green
+rect LightGreen
     gNB1->>+CP: HandoverRequired
     CP->>+SRv6Ctrl: PFCP Session Establishment(uplinkPDR, uplinkFAR)
     SRv6Ctrl->>+SRGW: create UL rule (match on new FTEID, path to Anchor2, desactivated)
@@ -154,7 +154,7 @@ participant Anchor1
 participant Anchor2
 
 note over UE, gNB2: gNB1 initiate N2 Handover
-rect green
+rect LightGreen
     gNB1->>+CP: HandoverRequired
     CP->>+SRv6Ctrl: PFCP Session Establishment(uplinkPDR, uplinkFAR)
     SRv6Ctrl->>+SRGW2: create UL rule (match on new FTEID, path to Anchor2)
