@@ -24,7 +24,7 @@ rect purple
 end
 User->>+UE: POST cli/ps/establish(gNBControl, dnn)
 note over User,UE: {<br>"gnb": "http://gnb1.example.org/",<br>"dnn": "srv6",<br>}
-rect green
+rect LightGreen
     note over UE,UPF: PDU Session Establishment
     UE->>+gNB: PDU Session Estab. Req.(UEControl)
     gNB->>+CP: PDU Session Estab. Req.(UEControl, gNBControl)
