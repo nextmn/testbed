@@ -9,11 +9,13 @@ actor User
 participant UE
 participant gNB
 participant CP
-participant UPF
+participant SRv6Ctrl
+participant SRGW
+participant Anchor
 rect LightBlue
-    note over CP,UPF: PFCP Association
-    CP->>+UPF: PFCP Association Setup Request
-    UPF->>+CP: PFCP Association Setup Response
+    note over CP,Anchor: PFCP Association
+    CP->>+SRv6Ctrl: PFCP Association Setup Request
+    SRv6Ctrl->>+CP: PFCP Association Setup Response
 end
 rect Orange
     User->>+UE: POST cli/radio/peer(gNBControl)
@@ -29,18 +31,23 @@ rect Orange
     note over User,UE: {<br>"gnb": "http://gnb1.example.org/",<br>"dnn": "srv6",<br>}
 end
 rect LightGreen
-    note over UE,UPF: PDU Session Establishment
+    note over UE,Anchor: PDU Session Establishment
     UE->>+gNB: PDU Session Estab. Req.(UEControl)
     gNB->>+CP: PDU Session Estab. Req.(UEControl, gNBControl)
-    CP->>+UPF: PFCP Session Establishment Request(uplinkPDR, uplinkFAR)
-    UPF->>+CP: PFCP Session Establishment Response
+    CP->>+SRv6Ctrl: PFCP Session Establishment Request(uplinkPDR, uplinkFAR)
+    note over CP,SRv6Ctrl: uplink rule cannot be created yet, we still miss the gNB Ip Addr to know the Area
+    SRv6Ctrl->>+CP: PFCP Session Establishment Response
     CP->>+gNB: N2 PDU Session Req.(ulFTEID, UEIpAddr)
     gNB->>+UE: PDU Session Estab. Accept
     gNB->>+CP: N2 PDU Session Resp.(dlFTEID)
-    CP->>+UPF: PFCP Session Modification Request(downlinkPDR, downlinkFAR)
-    UPF->>+CP: PFCP Session Modification Response
+    CP->>+SRv6Ctrl: PFCP Session Modification Request(downlinkPDR, downlinkFAR)
+    SRv6Ctrl->>+Anchor: create rule(match <UE>, path <SRGW,gNB+TEID>)
+    SRv6Ctrl->>+SRGW: create rule(match <UE (UplinkTEID), gNB (Area), Service>, path<Anchor>)
+    SRv6Ctrl->>+CP: PFCP Session Modification Response
 end
-UE<<-->>+UPF: PDUs
+rect white
+    UE<<-->>+Anchor: PDUs
+end
 ```
 
 ## N2 Handover Scenario 1 (preserve SRGW, preserve Anchor)
