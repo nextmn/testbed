@@ -40,7 +40,7 @@ make up # run containers
 make down # stop containers
 ```
 
-The Makefile provides some other commands you might want to use. They are described in [`doc/commands.md`](doc/commands.md)
+The Makefile provides some other commands you might want to use. They are described in [`doc/Commands.md`](https://github.com/nextmn/testbed/wiki/Commands)
 
 #### Configuration
 Configuration is done in the file [`default-config.yaml`](./default-config.yaml). Currently, it only contains a list of IP addresses.
@@ -48,7 +48,7 @@ Configuration is done in the file [`default-config.yaml`](./default-config.yaml)
 #### Documentation
 Documentation is available in the [`doc`](./doc) directory.
 
-![edge intance access through SRv6](./doc/img/edge-instance-access-through-srv6.svg)
+![edge intance access through SRv6](./img/edge-instance-access-through-srv6.svg)
 
 ### Contributing
 #### Syntax coloration
