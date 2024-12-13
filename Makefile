@@ -25,14 +25,16 @@ $(BCONFIG): default-config.yaml
 .PHONY: test
 test:
 	@$(MAKE) clean
-	@echo [1/4] Running linter on python scripts
+	@echo [1/5] Running linter on python scripts
 	@$(MAKE) test/lint/python
-	@echo [2/3] Running tests for Free5GC config
+	@echo [2/5] Running tests for Free5GC config
 	@$(MAKE) test/free5gc
-	@echo [3/4] Running tests for NextMN/UPF config
+	@echo [3/5] Running tests for NextMN/UPF config
 	@$(MAKE) test/nextmn-upf
-	@echo [4/4] Running tests for NextMN/SRv6 config
+	@echo [4/5] Running tests for NextMN/SRv6 config
 	@$(MAKE) test/nextmn-srv6
+	@echo [5/5] Running tests for NextMN-Lite config
+	@$(MAKE) test/nextmn-lite
 
 .PHONY: test/lint/python
 test/lint/python:
@@ -61,6 +63,13 @@ test/free5gc:
 	@$(MAKE) set/dataplane/free5gc
 	@$(MAKE) test/lint/yaml
 
+.PHONY: test/nextmn-lite
+test/nextmn-lite:
+	@$(MAKE) set/dataplane/nextmn-srv6+free5gc+nextmn-upf
+	@$(MAKE) set/nb-ue/2
+	@$(MAKE) set/controlplane/nextmn-lite
+	@$(MAKE) test/lint/yaml
+
 .PHONY: set/dataplane
 set/dataplane/%: $(BCONFIG)
 	@echo Set dataplane to $(@F)
@@ -70,8 +79,6 @@ set/dataplane/%: $(BCONFIG)
 set/controlplane/%: $(BCONFIG)
 	@echo Set controlplane to $(@F)
 	@./scripts/config_edit.py $(BCONFIG) --controlplane=$(@F)
-	@# not yet implemented for free5gc/nextmn-upf => we set dataplane to nextmn-srv6
-	@$(MAKE) set/dataplane/nextmn-srv6
 
 .PHONY: set/nb-edges
 set/nb-edges/%: $(BCONFIG)

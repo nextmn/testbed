@@ -34,6 +34,21 @@ subnets:
     gnbl2:
       ipv4_address: 10.1.0.133
       ipv6_address: fd00:0:0:0:1:8000:0:6
+    uel2:
+      ipv4_address: 10.1.0.134
+      ipv6_address: fd00:0:0:0:1:8000:0:7
+    uel3:
+      ipv4_address: 10.1.0.135
+      ipv6_address: fd00:0:0:0:1:8000:0:8
+    uel4:
+      ipv4_address: 10.1.0.136
+      ipv6_address: fd00:0:0:0:1:8000:0:9
+    uel5:
+      ipv4_address: 10.1.0.137
+      ipv6_address: fd00:0:0:0:1:8000:0:a
+    uel6:
+      ipv4_address: 10.1.0.138
+      ipv6_address: fd00:0:0:0:1:8000:0:b
   sbi:
     amf:
       ipv4_address: 10.1.1.129
@@ -97,7 +112,22 @@ subnets:
       ipv6_address: fd00:0:0:0:2:8000:0:9
     cp-lite:
       ipv4_address: 10.1.3.144
-      ipv6_address: fd00:0:0:0:2:8000:0:10
+      ipv6_address: fd00:0:0:0:2:8000:0:a
+    uel2:
+      ipv4_address: 10.1.3.145
+      ipv6_address: fd00:0:0:0:2:8000:0:b
+    uel3:
+      ipv4_address: 10.1.3.146
+      ipv6_address: fd00:0:0:0:2:8000:0:c
+    uel4:
+      ipv4_address: 10.1.3.147
+      ipv6_address: fd00:0:0:0:2:8000:0:d
+    uel5:
+      ipv4_address: 10.1.3.148
+      ipv6_address: fd00:0:0:0:2:8000:0:e
+    uel6:
+      ipv4_address: 10.1.3.149
+      ipv6_address: fd00:0:0:0:2:8000:0:f
   dataplane:
     gnb1:
       ipv4_address: 10.1.4.129
@@ -146,6 +176,8 @@ subnets:
   service:
     s:
       ipv4_address: 10.4.0.1
+    nots:
+      ipv4_address: 10.4.0.2
   slice0:
     subnet:
       ipv4_address: 10.2.0.0/24
@@ -189,10 +221,6 @@ subnets:
       ipv4_address: 10.3.0.1
     end-m-gtp4-e:
       ipv6_prefix: fc00:1:1::/48
-    gnb1:
-      ipv6_address: fc00:1:1:0A01:0481:0000:0000:0100 # fc00:1:1 + hex(gnb1) = hex(10.1.4.129) = 0A 01 04 81 + Args.Mob.Session ( 0 + 0000 0001) + padding
-    gnb2:
-      ipv6_address: fc00:1:1:0A01:0482:0000:0000:0100 # fc00:1:1 + hex(gnb2) = hex(10.1.4.130) = 0A 01 04 82 + Args.Mob.Session ( 0 + 0000 0001) + padding
 
   r0:
     subnet:
