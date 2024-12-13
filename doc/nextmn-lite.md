@@ -174,12 +174,12 @@ rect LightGreen
     CP->>+SRv6Ctrl: PFCP Session Modification(downlinkPDR, downlinkPDR)
     SRv6Ctrl->>+Anchor1: update DL rule to temporary (match on UE, create SRH using SRGW2+gnb2 FTEID)
     SRv6Ctrl->>+Anchor2: create DL rule (match on UE, create SRH using SRGW2+gNB2 FTEID)
-    SRv6Ctrl->>+SRGW1: update UL rule (remove old rule, activate new rule)
+    SRv6Ctrl->>+SRGW1: update UL rule (remove old rule, activate new redirect UL rule)
     CP->>+gNB1: HandoverCommand
     gNB1->>+UE: HandoverCommand
     UE->>+gNB2: HandoverConfirm
     gNB2->>+CP: HandoverNotify
     CP->>+SRv6Ctrl: PFCP Session Modification[update FAR from BUFF to FORW]
-    SRv6Ctrl->>+SRGW1: remove old UL rule()
+    SRv6Ctrl->>+SRGW1: remove redirect UL rule()
 end
 ```
