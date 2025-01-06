@@ -59,7 +59,7 @@ To analyse RAN traffic, you can install the following Wireshark/Tshark plugin : 
 
 ### Known issues
 - Docker version `5:25.0.0` has [a bug](https://github.com/moby/moby/issues/47120) that prevent running the testbed. Use a different version (`5:25.0.1` or higher, or `5:24.*` or lower).
-- To be able to use Free5GC's UPFs along with NextMN-Lite (`make set/dataplane/free5gc && make set/controlplane/nextmn-lite`), you must apply the patch provided in [free5gc/gtp5g#130](https://github.com/free5gc/gtp5g/pull/130) (or you may try to disable GTP Sequence Numbers). If you don't, downlink packets wil be malformed, and thus dropped by NextMN's gNB Lite.
+- To be able to use Free5GC's UPFs along with NextMN-Lite (`make set/dataplane/free5gc && make set/controlplane/nextmn-lite`), you must use [free5gc/gtp5g](https://github.com/free5gc/gtp5g) v0.9.6 at least.
 
 ## Copyright
 ### Author
