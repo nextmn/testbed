@@ -1416,6 +1416,10 @@ services:
     depends_on:
       gnbl1:
         condition: service_started
+    #~ if config["topology"]["ran"]["handover"]
+      gnbl2:
+        condition: service_started
+    #~ endif
     environment:
       GIN_MODE: "release"
       HTTP_ADDRESS: "{{ ipv6('uel1', 'control') }}"
@@ -1424,6 +1428,9 @@ services:
         bind-addr: "[{{ ipv6('uel1', 'ran') }}]:1234"
         gnbs:
           - "http://[{{ ipv6('gnbl1', 'control') }}]:8080"
+    #~ if config["topology"]["ran"]["handover"]
+          - "http://[{{ ipv6('gnbl2', 'control') }}]:8080"
+    #~ endif
         pdu-sessions:
           - gnb: "http://[{{ ipv6('gnbl1', 'control') }}]:8080"
             dnn: "srv6"
@@ -1467,6 +1474,10 @@ services:
     depends_on:
       gnbl1:
         condition: service_started
+    #~ if config["topology"]["ran"]["handover"]
+      gnbl2:
+        condition: service_started
+    #~ endif
     environment:
       GIN_MODE: "release"
       HTTP_ADDRESS: "{{ ipv6('uel3', 'control') }}"
@@ -1475,6 +1486,9 @@ services:
         bind-addr: "[{{ ipv6('uel3', 'ran') }}]:1234"
         gnbs:
           - "http://[{{ ipv6('gnbl1', 'control') }}]:8080"
+    #~ if config["topology"]["ran"]["handover"]
+          - "http://[{{ ipv6('gnbl2', 'control') }}]:8080"
+    #~ endif
         pdu-sessions:
           - gnb: "http://[{{ ipv6('gnbl1', 'control') }}]:8080"
             dnn: "free5gc"
@@ -1518,6 +1532,10 @@ services:
     depends_on:
       gnbl1:
         condition: service_started
+    #~ if config["topology"]["ran"]["handover"]
+      gnbl2:
+        condition: service_started
+    #~ endif
     environment:
       GIN_MODE: "release"
       HTTP_ADDRESS: "{{ ipv6('uel5', 'control') }}"
@@ -1526,6 +1544,9 @@ services:
         bind-addr: "[{{ ipv6('uel5', 'ran') }}]:1234"
         gnbs:
           - "http://[{{ ipv6('gnbl1', 'control') }}]:8080"
+    #~ if config["topology"]["ran"]["handover"]
+          - "http://[{{ ipv6('gnbl2', 'control') }}]:8080"
+    #~ endif
         pdu-sessions:
           - gnb: "http://[{{ ipv6('gnbl1', 'control') }}]:8080"
             dnn: "nextmn-upf"
