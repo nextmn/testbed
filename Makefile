@@ -52,14 +52,17 @@ test/lint/yaml:
 
 .PHONY: test/nextmn-srv6
 test/nextmn-srv6:
+	@$(MAKE) set/controlplane/free5gc
 	@$(MAKE) set/dataplane/nextmn-srv6
 	@$(MAKE) test/lint/yaml
 .PHONY: test/nextmn-upf
 test/nextmn-upf:
+	@$(MAKE) set/controlplane/free5gc
 	@$(MAKE) set/dataplane/nextmn-upf
 	@$(MAKE) test/lint/yaml
 .PHONY: test/nextmn-free5gc
 test/free5gc:
+	@$(MAKE) set/controlplane/free5gc
 	@$(MAKE) set/dataplane/free5gc
 	@$(MAKE) test/lint/yaml
 
@@ -109,6 +112,7 @@ set/ran/%: $(BCONFIG)
 set/handover-ueransim: $(BCONFIG)
 	@echo Set handover to true
 	@./scripts/config_edit.py $(BCONFIG) --handover=true
+	@$(MAKE) set/controlplane/free5gc
 	@$(MAKE) set/dataplane/free5gc
 	@$(MAKE) set/nb-ue/1
 	@$(MAKE) set/nb-edges/1
@@ -120,6 +124,9 @@ set/handover-ueransim: $(BCONFIG)
 set/handover-nextmn: $(BCONFIG)
 	@echo Set handover to true
 	@./scripts/config_edit.py $(BCONFIG) --handover=true
+	@$(MAKE) set/nb-ue/1
+	@$(MAKE) set/nb-edges/2
+	@$(MAKE) set/controlplane/nextmn-lite
 
 .PHONY: clean
 clean:
@@ -245,6 +252,7 @@ ue/switch-edge/%:
 .PHONY: plot/policy-diff
 plot/policy-diff:
 	@echo "[1/2] [1/6] Configuring testbed with NextMN-SRv6"
+	@$(MAKE) set/controlplane/free5gc
 	@$(MAKE) set/dataplane/nextmn-srv6
 	@$(MAKE) set/nb-ue/2
 	@$(MAKE) set/nb-edges/2
@@ -272,6 +280,7 @@ plot/policy-diff:
 .PHONY: plot/latency-switch
 plot/latency-switch:
 	@echo "[1/7] Configuring testbed with NextMN-SRv6 + Free5GC"
+	@$(MAKE) set/controlplane/free5gc
 	@$(MAKE) set/dataplane/nextmn-srv6+free5gc
 	@$(MAKE) set/nb-ue/1
 	@$(MAKE) set/nb-edges/2
