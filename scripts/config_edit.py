@@ -25,6 +25,7 @@ if __name__ == '__main__':
     parser.add_argument('--dataplane')
     parser.add_argument('--controlplane')
     parser.add_argument('--nb-ue')
+    parser.add_argument('--nb-gnb')
     parser.add_argument('--nb-edges')
     parser.add_argument('--log-level')
     parser.add_argument('--full-debug')
@@ -44,6 +45,8 @@ if __name__ == '__main__':
                          f'Invalid dataplane value: use values from {dataplane} (separated by `+`)')
         if args.nb_ue and (int(args.nb_ue) > 2 or int(args.nb_ue) < 1):
             raise ConfigException('Too many UEs: use 1 or 2')
+        if args.nb_gnb and (int(args.nb_gnb) > 2 or int(args.nb_gnb) < 1):
+            raise ConfigException('Too many gNBs: use 1 or 2')
         if args.nb_edges and (int(args.nb_edges) > 2 or int(args.nb_edges) < 1):
             raise ConfigException('Too many edges: use 1 or 2')
         if args.log_level and (args.log_level not in log_levels):
@@ -69,6 +72,8 @@ if __name__ == '__main__':
             c['config']['topology']['controlplane'] = args.controlplane
         if args.nb_ue:
             c['config']['topology']['nb_ue'] = int(args.nb_ue)
+        if args.nb_gnb:
+            c['config']['topology']['nb_gnb'] = int(args.nb_gnb)
         if args.nb_edges:
             c['config']['topology']['nb_edges'] = int(args.nb_edges)
         if args.log_level:

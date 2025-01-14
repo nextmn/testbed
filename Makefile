@@ -93,6 +93,11 @@ set/nb-ue/%: $(BCONFIG)
 	@echo Set number of ue to $(@F)
 	@./scripts/config_edit.py $(BCONFIG) --nb-ue=$(@F)
 
+.PHONY: set/nb-gnb
+set/nb-gnb/%: $(BCONFIG)
+	@echo Set number of gnb to $(@F)
+	@./scripts/config_edit.py $(BCONFIG) --nb-gnb=$(@F)
+
 .PHONY: set/log-level
 set/log-level/%: $(BCONFIG)
 	@echo Set log level to $(@F)
@@ -116,6 +121,7 @@ set/handover-ueransim: $(BCONFIG)
 	@$(MAKE) set/dataplane/free5gc
 	@$(MAKE) set/nb-ue/1
 	@$(MAKE) set/nb-edges/1
+	@$(MAKE) set/nb-gnb/2
 	@$(MAKE) set/log-level/debug
 	@$(MAKE) set/full-debug/true
 	@$(MAKE) set/ran/dev
@@ -126,6 +132,7 @@ set/handover-nextmn: $(BCONFIG)
 	@./scripts/config_edit.py $(BCONFIG) --handover=true
 	@$(MAKE) set/nb-ue/1
 	@$(MAKE) set/nb-edges/2
+	@$(MAKE) set/nb-gnb/2
 	@$(MAKE) set/controlplane/nextmn-lite
 
 .PHONY: clean
@@ -256,6 +263,7 @@ plot/policy-diff:
 	@$(MAKE) set/dataplane/nextmn-srv6
 	@$(MAKE) set/nb-ue/2
 	@$(MAKE) set/nb-edges/2
+	@$(MAKE) set/nb-gnb/2
 	@$(MAKE) set/full-debug/false
 	@$(MAKE) set/log-level/info
 	@echo "[1/2] [2/6] Starting containers"
@@ -284,6 +292,7 @@ plot/latency-switch:
 	@$(MAKE) set/dataplane/nextmn-srv6+free5gc
 	@$(MAKE) set/nb-ue/1
 	@$(MAKE) set/nb-edges/2
+	@$(MAKE) set/nb-gnb/2
 	@$(MAKE) set/full-debug/false
 	@$(MAKE) set/log-level/info
 	@echo "[2/7] Starting containers"
@@ -294,7 +303,7 @@ plot/latency-switch:
 	@docker exec ue1-debug bash -c "ping -c 1 10.4.0.1 > /dev/null" # check instance is reachable
 	@docker exec ue3-debug bash -c "ping -c 1 10.4.0.1 > /dev/null" # check instance is reachable
 	@echo "[4/7] [$$(date --rfc-3339=seconds)] Scheduling instance switch in 30s"
-	@bash -c 'sleep 30 && $(MAKE) ue/switch-edge/1 && echo "[5.5/7] [$$(date --rfc-3339=seconds)] Switching to edge 1"' &
+	@bash -c 'sleep 30 && $(MAKE) ue/switch-edge/1 && echo "[5.5/7] [$$(date --rfc-3339=seconds)] Switching UE1 from edge 0 to edge 1"' &
 	@echo "[5/7] [$$(date --rfc-3339=seconds)] Start ping for 60s + 5s margin"
 	@bash -c 'docker exec ue3-debug bash -c "ping -D -w 60 10.4.0.1 -i 0.1 > /volume/ping-ulcl.txt"' &
 	@bash -c 'docker exec ue1-debug bash -c "ping -D -w 60 10.4.0.1 -i 0.1 > /volume/ping-sr4mec.txt"' &
