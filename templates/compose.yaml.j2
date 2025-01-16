@@ -1735,6 +1735,28 @@ services:
                 - type: "N9"
                   addr: "{{ ipv4('upfa1-nmn', 'dataplane') }}"
   #~ endif
+      AREAS: |-
+        area1:
+          gnbs:
+            - "http://[{{ ipv6('gnbl1', 'control') }}]:8080"
+  #~ if config["topology"]["nb_gnb"] > 1
+            - "http://[{{ ipv6('gnbl2', 'control') }}]:8080"
+  #~ endif
+          paths:
+  #~ if "nextmn-srv6" in config["topology"]["dataplane"]
+            srv6:
+              - "{{ ipv4('srv6-ctrl', 'control') }}"
+  #~ endif
+  #~ if "free5gc" in config["topology"]["dataplane"]
+            free5gc:
+              - "{{ ipv4('upfi-f5gc', 'control') }}"
+              - "{{ ipv4('upfa1-f5gc', 'control') }}"
+  #~ endif
+  #~ if "nextmn-upf" in config["topology"]["dataplane"]
+            nextmn-upf:
+              - "{{ ipv4('upfi-nmn', 'control') }}"
+              - "{{ ipv4('upfa1-nmn', 'control') }}"
+  #~ endif
       LOG_LEVEL: "{{ log_level() }}"
     networks:
       control:
