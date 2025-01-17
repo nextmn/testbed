@@ -1205,11 +1205,13 @@ services:
       DOWNLINK: |-
         - control-uri: "http://[{{ ipv6('r0', 'control') }}]:8080"
           enabled: true
+          srgw-gtp4: "{{ ipv4('srgw0', 'srgw0') }}"
           segments-list:
             - "{{ ipv6_prefix('end-m-gtp4-e', 'srgw0') }}"
 #~ if config["topology"]["nb_edges"] > 1
         - control-uri: "http://[{{ ipv6('r1', 'control') }}]:8080"
           enabled: true
+          srgw-gtp4: "{{ ipv4('srgw0', 'srgw0') }}"
           segments-list:
             - "{{ ipv6_prefix('end-m-gtp4-e', 'srgw0') }}"
 #~ endif
