@@ -1747,17 +1747,22 @@ services:
           paths:
   #~ if "nextmn-srv6" in config["topology"]["dataplane"]
             srv6:
-              - "{{ ipv4('srv6-ctrl', 'control') }}"
+              - node-id: "{{ ipv4('srv6-ctrl', 'control') }}"
+                interface-addr: "{{ ipv4('srgw0', 'srgw0') }}"
   #~ endif
   #~ if "free5gc" in config["topology"]["dataplane"]
             free5gc:
-              - "{{ ipv4('upfi-f5gc', 'control') }}"
-              - "{{ ipv4('upfa1-f5gc', 'control') }}"
+              - node-id: "{{ ipv4('upfi-f5gc', 'control') }}"
+                interface-addr: "{{ ipv4('upfi-f5gc', 'dataplane') }}"
+              - node-id: "{{ ipv4('upfa1-f5gc', 'control') }}"
+                interface-addr: "{{ ipv4('upfa1-f5gc', 'dataplane') }}"
   #~ endif
   #~ if "nextmn-upf" in config["topology"]["dataplane"]
             nextmn-upf:
-              - "{{ ipv4('upfi-nmn', 'control') }}"
-              - "{{ ipv4('upfa1-nmn', 'control') }}"
+              - node-id: "{{ ipv4('upfi-nmn', 'control') }}"
+                interface-addr: "{{ ipv4('upfi-nmn', 'dataplane') }}"
+              - node-id: "{{ ipv4('upfa1-nmn', 'control') }}"
+                interface-addr: "{{ ipv4('upfa1-nmn', 'dataplane') }}"
   #~ endif
       LOG_LEVEL: "{{ log_level() }}"
     networks:
