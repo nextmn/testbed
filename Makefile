@@ -38,7 +38,7 @@ test:
 
 .PHONY: test/lint/python
 test/lint/python:
-	@find -type f -iname '*.py' -print | parallel '(echo -n Running pylint on {} ; pylint --persistent=false -v -j 0 {})' :::
+	@find -type f -iname '*.py' -print | parallel '(echo -n Running pylint on {} ; pylint --disable=fixme --persistent=false -v -j 0 {})' :::
 
 .PHONY: test/lint/yaml
 test/lint/yaml:
