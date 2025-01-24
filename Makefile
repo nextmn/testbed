@@ -135,6 +135,15 @@ set/handover-nextmn: $(BCONFIG)
 	@$(MAKE) set/nb-gnb/2
 	@$(MAKE) set/controlplane/nextmn-lite
 
+.PHONY: set/handover-nextmn-extra
+set/handover-nextmn-extra: $(BCONFIG)
+	@echo Set handover to true
+	@./scripts/config_edit.py $(BCONFIG) --handover=true
+	@$(MAKE) set/nb-ue/1
+	@$(MAKE) set/nb-edges/3
+	@$(MAKE) set/nb-gnb/3
+	@$(MAKE) set/controlplane/nextmn-lite
+
 .PHONY: clean
 clean:
 	@rm -rf $(BUILD_DIR)
