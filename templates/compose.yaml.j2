@@ -1336,12 +1336,38 @@ services:
       DOWNLINK: |-
         - control-uri: "http://[{{ ipv6('r0', 'control') }}]:8080"
           enabled: true
+          area:
+  #~ if config["topology"]["controlplane"] == "free5gc"
+            - "{{ ipv4('gnb1', 'dataplane') }}/32"
+    #~ if config["topology"]["nb_gnb"] > 1
+            - "{{ ipv4('gnb2', 'dataplane') }}/32"
+    #~ endif
+  #~ endif
+  #~ if config["topology"]["controlplane"] == "nextmn-lite"
+            - "{{ ipv4('gnbl1', 'dataplane') }}/32"
+    #~ if config["topology"]["nb_gnb"] > 1
+            - "{{ ipv4('gnbl2', 'dataplane') }}/32"
+    #~ endif
+  #~ endif
           srgw-gtp4: "{{ ipv4('srgw0', 'srgw0') }}"
           segments-list:
             - "{{ ipv6_prefix('end-m-gtp4-e', 'srgw0') }}"
   #~ if config["topology"]["nb_edges"] > 1
         - control-uri: "http://[{{ ipv6('r1', 'control') }}]:8080"
           enabled: true
+          area:
+  #~ if config["topology"]["controlplane"] == "free5gc"
+            - "{{ ipv4('gnb1', 'dataplane') }}/32"
+    #~ if config["topology"]["nb_gnb"] > 1
+            - "{{ ipv4('gnb2', 'dataplane') }}/32"
+    #~ endif
+  #~ endif
+  #~ if config["topology"]["controlplane"] == "nextmn-lite"
+            - "{{ ipv4('gnbl1', 'dataplane') }}/32"
+    #~ if config["topology"]["nb_gnb"] > 1
+            - "{{ ipv4('gnbl2', 'dataplane') }}/32"
+    #~ endif
+  #~ endif
           srgw-gtp4: "{{ ipv4('srgw0', 'srgw0') }}"
           segments-list:
             - "{{ ipv6_prefix('end-m-gtp4-e', 'srgw0') }}"
@@ -1349,6 +1375,8 @@ services:
   #~ if config["topology"]["nb_edges"] > 2
         - control-uri: "http://[{{ ipv6('r2', 'control') }}]:8080"
           enabled: true
+          area:
+            - "{{ ipv4('gnbl3', 'dataplane') }}/32"
           srgw-gtp4: "{{ ipv4('srgw1', 'srgw1') }}"
           segments-list:
             - "{{ ipv6_prefix('end-m-gtp4-e', 'srgw1') }}"
