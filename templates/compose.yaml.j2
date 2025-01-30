@@ -1356,6 +1356,7 @@ services:
       UPLINK: |-
         - control-uri: "http://[{{ ipv6('srgw0', 'control') }}]:8080"
           enabled: true
+          service: "{{ ipv4('s', 'service') }}"
           area:
   #~ if config["topology"]["controlplane"] == "free5gc"
             - "{{ ipv4('gnb1', 'dataplane') }}/32"
@@ -1374,6 +1375,7 @@ services:
 #~ if config["topology"]["nb_edges"] > 1
         - control-uri: "http://[{{ ipv6('srgw0', 'control') }}]:8080"
           enabled: false
+          service: "{{ ipv4('s', 'service') }}"
           area:
   #~ if config["topology"]["controlplane"] == "free5gc"
             - "{{ ipv4('gnb1', 'dataplane') }}/32"
@@ -1392,6 +1394,7 @@ services:
   #~ if (config["topology"]["nb_gnb"] > 2) and (config["topology"]["nb_edges"] > 2) and (config["topology"]["controlplane"] == "nextmn-lite")
         - control-uri: "http://[{{ ipv6('srgw1', 'control') }}]:8080"
           enabled: true
+          service: "{{ ipv4('s', 'service') }}"
           area:
             - "{{ ipv4('gnbl3', 'dataplane') }}/32"
           segments-list:
