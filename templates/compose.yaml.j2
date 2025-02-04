@@ -713,7 +713,7 @@ services:
                 - nextmn-upf
     #~ endif
   #~ endif
-      ULCL: "true"
+      ULCL: "false" # see https://github.com/free5gc/smf/issues/141
       LINKS: |-
   #~ if "nextmn-srv6" in config["topology"]["dataplane"]
         - A: GNB
