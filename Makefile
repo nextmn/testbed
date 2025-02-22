@@ -162,6 +162,16 @@ pull/all:
 	@echo Pull **all** Docker images
 	@docker compose -f templates/images-list.yaml pull
 
+.PHONY: docker-build
+docker-build:
+	@echo Building Docker images
+	@docker compose $(PROFILES) $(PROJECT_DIRECTORY) build
+
+.PHONY: docker-build/all
+docker-build/all:
+	@echo Building **all** Docker images
+	@docker compose -f templates/images-list.yaml build
+
 .PHONY: u
 u:
 	@$(MAKE) up

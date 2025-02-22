@@ -6,45 +6,72 @@ services:
     image: docker.io/library/postgres
   nginx:
     image: docker.io/library/nginx
+  base-irit:
+    image: docker.io/louisroyer/base-irit
+    build: https://github.com/louisroyer-docker/base-irit.git#master:.
   ue:
     image: docker.io/louisroyer/ueransim-ue
+    build: https://github.com/louisroyer-docker/ueransim.git#master:ue
   gnb:
     image: docker.io/louisroyer/ueransim-gnb
+    build: https://github.com/louisroyer-docker/ueransim.git#master:gnb
   debug:
     image: docker.io/louisroyer/network-debug
+    build: https://github.com/louisroyer-docker/network-debug.git#master:network-debug
+  free5gc-populate:
+    image: docker.io/louisroyer/free5gc-populate
+    build: https://github.com/louisroyer-docker/free5gc-populate.git#master:free5gc-populate
   docker-setup:
     image: docker.io/louisroyer/docker-setup
+    build: https://github.com/louisroyer-docker/docker-setup.git#master:.
   free5gc-upf:
     image: docker.io/louisroyer/dev-free5gc-upf
+    build: https://github.com/louisroyer-docker/free5gc.git#master:upf
   nextmn-upf:
     image: docker.io/louisroyer/dev-nextmn-upf
+    build: https://github.com/louisroyer-docker/nextmn.git#master:upf
   nextmn-srv6:
     image: docker.io/louisroyer/dev-nextmn-srv6
+    build: https://github.com/louisroyer-docker/nextmn.git#master:srv6
   nextmn-srv6-ctrl:
     image: docker.io/louisroyer/dev-nextmn-srv6-ctrl
+    build: https://github.com/louisroyer-docker/nextmn.git#master:srv6-ctrl
   nextmn-ue-lite:
     image: docker.io/louisroyer/dev-nextmn-ue-lite
+    build: https://github.com/louisroyer-docker/nextmn.git#master:ue-lite
   nextmn-gnb-lite:
     image: docker.io/louisroyer/dev-nextmn-gnb-lite
+    build: https://github.com/louisroyer-docker/nextmn.git#master:gnb-lite
   nextmn-cp-lite:
     image: docker.io/louisroyer/dev-nextmn-cp-lite
+    build: https://github.com/louisroyer-docker/nextmn.git#master:cp-lite
   amf:
     image: docker.io/louisroyer/dev-free5gc-amf
+    build: https://github.com/louisroyer-docker/free5gc.git#master:amf
   ausf:
     image: docker.io/louisroyer/dev-free5gc-ausf
+    build: https://github.com/louisroyer-docker/free5gc.git#master:ausf
   chf:
     image: docker.io/louisroyer/dev-free5gc-chf
+    build: https://github.com/louisroyer-docker/free5gc.git#master:chf
   nrf:
     image: docker.io/louisroyer/dev-free5gc-nrf
+    build: https://github.com/louisroyer-docker/free5gc.git#master:nrf
   nssf:
     image: docker.io/louisroyer/dev-free5gc-nssf
+    build: https://github.com/louisroyer-docker/free5gc.git#master:nssf
   pcf:
     image: docker.io/louisroyer/dev-free5gc-pcf
+    build: https://github.com/louisroyer-docker/free5gc.git#master:pcf
   smf:
     image: docker.io/louisroyer/dev-free5gc-smf
+    build: https://github.com/louisroyer-docker/free5gc.git#master:smf
   udm:
     image: docker.io/louisroyer/dev-free5gc-udm
+    build: https://github.com/louisroyer-docker/free5gc.git#master:udm
   udr:
     image: docker.io/louisroyer/dev-free5gc-udr
+    build: https://github.com/louisroyer-docker/free5gc.git#master:udr
   webconsole:
     image: docker.io/louisroyer/dev-free5gc-webconsole
+    build: https://github.com/louisroyer-docker/free5gc.git#master:webconsole

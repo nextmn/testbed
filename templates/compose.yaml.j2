@@ -6,7 +6,7 @@ name: "nextmn-testbed"
 
 services:
 #~ if ("nextmn-srv6" in config["topology"]["dataplane"]) and (config["topology"]["controlplane"] == "free5gc")
-  {{ container_s(name='ue1', image='docker.io/louisroyer/ueransim-ue', enable_ipv6=True, debug='always', debug_volume=True, iface_tun=True, cap_net_admin=True, init=True) }}
+  {{ container_s(name='ue1', image='docker.io/louisroyer/ueransim-ue', image_build='https://github.com/louisroyer-docker/ueransim.git#master:ue', enable_ipv6=True, debug='always', debug_volume=True, iface_tun=True, cap_net_admin=True, init=True) }}
     depends_on:
       amf:
         condition: service_started
@@ -38,7 +38,7 @@ services:
       ran: # automatic allocation by docker compose
 
   #~ if config["topology"]["nb_ue"] > 1
-  {{ container_s(name='ue2', image='docker.io/louisroyer/ueransim-ue', enable_ipv6=True, debug='always', debug_volume=True, iface_tun=True, cap_net_admin=True, init=True) }}
+  {{ container_s(name='ue2', image='docker.io/louisroyer/ueransim-ue', image_build='https://github.com/louisroyer-docker/ueransim.git#master:ue', enable_ipv6=True, debug='always', debug_volume=True, iface_tun=True, cap_net_admin=True, init=True) }}
     depends_on:
       amf:
         condition: service_started
@@ -69,7 +69,7 @@ services:
 #~ endif
 
 #~ if ("free5gc" in config["topology"]["dataplane"]) and (config["topology"]["controlplane"] == "free5gc")
-  {{ container_s(name='ue3', image='docker.io/louisroyer/ueransim-ue', enable_ipv6=True, debug='always', debug_volume=True, iface_tun=True, cap_net_admin=True, init=True) }}
+  {{ container_s(name='ue3', image='docker.io/louisroyer/ueransim-ue', image_build='https://github.com/louisroyer-docker/ueransim.git#master:ue', enable_ipv6=True, debug='always', debug_volume=True, iface_tun=True, cap_net_admin=True, init=True) }}
     depends_on:
       amf:
         condition: service_started
@@ -101,7 +101,7 @@ services:
       ran: # automatic allocation by docker compose
 
   #~ if config["topology"]["nb_ue"] > 1
-  {{ container_s(name='ue4', image='docker.io/louisroyer/ueransim-ue', enable_ipv6=True, debug='always', debug_volume=True, iface_tun=True, cap_net_admin=True, init=True) }}
+  {{ container_s(name='ue4', image='docker.io/louisroyer/ueransim-ue', image_build='https://github.com/louisroyer-docker/ueransim.git#master:ue', enable_ipv6=True, debug='always', debug_volume=True, iface_tun=True, cap_net_admin=True, init=True) }}
     depends_on:
       amf:
         condition: service_started
@@ -132,7 +132,7 @@ services:
 #~ endif
 
 #~ if ("nextmn-upf" in config["topology"]["dataplane"]) and (config["topology"]["controlplane"] == "free5gc")
-  {{ container_s(name='ue5', image='docker.io/louisroyer/ueransim-ue', enable_ipv6=True, debug='always', debug_volume=True, iface_tun=True, cap_net_admin=True, init=True) }}
+  {{ container_s(name='ue5', image='docker.io/louisroyer/ueransim-ue', image_build='https://github.com/louisroyer-docker/ueransim.git#master:ue', enable_ipv6=True, debug='always', debug_volume=True, iface_tun=True, cap_net_admin=True, init=True) }}
     depends_on:
       amf:
         condition: service_started
@@ -164,7 +164,7 @@ services:
       ran: # automatic allocation by docker compose
 
   #~ if config["topology"]["nb_ue"] > 1
-  {{ container_s(name='ue6', image='docker.io/louisroyer/ueransim-ue', enable_ipv6=True, debug='always', debug_volume=True, iface_tun=True, cap_net_admin=True, init=True) }}
+  {{ container_s(name='ue6', image='docker.io/louisroyer/ueransim-ue', image_build='https://github.com/louisroyer-docker/ueransim.git#master:ue', enable_ipv6=True, debug='always', debug_volume=True, iface_tun=True, cap_net_admin=True, init=True) }}
     depends_on:
       amf:
         condition: service_started
@@ -195,7 +195,7 @@ services:
 #~ endif
 
 #~ if config["topology"]["controlplane"] == "free5gc"
-  {{ container_s(name='gnb1', image='docker.io/louisroyer/ueransim-gnb', enable_ipv6=True, restart='always', iface_tun=True, cap_net_admin=True, debug='allow') }}
+  {{ container_s(name='gnb1', image='docker.io/louisroyer/ueransim-gnb', image_build='https://github.com/louisroyer-docker/ueransim.git#master:gnb', enable_ipv6=True, restart='always', iface_tun=True, cap_net_admin=True, debug='allow') }}
     depends_on:
       amf:
         condition: service_started
@@ -241,7 +241,7 @@ services:
         ipv4_address: "{{ ipv4('gnb1', 'dataplane') }}"
 
   #~ if (config["topology"]["nb_ue"] > 1) or (config["topology"]["ran"]["handover"])
-  {{ container_s(name='gnb2', image='docker.io/louisroyer/ueransim-gnb', enable_ipv6=True, restart='always', iface_tun=True, cap_net_admin=True, debug='allow') }}
+  {{ container_s(name='gnb2', image='docker.io/louisroyer/ueransim-gnb', image_build='https://github.com/louisroyer-docker/ueransim.git#master:gnb', enable_ipv6=True, restart='always', iface_tun=True, cap_net_admin=True, debug='allow') }}
     depends_on:
       amf:
         condition: service_started
@@ -289,7 +289,7 @@ services:
 #~ endif
 
 #~ if config["topology"]["controlplane"] == "free5gc"
-  {{ container_s(name='amf', image='docker.io/louisroyer/dev-free5gc-amf', restart='always') }}
+  {{ container_s(name='amf', image='docker.io/louisroyer/dev-free5gc-amf', image_build='https://github.com/louisroyer-docker/free5gc.git#master:amf', restart='always') }}
     depends_on:
       smf:
         condition: service_started
@@ -345,7 +345,7 @@ services:
     networks:
       db:
 
-  {{ container_s(name='nrf', image='docker.io/louisroyer/dev-free5gc-nrf', restart='always') }}
+  {{ container_s(name='nrf', image='docker.io/louisroyer/dev-free5gc-nrf', image_build='https://github.com/louisroyer-docker/free5gc.git#master:nrf', restart='always') }}
     depends_on:
       mongodb: # required to being able to deregister propertly
         condition: service_started
@@ -367,7 +367,7 @@ services:
       sbi:
         ipv4_address: "{{ ipv4('nrf', 'sbi') }}"
 
-  {{ container_s(name='ausf', image='docker.io/louisroyer/dev-free5gc-ausf', restart='always') }}
+  {{ container_s(name='ausf', image='docker.io/louisroyer/dev-free5gc-ausf', image_build='https://github.com/louisroyer-docker/free5gc.git#master:ausf', restart='always') }}
     depends_on:
       nrf: # required to being able to deregister propertly
         condition: service_started
@@ -387,7 +387,7 @@ services:
       sbi:
         ipv4_address: "{{ ipv4('ausf', 'sbi') }}"
 
-  {{ container_s(name='udm', image='docker.io/louisroyer/dev-free5gc-udm', restart='always') }}
+  {{ container_s(name='udm', image='docker.io/louisroyer/dev-free5gc-udm', image_build='https://github.com/louisroyer-docker/free5gc.git#master:udm', restart='always') }}
     depends_on:
       nrf: # required to being able to deregister propertly
         condition: service_started
@@ -408,7 +408,7 @@ services:
       sbi:
         ipv4_address: "{{ ipv4('udm', 'sbi') }}"
 
-  {{ container_s(name='udr', image='docker.io/louisroyer/dev-free5gc-udr', restart='always') }}
+  {{ container_s(name='udr', image='docker.io/louisroyer/dev-free5gc-udr', image_build='https://github.com/louisroyer-docker/free5gc.git#master:udr', restart='always') }}
     depends_on:
       nrf: # required to being able to deregister propertly
         condition: service_started
@@ -431,7 +431,7 @@ services:
       sbi:
         ipv4_address: "{{ ipv4('udr', 'sbi') }}"
 
-  {{ container_s(name='pcf', image='docker.io/louisroyer/dev-free5gc-pcf', restart='always') }}
+  {{ container_s(name='pcf', image='docker.io/louisroyer/dev-free5gc-pcf', image_build='https://github.com/louisroyer-docker/free5gc.git#master:pcf', restart='always') }}
     depends_on:
       nrf: # required to being able to deregister propertly
         condition: service_started
@@ -454,7 +454,7 @@ services:
       sbi:
         ipv4_address: "{{ ipv4('pcf', 'sbi') }}"
 
-  {{ container_s(name='chf', image='docker.io/louisroyer/dev-free5gc-chf', restart='always') }}
+  {{ container_s(name='chf', image='docker.io/louisroyer/dev-free5gc-chf', image_build='https://github.com/louisroyer-docker/free5gc.git#master:chf', restart='always') }}
     depends_on:
       nrf: # required to being able to deregister propertly
         condition: service_started
@@ -481,7 +481,7 @@ services:
       sbi:
         ipv4_address: "{{ ipv4('chf', 'sbi') }}"
 
-  {{ container_s(name='webconsole', image='docker.io/louisroyer/dev-free5gc-webconsole', restart='always') }}
+  {{ container_s(name='webconsole', image='docker.io/louisroyer/dev-free5gc-webconsole', image_build='https://github.com/louisroyer-docker/free5gc.git#master:webconsole', restart='always') }}
     depends_on:
       nrf: # required to being able to deregister propertly
         condition: service_started
@@ -502,7 +502,7 @@ services:
       sbi:
         ipv4_address: "{{ ipv4('webconsole', 'sbi') }}"
 
-  {{ container_s(name='smf', image='docker.io/louisroyer/dev-free5gc-smf', restart='always') }}
+  {{ container_s(name='smf', image='docker.io/louisroyer/dev-free5gc-smf', image_build='https://github.com/louisroyer-docker/free5gc.git#master:smf', restart='always') }}
     depends_on:
       nrf: # required to being able to deregister propertly
         condition: service_started
@@ -809,7 +809,7 @@ services:
       sbi:
         ipv4_address: "{{ ipv4('smf', 'sbi') }}"
 
-  {{ container_s(name='populate', image='docker.io/louisroyer/free5gc-populate', restart='no') }}
+  {{ container_s(name='populate', image='docker.io/louisroyer/free5gc-populate', image_build='https://github.com/louisroyer-docker/free5gc-populate.git#master:free5gc-populate', restart='no') }}
     depends_on:
       mongodb: # required to being able to deregister propertly
         condition: service_started
@@ -856,7 +856,7 @@ services:
     networks:
       db:
 
-  {{ container_s(name='nssf', image='docker.io/louisroyer/dev-free5gc-nssf', restart='always') }}
+  {{ container_s(name='nssf', image='docker.io/louisroyer/dev-free5gc-nssf', image_build='https://github.com/louisroyer-docker/free5gc.git#master:nssf', restart='always') }}
     depends_on:
       nrf: # required to being able to deregister propertly
         condition: service_started
@@ -1002,7 +1002,7 @@ services:
 #~ endif
 
 #~ if "nextmn-srv6" in config["topology"]["dataplane"]
-  {{ container_s(name='r0', image='docker.io/louisroyer/dev-nextmn-srv6', restart='always', srv6=True, debug='allow') }}
+  {{ container_s(name='r0', image='docker.io/louisroyer/dev-nextmn-srv6', image_build='https://github.com/louisroyer-docker/nextmn.git#master:srv6', restart='always', srv6=True, debug='allow') }}
     depends_on:
       srv6-ctrl:
         condition: service_healthy
@@ -1066,7 +1066,7 @@ services:
     networks:
       nextmndb:
 
-  {{ container_s(name='r1', image='docker.io/louisroyer/dev-nextmn-srv6', restart='always', srv6=True, debug='allow' ) }}
+  {{ container_s(name='r1', image='docker.io/louisroyer/dev-nextmn-srv6', image_build='https://github.com/louisroyer-docker/nextmn.git#master:srv6', restart='always', srv6=True, debug='allow' ) }}
     depends_on:
       srv6-ctrl:
         condition: service_healthy
@@ -1131,7 +1131,7 @@ services:
       nextmndb:
 
   #~ if config["topology"]["nb_edges"] > 2
-  {{ container_s(name='r2', image='docker.io/louisroyer/dev-nextmn-srv6', restart='always', srv6=True, debug='allow' ) }}
+  {{ container_s(name='r2', image='docker.io/louisroyer/dev-nextmn-srv6', image_build='https://github.com/louisroyer-docker/nextmn.git#master:srv6', restart='always', srv6=True, debug='allow' ) }}
     depends_on:
       srv6-ctrl:
         condition: service_healthy
@@ -1196,7 +1196,7 @@ services:
       nextmndb:
     #~ endif
 
-  {{ container_s(name='srgw0', image='docker.io/louisroyer/dev-nextmn-srv6', restart='always', srv6=True, debug='allow' ) }}
+  {{ container_s(name='srgw0', image='docker.io/louisroyer/dev-nextmn-srv6', image_build='https://github.com/louisroyer-docker/nextmn.git#master:srv6', restart='always', srv6=True, debug='allow' ) }}
     depends_on:
       srv6-ctrl:
         condition: service_healthy
@@ -1261,7 +1261,7 @@ services:
       nextmndb:
 
   #~ if config["topology"]["nb_gnb"] > 2
-  {{ container_s(name='srgw1', image='docker.io/louisroyer/dev-nextmn-srv6', restart='always', srv6=True, debug='allow' ) }}
+  {{ container_s(name='srgw1', image='docker.io/louisroyer/dev-nextmn-srv6', image_build='https://github.com/louisroyer-docker/nextmn.git#master:srv6', restart='always', srv6=True, debug='allow' ) }}
     depends_on:
       srv6-ctrl:
         condition: service_healthy
@@ -1326,7 +1326,7 @@ services:
       nextmndb:
   #~ endif
 
-  {{ container_s(name='srv6-ctrl', image='docker.io/louisroyer/dev-nextmn-srv6-ctrl', debug='allow', restart='always') }}
+  {{ container_s(name='srv6-ctrl', image='docker.io/louisroyer/dev-nextmn-srv6-ctrl', image_build='https://github.com/louisroyer-docker/nextmn.git#master:srv6-ctrl', debug='allow', restart='always') }}
     environment:
       N4: "{{ ipv4('srv6-ctrl', 'control') }}"
       HTTP_ADDRESS: "{{ ipv6('srv6-ctrl', 'control') }}"
@@ -1528,7 +1528,7 @@ services:
 #~ endif
 
 #~ if "free5gc" in config["topology"]["dataplane"]
-  {{ container_s(name='upfi1-f5gc', image='docker.io/louisroyer/dev-free5gc-upf', restart='always', cap_net_admin=True, debug='allow') }}
+  {{ container_s(name='upfi1-f5gc', image='docker.io/louisroyer/dev-free5gc-upf', image_build='https://github.com/louisroyer-docker/free5gc.git#master:upf', restart='always', cap_net_admin=True, debug='allow') }}
     environment:
       LOG_LEVEL: "{{ log_level() }}"
       N4: "{{ ipv4('upfi1-f5gc', 'control') }}"
@@ -1546,7 +1546,7 @@ services:
       dataplane:
         ipv4_address: "{{ ipv4('upfi1-f5gc', 'dataplane') }}"
   #~ if config["topology"]["nb_gnb"] > 2
-  {{ container_s(name='upfi2-f5gc', image='docker.io/louisroyer/dev-free5gc-upf', restart='always', cap_net_admin=True, debug='allow') }}
+  {{ container_s(name='upfi2-f5gc', image='docker.io/louisroyer/dev-free5gc-upf', image_build='https://github.com/louisroyer-docker/free5gc.git#master:upf', restart='always', cap_net_admin=True, debug='allow') }}
     environment:
       LOG_LEVEL: "{{ log_level() }}"
       N4: "{{ ipv4('upfi2-f5gc', 'control') }}"
@@ -1564,7 +1564,7 @@ services:
       dataplane:
         ipv4_address: "{{ ipv4('upfi2-f5gc', 'dataplane') }}"
   #~ endif
-  {{ container_s(name='upfa1-f5gc', image='docker.io/louisroyer/dev-free5gc-upf', restart='always', cap_net_admin=True, debug='allow') }}
+  {{ container_s(name='upfa1-f5gc', image='docker.io/louisroyer/dev-free5gc-upf', image_build='https://github.com/louisroyer-docker/free5gc.git#master:upf', restart='always', cap_net_admin=True, debug='allow') }}
     environment:
       LOG_LEVEL: "{{ log_level() }}"
       N4: "{{ ipv4('upfa1-f5gc', 'control') }}"
@@ -1584,7 +1584,7 @@ services:
       edge:
         ipv4_address: "{{ ipv4('upfa1-f5gc', 'edge') }}"
   #~ if config["topology"]["nb_edges"] > 1
-  {{ container_s(name='upfa2-f5gc', image='docker.io/louisroyer/dev-free5gc-upf', restart='always', cap_net_admin=True, debug='allow') }}
+  {{ container_s(name='upfa2-f5gc', image='docker.io/louisroyer/dev-free5gc-upf', image_build='https://github.com/louisroyer-docker/free5gc.git#master:upf', restart='always', cap_net_admin=True, debug='allow') }}
     environment:
       LOG_LEVEL: "{{ log_level() }}"
       N4: "{{ ipv4('upfa2-f5gc', 'control') }}"
@@ -1605,7 +1605,7 @@ services:
         ipv4_address: "{{ ipv4('upfa2-f5gc', 'edge') }}"
   #~ endif
   #~ if config["topology"]["nb_edges"] > 2
-  {{ container_s(name='upfa3-f5gc', image='docker.io/louisroyer/dev-free5gc-upf', restart='always', cap_net_admin=True, debug='allow') }}
+  {{ container_s(name='upfa3-f5gc', image='docker.io/louisroyer/dev-free5gc-upf', image_build='https://github.com/louisroyer-docker/free5gc.git#master:upf', restart='always', cap_net_admin=True, debug='allow') }}
     environment:
       LOG_LEVEL: "{{ log_level() }}"
       N4: "{{ ipv4('upfa3-f5gc', 'control') }}"
@@ -1628,7 +1628,7 @@ services:
 #~ endif
 
 #~ if "nextmn-upf" in config["topology"]["dataplane"]
-  {{ container_s(name='upfi1-nmn', image='docker.io/louisroyer/dev-nextmn-upf', restart='always', iface_tun=True, ipv4_forward=True, cap_net_admin=True, debug='allow') }}
+  {{ container_s(name='upfi1-nmn', image='docker.io/louisroyer/dev-nextmn-upf', image_build='https://github.com/louisroyer-docker/nextmn.git#master:upf', restart='always', iface_tun=True, ipv4_forward=True, cap_net_admin=True, debug='allow') }}
     environment:
       N4: "{{ ipv4('upfi1-nmn', 'control') }}"
       IF_LIST: |-
@@ -1646,7 +1646,7 @@ services:
       dataplane:
         ipv4_address: "{{ ipv4('upfi1-nmn', 'dataplane') }}"
   #~ if config["topology"]["nb_gnb"] > 2
-  {{ container_s(name='upfi2-nmn', image='docker.io/louisroyer/dev-nextmn-upf', restart='always', iface_tun=True, ipv4_forward=True, cap_net_admin=True, debug='allow') }}
+  {{ container_s(name='upfi2-nmn', image='docker.io/louisroyer/dev-nextmn-upf', image_build='https://github.com/louisroyer-docker/nextmn.git#master:upf', restart='always', iface_tun=True, ipv4_forward=True, cap_net_admin=True, debug='allow') }}
     environment:
       N4: "{{ ipv4('upfi2-nmn', 'control') }}"
       IF_LIST: |-
@@ -1664,7 +1664,7 @@ services:
       dataplane:
         ipv4_address: "{{ ipv4('upfi2-nmn', 'dataplane') }}"
   #~ endif
-  {{ container_s(name='upfa1-nmn', image='docker.io/louisroyer/dev-nextmn-upf', restart='always', iface_tun=True, ipv4_forward=True, cap_net_admin=True, debug='allow') }}
+  {{ container_s(name='upfa1-nmn', image='docker.io/louisroyer/dev-nextmn-upf', image_build='https://github.com/louisroyer-docker/nextmn.git#master:upf', restart='always', iface_tun=True, ipv4_forward=True, cap_net_admin=True, debug='allow') }}
     environment:
       N4: "{{ ipv4('upfa1-nmn', 'control') }}"
       IF_LIST: |-
@@ -1684,7 +1684,7 @@ services:
       edge:
         ipv4_address: "{{ ipv4('upfa1-nmn', 'edge') }}"
   #~ if config["topology"]["nb_edges"] > 1
-  {{ container_s(name='upfa2-nmn', image='docker.io/louisroyer/dev-nextmn-upf', restart='always', iface_tun=True, ipv4_forward=True, cap_net_admin=True, debug='allow') }}
+  {{ container_s(name='upfa2-nmn', image='docker.io/louisroyer/dev-nextmn-upf', image_build='https://github.com/louisroyer-docker/nextmn.git#master:upf', restart='always', iface_tun=True, ipv4_forward=True, cap_net_admin=True, debug='allow') }}
     environment:
       N4: "{{ ipv4('upfa2-nmn', 'control') }}"
       IF_LIST: |-
@@ -1705,7 +1705,7 @@ services:
         ipv4_address: "{{ ipv4('upfa2-nmn', 'edge') }}"
   #~ endif
   #~ if config["topology"]["nb_edges"] > 2
-  {{ container_s(name='upfa3-nmn', image='docker.io/louisroyer/dev-nextmn-upf', restart='always', iface_tun=True, ipv4_forward=True, cap_net_admin=True, debug='allow') }}
+  {{ container_s(name='upfa3-nmn', image='docker.io/louisroyer/dev-nextmn-upf', image_build='https://github.com/louisroyer-docker/nextmn.git#master:upf', restart='always', iface_tun=True, ipv4_forward=True, cap_net_admin=True, debug='allow') }}
     environment:
       N4: "{{ ipv4('upfa3-nmn', 'control') }}"
       IF_LIST: |-
@@ -1729,7 +1729,7 @@ services:
 
 #~ if config["topology"]["controlplane"] == "nextmn-lite"
   #~ if "nextmn-srv6" in config["topology"]["dataplane"]
-  {{ container_s(name='uel1', image='docker.io/louisroyer/dev-nextmn-ue-lite', enable_ipv6=True, debug='always', debug_volume=False, iface_tun=True, cap_net_admin=True) }}
+  {{ container_s(name='uel1', image='docker.io/louisroyer/dev-nextmn-ue-lite', image_build='https://github.com/louisroyer-docker/nextmn.git#master:ue-lite', enable_ipv6=True, debug='always', debug_volume=False, iface_tun=True, cap_net_admin=True) }}
     depends_on:
       gnbl1:
         condition: service_started
@@ -1768,7 +1768,7 @@ services:
         ipv6_address: "{{ ipv6('uel1', 'control') }}"
 
     #~ if config["topology"]["nb_ue"] > 1
-  {{ container_s(name='uel2', image='docker.io/louisroyer/dev-nextmn-ue-lite', enable_ipv6=True, debug='always', debug_volume=False, iface_tun=True, cap_net_admin=True) }}
+  {{ container_s(name='uel2', image='docker.io/louisroyer/dev-nextmn-ue-lite', image_build='https://github.com/louisroyer-docker/nextmn.git#master:ue-lite', enable_ipv6=True, debug='always', debug_volume=False, iface_tun=True, cap_net_admin=True) }}
     depends_on:
       gnbl2:
         condition: service_started
@@ -1794,7 +1794,7 @@ services:
     #~ endif
   #~ endif
   #~ if "free5gc" in config["topology"]["dataplane"]
-  {{ container_s(name='uel3', image='docker.io/louisroyer/dev-nextmn-ue-lite', enable_ipv6=True, debug='always', debug_volume=False, iface_tun=True, cap_net_admin=True) }}
+  {{ container_s(name='uel3', image='docker.io/louisroyer/dev-nextmn-ue-lite', image_build='https://github.com/louisroyer-docker/nextmn.git#master:ue-lite', enable_ipv6=True, debug='always', debug_volume=False, iface_tun=True, cap_net_admin=True) }}
     depends_on:
       gnbl1:
         condition: service_started
@@ -1833,7 +1833,7 @@ services:
         ipv6_address: "{{ ipv6('uel3', 'control') }}"
 
     #~ if config["topology"]["nb_ue"] > 1
-  {{ container_s(name='uel4', image='docker.io/louisroyer/dev-nextmn-ue-lite', enable_ipv6=True, debug='always', debug_volume=False, iface_tun=True, cap_net_admin=True) }}
+  {{ container_s(name='uel4', image='docker.io/louisroyer/dev-nextmn-ue-lite', image_build='https://github.com/louisroyer-docker/nextmn.git#master:ue-lite', enable_ipv6=True, debug='always', debug_volume=False, iface_tun=True, cap_net_admin=True) }}
     depends_on:
       gnbl2:
         condition: service_started
@@ -1859,7 +1859,7 @@ services:
     #~ endif
   #~ endif
   #~ if "nextmn-upf" in config["topology"]["dataplane"]
-  {{ container_s(name='uel5', image='docker.io/louisroyer/dev-nextmn-ue-lite', enable_ipv6=True, debug='always', debug_volume=False, iface_tun=True, cap_net_admin=True) }}
+  {{ container_s(name='uel5', image='docker.io/louisroyer/dev-nextmn-ue-lite', image_build='https://github.com/louisroyer-docker/nextmn.git#master:ue-lite', enable_ipv6=True, debug='always', debug_volume=False, iface_tun=True, cap_net_admin=True) }}
     depends_on:
       gnbl1:
         condition: service_started
@@ -1898,7 +1898,7 @@ services:
         ipv6_address: "{{ ipv6('uel5', 'control') }}"
 
     #~ if config["topology"]["nb_ue"] > 1
-  {{ container_s(name='uel6', image='docker.io/louisroyer/dev-nextmn-ue-lite', enable_ipv6=True, debug='always', debug_volume=False, iface_tun=True, cap_net_admin=True) }}
+  {{ container_s(name='uel6', image='docker.io/louisroyer/dev-nextmn-ue-lite', image_build='https://github.com/louisroyer-docker/nextmn.git#master:ue-lite', enable_ipv6=True, debug='always', debug_volume=False, iface_tun=True, cap_net_admin=True) }}
     depends_on:
       gnbl2:
         condition: service_started
@@ -1924,7 +1924,7 @@ services:
     #~ endif
   #~ endif
 
-  {{ container_s(name='gnbl1', image='docker.io/louisroyer/dev-nextmn-gnb-lite', enable_ipv6=True, debug='always', debug_volume=False, cap_net_admin=True) }}
+  {{ container_s(name='gnbl1', image='docker.io/louisroyer/dev-nextmn-gnb-lite', image_build='https://github.com/louisroyer-docker/nextmn.git#master:gnb-lite', enable_ipv6=True, debug='always', debug_volume=False, cap_net_admin=True) }}
     depends_on:
       cp-lite:
         condition: service_started
@@ -1949,7 +1949,7 @@ services:
       dataplane:
         ipv4_address: "{{ ipv4('gnbl1', 'dataplane') }}"
 
-  {{ container_s(name='gnbl2', image='docker.io/louisroyer/dev-nextmn-gnb-lite', enable_ipv6=True, debug='always', debug_volume=False, cap_net_admin=True) }}
+  {{ container_s(name='gnbl2', image='docker.io/louisroyer/dev-nextmn-gnb-lite', image_build='https://github.com/louisroyer-docker/nextmn.git#master:gnb-lite', enable_ipv6=True, debug='always', debug_volume=False, cap_net_admin=True) }}
     depends_on:
       cp-lite:
         condition: service_started
@@ -1975,7 +1975,7 @@ services:
         ipv4_address: "{{ ipv4('gnbl2', 'dataplane') }}"
 
   #~ if config["topology"]["nb_gnb"] > 2
-  {{ container_s(name='gnbl3', image='docker.io/louisroyer/dev-nextmn-gnb-lite', enable_ipv6=True, debug='always', debug_volume=False, cap_net_admin=True) }}
+  {{ container_s(name='gnbl3', image='docker.io/louisroyer/dev-nextmn-gnb-lite', image_build='https://github.com/louisroyer-docker/nextmn.git#master:gnb-lite', enable_ipv6=True, debug='always', debug_volume=False, cap_net_admin=True) }}
     depends_on:
       cp-lite:
         condition: service_started
@@ -2001,7 +2001,7 @@ services:
         ipv4_address: "{{ ipv4('gnbl3', 'dataplane') }}"
   #~ endif
 
-  {{ container_s(name='cp-lite', image='docker.io/louisroyer/dev-nextmn-cp-lite', enable_ipv6=True, debug='allow', debug_volume=False, cap_net_admin=True) }}
+  {{ container_s(name='cp-lite', image='docker.io/louisroyer/dev-nextmn-cp-lite', image_build='https://github.com/louisroyer-docker/nextmn.git#master:cp-lite', enable_ipv6=True, debug='allow', debug_volume=False, cap_net_admin=True) }}
     depends_on:
   #~ if "nextmn-srv6" in config["topology"]["dataplane"]
       srv6-ctrl:

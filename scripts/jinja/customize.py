@@ -364,6 +364,7 @@ def container(name: str, image: str, _context: _Context, enable_ipv6: typing.Opt
               ipv4_forward: typing.Optional[bool] = False,
               debug: typing.Optional[str] = 'never',
               debug_volume: typing.Optional[bool] = False,
+              image_build: typing.Optional[str] = None,
               ) -> str:
     '''Add a container'''
     containers = {}
@@ -373,6 +374,7 @@ def container(name: str, image: str, _context: _Context, enable_ipv6: typing.Opt
             "container_name": f'{name}-debug',
             "network_mode": f'service:{name}',
             "image": 'louisroyer/network-debug',
+            "build": 'https://github.com/louisroyer-docker/network-debug.git#master:network-debug',
             "cap_add": ['NET_ADMIN',],
             "profiles": ['debug',],
         }
@@ -400,6 +402,8 @@ def container(name: str, image: str, _context: _Context, enable_ipv6: typing.Opt
         "hostname": name,
         "image": image,
     }
+    if image_build:
+        containers[name]['build'] = image_build
     if command:
         containers[name]['command'] = command
     elif command is None:
@@ -437,6 +441,7 @@ def container_setup(name: str) -> str:
         "container_name": f'{name}-setup',
         "network_mode": f'service:{name}',
         "image": 'louisroyer/docker-setup',
+        "build": 'https://github.com/louisroyer-docker/docker-setup#master:.',
         "cap_add": ['NET_ADMIN',],
         "restart": "no",
     }
