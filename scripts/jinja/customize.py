@@ -312,6 +312,17 @@ def log_level(_context: _Context) -> str:
     return ret
 
 @j2_function
+def log_report_caller(_context: _Context) -> str:
+    '''Get global log report_caller'''
+    ret = 'false' # default log report_caller
+    try:
+        if _context.dict['config']['topology']['log_level'] in ("trace", "verbose", "debug"):
+            ret = 'true'
+    except KeyError:
+        return ret
+    return ret
+
+@j2_function
 def ipv4(host: str, subnet: str, _context: _Context) -> str:
     '''Get IPv4 Address'''
     try:

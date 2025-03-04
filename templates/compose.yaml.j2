@@ -297,6 +297,7 @@ services:
         condition: service_started
     environment:
       LOG_LEVEL: "{{ log_level() }}"
+      LOG_REPORT_CALLER: "{{ log_report_caller() }}"
       GIN_MODE: "release"
       N2: "{{ ipv4('amf', 'control') }}"
       SBI_REGISTER_IP: "amf.sbi"
@@ -351,6 +352,7 @@ services:
         condition: service_started
     environment:
       LOG_LEVEL: "{{ log_level() }}"
+      LOG_REPORT_CALLER: "{{ log_report_caller() }}"
       GIN_MODE: "release"
       MONGO_HOST: "mongodb.db"
       SBI_REGISTER_IP: "nrf.sbi"
@@ -376,6 +378,7 @@ services:
         condition: service_started
     environment:
       LOG_LEVEL: "{{ log_level() }}"
+      LOG_REPORT_CALLER: "{{ log_report_caller() }}"
       GIN_MODE: "release"
       SBI_REGISTER_IP: "ausf.sbi"
       SBI_BINDING_IP: "{{ ipv4('ausf', 'sbi') }}"
@@ -396,6 +399,7 @@ services:
         condition: service_started
     environment:
       LOG_LEVEL: "{{ log_level() }}"
+      LOG_REPORT_CALLER: "{{ log_report_caller() }}"
       GIN_MODE: "release"
       SBI_REGISTER_IP: "udm.sbi"
       SBI_BINDING_IP: "{{ ipv4('udm', 'sbi') }}"
@@ -417,6 +421,7 @@ services:
         condition: service_started
     environment:
       LOG_LEVEL: "{{ log_level() }}"
+      LOG_REPORT_CALLER: "{{ log_report_caller() }}"
       GIN_MODE: "release"
       MONGO_HOST: "mongodb.db"
       SBI_REGISTER_IP: "udr.sbi"
@@ -440,6 +445,7 @@ services:
         condition: service_started
     environment:
       LOG_LEVEL: "{{ log_level() }}"
+      LOG_REPORT_CALLER: "{{ log_report_caller() }}"
       GIN_MODE: "release"
       MONGO_HOST: "mongodb.db"
       SBI_REGISTER_IP: "pcf.sbi"
@@ -465,6 +471,7 @@ services:
         condition: service_started
     environment:
       LOG_LEVEL: "{{ log_level() }}"
+      LOG_REPORT_CALLER: "{{ log_report_caller() }}"
       GIN_MODE: "release"
       MONGO_HOST: "mongodb.db"
       SBI_REGISTER_IP: "chf.sbi"
@@ -490,6 +497,7 @@ services:
         condition: service_started
     environment:
       LOG_LEVEL: "{{ log_level() }}"
+      LOG_REPORT_CALLER: "{{ log_report_caller() }}"
       GIN_MODE: "release"
       MONGO_HOST: "mongodb.db"
       NRF: "nrf.sbi:8000"
@@ -519,6 +527,7 @@ services:
   #~ endif
     environment:
       LOG_LEVEL: "{{ log_level() }}"
+      LOG_REPORT_CALLER: "{{ log_report_caller() }}"
       GIN_MODE: "release"
       SBI_REGISTER_IP: "smf.sbi"
       SBI_BINDING_IP: "{{ ipv4('smf', 'sbi') }}"
@@ -865,6 +874,7 @@ services:
         condition: service_started
     environment:
       LOG_LEVEL: "{{ log_level() }}"
+      LOG_REPORT_CALLER: "{{ log_report_caller() }}"
       GIN_MODE: "release"
       SBI_REGISTER_IP: "nssf.sbi"
       SBI_BINDING_IP: "{{ ipv4('nssf', 'sbi') }}"
@@ -1534,6 +1544,7 @@ services:
   {{ container_s(name='upfi1-f5gc', image='docker.io/louisroyer/dev-free5gc-upf', image_build='https://github.com/louisroyer-docker/free5gc.git#master:upf', restart='always', cap_net_admin=True, debug='allow') }}
     environment:
       LOG_LEVEL: "{{ log_level() }}"
+      LOG_REPORT_CALLER: "{{ log_report_caller() }}"
       N4: "{{ ipv4('upfi1-f5gc', 'control') }}"
       IF_LIST: |-
         - addr: "{{ ipv4('upfi1-f5gc', 'dataplane') }}"
@@ -1552,6 +1563,7 @@ services:
   {{ container_s(name='upfi2-f5gc', image='docker.io/louisroyer/dev-free5gc-upf', image_build='https://github.com/louisroyer-docker/free5gc.git#master:upf', restart='always', cap_net_admin=True, debug='allow') }}
     environment:
       LOG_LEVEL: "{{ log_level() }}"
+      LOG_REPORT_CALLER: "{{ log_report_caller() }}"
       N4: "{{ ipv4('upfi2-f5gc', 'control') }}"
       IF_LIST: |-
         - addr: "{{ ipv4('upfi2-f5gc', 'dataplane') }}"
@@ -1570,6 +1582,7 @@ services:
   {{ container_s(name='upfa1-f5gc', image='docker.io/louisroyer/dev-free5gc-upf', image_build='https://github.com/louisroyer-docker/free5gc.git#master:upf', restart='always', cap_net_admin=True, debug='allow') }}
     environment:
       LOG_LEVEL: "{{ log_level() }}"
+      LOG_REPORT_CALLER: "{{ log_report_caller() }}"
       N4: "{{ ipv4('upfa1-f5gc', 'control') }}"
       IF_LIST: |-
         - addr: "{{ ipv4('upfa1-f5gc', 'dataplane') }}"
@@ -1590,6 +1603,7 @@ services:
   {{ container_s(name='upfa2-f5gc', image='docker.io/louisroyer/dev-free5gc-upf', image_build='https://github.com/louisroyer-docker/free5gc.git#master:upf', restart='always', cap_net_admin=True, debug='allow') }}
     environment:
       LOG_LEVEL: "{{ log_level() }}"
+      LOG_REPORT_CALLER: "{{ log_report_caller() }}"
       N4: "{{ ipv4('upfa2-f5gc', 'control') }}"
       IF_LIST: |-
         - addr: "{{ ipv4('upfa2-f5gc', 'dataplane') }}"
@@ -1611,6 +1625,7 @@ services:
   {{ container_s(name='upfa3-f5gc', image='docker.io/louisroyer/dev-free5gc-upf', image_build='https://github.com/louisroyer-docker/free5gc.git#master:upf', restart='always', cap_net_admin=True, debug='allow') }}
     environment:
       LOG_LEVEL: "{{ log_level() }}"
+      LOG_REPORT_CALLER: "{{ log_report_caller() }}"
       N4: "{{ ipv4('upfa3-f5gc', 'control') }}"
       IF_LIST: |-
         - addr: "{{ ipv4('upfa3-f5gc', 'dataplane') }}"
