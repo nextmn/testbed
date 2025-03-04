@@ -821,7 +821,7 @@ services:
       sbi:
         ipv4_address: "{{ ipv4('smf', 'sbi') }}"
 
-  {{ container_s(name='populate', image='docker.io/louisroyer/free5gc-populate', image_build='https://github.com/louisroyer-docker/free5gc-populate.git#master:free5gc-populate', restart='no') }}
+  {{ container_s(name='populate', image='docker.io/louisroyer/dev-free5gc-populate', image_build='https://github.com/louisroyer-docker/free5gc-populate.git#master:dev-free5gc-populate', restart='no') }}
     depends_on:
       mongodb: # required to being able to deregister propertly
         condition: service_started

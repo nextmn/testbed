@@ -21,6 +21,9 @@ services:
   free5gc-populate:
     image: docker.io/louisroyer/free5gc-populate
     build: https://github.com/louisroyer-docker/free5gc-populate.git#master:free5gc-populate
+  dev-free5gc-populate:
+    image: docker.io/louisroyer/dev-free5gc-populate
+    build: https://github.com/louisroyer-docker/free5gc-populate.git#master:dev-free5gc-populate
   docker-setup:
     image: docker.io/louisroyer/docker-setup
     build: https://github.com/louisroyer-docker/docker-setup.git#master:.
