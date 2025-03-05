@@ -235,6 +235,52 @@ def secret(name: str) -> str:
     return f'{os.path.join("./secrets", name)}'
 
 @j2_function(output='json')
+def openssl_root(_context: _Context) -> str:
+    '''Generate root CA key and pem and return text to create secret'''
+    build, _ = build_and_template_dir()
+    key_filename = 'root.key'
+    pem_filename = 'root.pem'
+    path_key = os.path.join(build, 'secrets', key_filename)
+    path_pem = os.path.join(build, 'secrets', pem_filename)
+    if not (os.path.isfile(path_key) and os.path.isfile(path_key)):
+        os.makedirs(os.path.join('build', 'secrets'), exist_ok=True)
+        print('Creating new openssl root key and certificate`… ', end='')
+        try:
+            if ("disable_openssl_generation" in _context.dict) and (
+                _context.dict["disable_openssl_generation"]):
+                raise SkipException
+            subprocess.run(['openssl', 'req', '-x509',
+                             '-sha512', '-nodes',
+                             '-days', '30',
+                             '-subj', '/',
+                             '-newkey', 'rsa:2048',
+                             '-keyout', path_key,
+                             '-out', path_pem
+                             ],
+                           check=True,
+                           stdout=subprocess.DEVNULL,
+                           stderr=subprocess.DEVNULL
+                        )
+        except subprocess.CalledProcessError as exc:
+            print("Failed.")
+            raise(GenerationError(
+                'Could not create openssl root key and certificate')) from exc
+        except SkipException:
+            print("Skipped.")
+        else:
+            print("Done.")
+    ret = {
+            'openssl_root_key': {
+                'file': os.path.join("./secrets", key_filename),
+            },
+            'openssl_root_pem': {
+                'file': os.path.join("./secrets", pem_filename),
+            },
+    }
+    return json.dumps(ret)
+
+
+@j2_function(output='json')
 def openssl(host: str, subnet: str, _context: _Context) -> str:
     '''Generate openssl key and pem and return text to create secret'''
     ip_addr = ipv4(host, subnet, _context=_context)
@@ -243,6 +289,10 @@ def openssl(host: str, subnet: str, _context: _Context) -> str:
     pem_filename = f'{host}_{subnet}.pem'
     path_key = os.path.join(build, 'secrets', key_filename)
     path_pem = os.path.join(build, 'secrets', pem_filename)
+    root_key_filename = 'root.key'
+    root_pem_filename = 'root.pem'
+    root_path_key = os.path.join(build, 'secrets', root_key_filename)
+    root_path_pem = os.path.join(build, 'secrets', root_pem_filename)
     if not (os.path.isfile(path_key) and os.path.isfile(path_key)):
         os.makedirs(os.path.join('build', 'secrets'), exist_ok=True)
         print(f'Creating new openssl key and certificate for `{host}.{subnet}`… ', end='')
@@ -251,7 +301,10 @@ def openssl(host: str, subnet: str, _context: _Context) -> str:
                 _context.dict["disable_openssl_generation"]):
                 raise SkipException
             subprocess.run(['openssl', 'req', '-x509',
-                             '-sha256', '-nodes',
+                             '-CA', root_path_pem,
+                             '-CAkey', root_path_key,
+                             '-CAcreateserial',
+                             '-sha512', '-nodes',
                              '-days', '30',
                              '-subj', f'/CN={host}.{subnet}',
                              '-addext', f'subjectAltName=DNS:{host}.{subnet},IP.1:{ip_addr}',
@@ -283,13 +336,28 @@ def openssl(host: str, subnet: str, _context: _Context) -> str:
     return json.dumps(ret)
 
 @j2_function(output='json')
+def openssl_root_secrets() -> str:
+    '''Mount openssl root secrets in the container'''
+    return json.dumps(['openssl_root_key', 'openssl_root_pem'])
+
+@j2_function
+def openssl_root_secret_key() -> str:
+    '''Root key file path mounted inside container'''
+    return '/run/secrets/openssl_root_key'
+
+@j2_function
+def openssl_root_secret_pem() -> str:
+    '''Root pem file path mounted inside container'''
+    return '/run/secrets/openssl_root_pem'
+
+@j2_function(output='json')
 def openssl_secrets(host: str, subnet: str) -> str:
     '''Mount openssl secrets in the container'''
     return json.dumps([f'openssl_{host}_{subnet}_key', f'openssl_{host}_{subnet}_pem'])
 
 @j2_function(output='json')
 def openssl_secrets_pem(host: str, subnet: str) -> str:
-    '''Mont openssl pem secret in the container'''
+    '''Mount openssl pem secret in the container'''
     return json.dumps([f'openssl_{host}_{subnet}_pem'])
 
 @j2_function

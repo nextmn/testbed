@@ -362,11 +362,12 @@ services:
       MNC: "01"
       NRF_PEM: "{{ openssl_secret_pem('nrf', 'sbi') }}"
       NRF_KEY: "{{ openssl_secret_key('nrf', 'sbi') }}"
-      ROOT_PEM: "{{ openssl_secret_pem('nrf', 'sbi') }}"
-      ROOT_KEY: "{{ openssl_secret_key('nrf', 'sbi') }}"
+      ROOT_PEM: "{{ openssl_root_secret_pem() }}"
+      ROOT_KEY: "{{ openssl_root_secret_key() }}"
       OAUTH_ENABLE: "false" # disabled until https://github.com/free5gc/nrf/issues/57 is fixed
     secrets:
       {{ openssl_secrets_s('nrf', 'sbi') | indent(2) }}
+      {{ openssl_root_secrets_s() | indent(2) }}
     networks:
       db:
       sbi:
@@ -2213,6 +2214,7 @@ services:
 secrets:
 #~ endif
 #~ if config["topology"]["controlplane"] == "free5gc"
+  {{ openssl_root_s() }}
   {{ openssl_s('amf', 'sbi') }}
   {{ openssl_s('ausf', 'sbi') }}
   {{ openssl_s('chf', 'sbi') }}
