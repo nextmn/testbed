@@ -113,12 +113,25 @@ set/ran/%: $(BCONFIG)
 	@echo Set ran to $(@F)
 	@./scripts/config_edit.py $(BCONFIG) --ran=$(@F)
 
-.PHONY: set/handover-ueransim
-set/handover-ueransim: $(BCONFIG)
+.PHONY: set/handover-ueransim-f5gc
+set/handover-ueransim-f5gc: $(BCONFIG)
 	@echo Set handover to true
 	@./scripts/config_edit.py $(BCONFIG) --handover=true
 	@$(MAKE) set/controlplane/free5gc
 	@$(MAKE) set/dataplane/free5gc
+	@$(MAKE) set/nb-ue/1
+	@$(MAKE) set/nb-edges/1
+	@$(MAKE) set/nb-gnb/2
+	@$(MAKE) set/log-level/debug
+	@$(MAKE) set/full-debug/true
+	@$(MAKE) set/ran/dev
+
+.PHONY: set/handover-ueransim-nextmn
+set/handover-ueransim-nextmn: $(BCONFIG)
+	@echo Set handover to true
+	@./scripts/config_edit.py $(BCONFIG) --handover=true
+	@$(MAKE) set/controlplane/free5gc
+	@$(MAKE) set/dataplane/nextmn-upf
 	@$(MAKE) set/nb-ue/1
 	@$(MAKE) set/nb-edges/1
 	@$(MAKE) set/nb-gnb/2
