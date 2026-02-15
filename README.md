@@ -64,7 +64,7 @@ To analyse RAN traffic, you can install the following Wireshark/Tshark plugin : 
 
 ## Copyright
 ### Author
-Louis Royer
+Louis Royer and the NextMN contributors
 
 ### License
 The testbed code in this repository is under the MIT license, but the various software used, which are distributed in particular in the form of Docker images, are under other licenses.
