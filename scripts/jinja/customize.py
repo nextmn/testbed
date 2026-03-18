@@ -412,18 +412,28 @@ def ipv6(host: str, subnet: str, _context: _Context) -> str:
 def ipv4_subnet(subnet: str, _context: _Context) -> str:
     '''Get IPv4 subnet'''
     try:
-        addr = _context.dict['subnets'][subnet]['subnet']['ipv4_address']
+        addr = _context.dict['subnets'][subnet]['subnet']['ipv4_prefix']
     except KeyError as exc:
-        raise(TemplateError(f'Unknown ipv4 subnet: {subnet}')) from exc
+        # XXX: remove this backward compatibility fallback after some time
+        try:
+            addr = _context.dict['subnets'][subnet]['subnet']['ipv4_address']
+            print('warning: subnets[].subnet.ipv4_address is deprecated and must be replaced by subnets[].subnet.ipv4_prefix')
+        except KeyError as exc:
+            raise(TemplateError(f'Unknown ipv4 subnet: {subnet}')) from exc
     return addr
 
 @j2_function
 def ipv6_subnet(subnet: str, _context: _Context) -> str:
     '''Get IPv6 subnet'''
     try:
-        addr = _context.dict['subnets'][subnet]['subnet']['ipv6_address']
+        addr = _context.dict['subnets'][subnet]['subnet']['ipv6_prefix']
     except KeyError as exc:
-        raise(TemplateError(f'Unknown ipv6 subnet: {subnet}')) from exc
+        # XXX: remove this backward compatibility fallback after some time
+        try:
+            addr = _context.dict['subnets'][subnet]['subnet']['ipv6_address']
+            print('warning: subnets[].subnet.ipv6_address is deprecated and must be replaced by subnets[].subnet.ipv6_prefix')
+        except KeyError as exc:
+            raise(TemplateError(f'Unknown ipv6 subnet: {subnet}')) from exc
     return addr
 
 @j2_function

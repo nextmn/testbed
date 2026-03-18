@@ -222,69 +222,69 @@ subnets:
       ipv4_address: 10.4.0.2
   slice0:
     subnet:
-      ipv4_address: 10.2.0.0/24
+      ipv4_prefix: 10.2.0.0/24
   slice0-static:
     subnet:
-      ipv4_address: 10.2.0.128/25
+      ipv4_prefix: 10.2.0.128/25
   slice1:
     subnet:
-      ipv4_address: 10.2.1.0/24
+      ipv4_prefix: 10.2.1.0/24
   slice1-e1:
     subnet:
-      ipv4_address: 10.2.1.0/26
+      ipv4_prefix: 10.2.1.0/26
   slice1-e1-static:
     subnet:
-      ipv4_address: 10.2.1.64/26
+      ipv4_prefix: 10.2.1.64/26
   slice1-e2:
     subnet:
-      ipv4_address: 10.2.1.128/26
+      ipv4_prefix: 10.2.1.128/26
   slice1-e2-static:
     subnet:
-      ipv4_address: 10.2.1.192/26
+      ipv4_prefix: 10.2.1.192/26
   slice2:
     subnet:
-      ipv4_address: 10.2.2.0/24
+      ipv4_prefix: 10.2.2.0/24
   slice2-e1:
     subnet:
-      ipv4_address: 10.2.2.0/26
+      ipv4_prefix: 10.2.2.0/26
   slice2-e1-static:
     subnet:
-      ipv4_address: 10.2.2.64/26
+      ipv4_prefix: 10.2.2.64/26
   slice2-e2:
     subnet:
-      ipv4_address: 10.2.2.128/26
+      ipv4_prefix: 10.2.2.128/26
   slice2-e2-static:
     subnet:
-      ipv4_address: 10.2.2.192/26
+      ipv4_prefix: 10.2.2.192/26
   srgw0:
     subnet:
-      ipv6_address: fc00:1::/32
+      ipv6_prefix: fc00:1::/32
     srgw0:
       ipv4_address: 10.3.0.1
     end-m-gtp4-e:
       ipv6_prefix: fc00:1:1::/48
   srgw1:
     subnet:
-      ipv6_address: fc00:4::/32
+      ipv6_prefix: fc00:4::/32
     srgw1:
       ipv4_address: 10.3.0.2
     end-m-gtp4-e:
       ipv6_prefix: fc00:4:1::/48
   r0:
     subnet:
-      ipv6_address: fc00:2::/32
+      ipv6_prefix: fc00:2::/32
     end-dx4:
       ipv6_address: "fc00:2:1::"
       ipv6_prefix: fc00:2:1::/48
   r1:
     subnet:
-      ipv6_address: fc00:3::/32
+      ipv6_prefix: fc00:3::/32
     end-dx4:
       ipv6_address: "fc00:3:1::"
       ipv6_prefix: fc00:3:1::/48
   r2:
     subnet:
-      ipv6_address: fc00:5::/32
+      ipv6_prefix: fc00:5::/32
     end-dx4:
       ipv6_address: "fc00:5:1::"
       ipv6_prefix: fc00:5:1::/48

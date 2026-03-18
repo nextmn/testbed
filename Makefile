@@ -13,11 +13,17 @@ MAKE = make --no-print-directory
 
 
 $(BCOMPOSE): templates/compose.yaml.j2 scripts/jinja/customize.py $(BCONFIG)
-	@echo Building $(BCOMPOSE) from jinja template
+	@if [ $(BCONFIG) -ot default-config.yaml ]; then \
+		echo "Warning: default-config.yaml has been updated recently, consider updating $(BCONFIG)"; \
+	fi
+	@echo Building $(BCOMPOSE) from jinja template.
 	@mkdir -p $$(dirname $(BCOMPOSE))
 	@j2 --customize scripts/jinja/customize.py -o $(BCOMPOSE) templates/compose.yaml.j2 $(BCONFIG)
 
-$(BCONFIG): default-config.yaml
+$(BCONFIG):
+	# Note: "default-config.yaml" is not a dependency of this target
+	# to avoid overriding local config.
+	# You may want to do a "make clean" when updating the template.
 	@echo Copying default-config.yaml into $(BCONFIG)
 	@mkdir -p $$(dirname $(BCONFIG))
 	@cp default-config.yaml $(BCONFIG)
