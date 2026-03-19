@@ -21,9 +21,9 @@ $(BCOMPOSE): templates/compose.yaml.j2 scripts/jinja/customize.py $(BCONFIG)
 	@j2 --customize scripts/jinja/customize.py -o $(BCOMPOSE) templates/compose.yaml.j2 $(BCONFIG)
 
 $(BCONFIG):
-	# Note: "default-config.yaml" is not a dependency of this target
-	# to avoid overriding local config.
-	# You may want to do a "make clean" when updating the template.
+	@# Note: "default-config.yaml" is not a dependency of this target
+	@# to avoid overriding local config.
+	@# You may want to do a "make clean" when updating the template.
 	@echo Copying default-config.yaml into $(BCONFIG)
 	@mkdir -p $$(dirname $(BCONFIG))
 	@cp default-config.yaml $(BCONFIG)
