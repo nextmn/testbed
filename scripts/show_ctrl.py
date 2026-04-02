@@ -19,12 +19,12 @@ if __name__ == '__main__':
     with open(args.config, 'r', encoding='utf-8') as f:
         c = yaml.safe_load(f)
         # TODO: open all the below without hardcoding list of controllers/routers
-        controller = f'http://[{c["subnets"]["control"]["srv6-ctrl"]["ipv6_address"]}]:8080'
-        r0 = f'http://[{c["subnets"]["control"]["r0"]["ipv6_address"]}]:8080'
-        r1 = f'http://[{c["subnets"]["control"]["r1"]["ipv6_address"]}]:8080'
-        r2 = f'http://[{c["subnets"]["control"]["r2"]["ipv6_address"]}]:8080'
-        srgw0 = f'http://[{c["subnets"]["control"]["srgw0"]["ipv6_address"]}]:8080'
-        srgw1 = f'http://[{c["subnets"]["control"]["srgw1"]["ipv6_address"]}]:8080'
+        controller = f'http://[{c["subnets"]["rest"]["srv6-ctrl"]["ipv6_address"]}]:8080'
+        r0 = f'http://[{c["subnets"]["rest"]["r0"]["ipv6_address"]}]:8080'
+        r1 = f'http://[{c["subnets"]["rest"]["r1"]["ipv6_address"]}]:8080'
+        r2 = f'http://[{c["subnets"]["rest"]["r2"]["ipv6_address"]}]:8080'
+        srgw0 = f'http://[{c["subnets"]["rest"]["srgw0"]["ipv6_address"]}]:8080'
+        srgw1 = f'http://[{c["subnets"]["rest"]["srgw1"]["ipv6_address"]}]:8080'
         webbrowser.get('firefox').open_new_tab(f'{controller}/routers#controller')
         webbrowser.get('firefox').open_new_tab(f'{r0}/rules#r0')
         webbrowser.get('firefox').open_new_tab(f'{r1}/rules#r1')

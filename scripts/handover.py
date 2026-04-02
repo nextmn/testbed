@@ -38,14 +38,16 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     # TODO: this should not be hardcoded
-    if args.dnn == "srv6":
-        UE_ADDR  = "10.2.0.1"
-    elif args.dnn == "free5gc":
-        UE_ADDR = "10.2.1.1"
-    elif args.dnn == "nextmn-upf":
-        UE_ADDR = "10.2.2.1"
+    if args.dnn == "sr4mec-0":
+        UE_ADDR  = "10.2.0.1" # uel1
+    elif args.dnn == "sr4mec-1":
+        UE_ADDR  = "10.2.1.1" # uel2
+    elif args.dnn == "f5gc-0":
+        UE_ADDR = "10.2.2.1" # uel3
+    elif args.dnn == "nmn-upf-0":
+        UE_ADDR = "10.2.3.1" #uel5
     else:
-        raise ValueError("DNN must be in (srv6, free5gc, nextmn-upf)")
+        raise ValueError("DNN must be in (sr4mec-0, sr4mec-1, f5gc-0, nmn-upf-0)")
 
 
     # TODO: this info should be guessable by the gNB
@@ -53,9 +55,9 @@ if __name__ == '__main__':
 
     with open(args.config, 'r', encoding='utf-8') as f:
         c = yaml.safe_load(f)
-        gnb_source_uri = f'http://[{c["subnets"]["control"][args.gnb_source]["ipv6_address"]}]:8080'
-        gnb_target_uri = f'http://[{c["subnets"]["control"][args.gnb_target]["ipv6_address"]}]:8080'
-        ue_uri = f'http://[{c["subnets"]["control"][args.ue]["ipv6_address"]}]:8080'
+        gnb_source_uri = f'http://[{c["subnets"]["rest"][args.gnb_source]["ipv6_address"]}]:8080'
+        gnb_target_uri = f'http://[{c["subnets"]["rest"][args.gnb_target]["ipv6_address"]}]:8080'
+        ue_uri = f'http://[{c["subnets"]["rest"][args.ue]["ipv6_address"]}]:8080'
         handover_req = {
                 "ue-ctrl": ue_uri,
                 "gnb-target": gnb_target_uri,

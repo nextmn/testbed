@@ -16,6 +16,10 @@ import typing
 import jinja2
 import yaml
 
+with open('templates/images-list.yaml', 'r', encoding='utf-8') as file_images_list:
+    images_list = yaml.safe_load(file_images_list)
+
+
 class TemplateError(Exception):
     '''Template error'''
 
@@ -209,16 +213,86 @@ def build_and_template_dir():
                 'Error while parsing j2cli options to find the outfile and template file.')
                ) from exc
 
-@j2_function
+@j2_function(output='json')
 @functools.cache # we don't want to copy more than once
-def volume_ro(src: str, dst: str) -> str:
+def volume_bind_ro(src: str, dst: str) -> str:
     '''Create a read only volume'''
     build, template = build_and_template_dir()
     build, template = os.path.join(build, src), os.path.join(template, src)
     print(f'Copying {template} into {build}.')
     os.makedirs(os.path.dirname(build), exist_ok=True)
     shutil.copy2(src=template, dst=build)
-    return f'- ./{src}:{dst}:ro'
+    ret = {
+        'type': 'bind',
+        'source': src,
+        'target': dst,
+        'read_only': True,
+    }
+    return json.dumps(ret)
+
+@j2_function(output='json')
+def volume_bind_ran_binary_ro(name: str, _context: _Context) -> str:
+    '''Mount ueransim build directory'''
+    ret = {
+        'type': 'bind',
+        'source': os.path.join('..',
+                               _context.dict['config']['topology']['ran']['dev_build_path'],
+                               name),
+        'target': os.path.join('/usr/bin/', name),
+        'read_only': True,
+    }
+    return json.dumps(ret)
+
+
+@j2_function(output='json')
+def mount_volume_named_rw(volume: str, dst: str) -> str:
+    '''Mount a rw named volume'''
+    ret = {
+        'type': 'volume',
+        'source': volume,
+        'target': dst,
+        'read_only': False,
+    }
+    return json.dumps(ret)
+
+@j2_function(output='json')
+def mount_volume_named_postgres_rw(volume: str) -> str:
+    '''Mount a ro named volume for postgres'''
+    ret = {
+        'type': 'volume',
+        'source': volume,
+        'target': '/var/run/postgresql/',
+        'read_only': False,
+    }
+    return json.dumps(ret)
+
+@j2_function(output='str')
+def environment_postgres_socket_path() -> str:
+    '''Return environment variable for postgres unix socket path'''
+    return 'POSTGRES_UNIX_SOCKET_PATH: /var/run/postgresql'
+
+
+@j2_function(output='json')
+def mount_volume_named_ro(volume: str, dst: str) -> str:
+    '''Mount a ro named volume'''
+    ret = {
+        'type': 'volume',
+        'source': volume,
+        'target': dst,
+        'read_only': True,
+    }
+    return json.dumps(ret)
+
+
+@j2_function(output='json')
+def mount_xdg_config(name: str, filename: str) -> str:
+    '''Mount a config in /etc/xdg'''
+    ret = {
+            'source': name,
+            'target': os.path.join('/etc/xdg/', filename),
+    }
+    return json.dumps(ret)
+
 
 @j2_function
 def secret(name: str) -> str:
@@ -413,11 +487,12 @@ def ipv4_subnet(subnet: str, _context: _Context) -> str:
     '''Get IPv4 subnet'''
     try:
         addr = _context.dict['subnets'][subnet]['subnet']['ipv4_prefix']
-    except KeyError as exc:
+    except KeyError:
         # XXX: remove this backward compatibility fallback after some time
         try:
             addr = _context.dict['subnets'][subnet]['subnet']['ipv4_address']
-            print('warning: subnets[].subnet.ipv4_address is deprecated and must be replaced by subnets[].subnet.ipv4_prefix')
+            print('warning: subnets[].subnet.ipv4_address is deprecated',
+                'and must be replaced by subnets[].subnet.ipv4_prefix')
         except KeyError as exc:
             raise(TemplateError(f'Unknown ipv4 subnet: {subnet}')) from exc
     return addr
@@ -427,11 +502,12 @@ def ipv6_subnet(subnet: str, _context: _Context) -> str:
     '''Get IPv6 subnet'''
     try:
         addr = _context.dict['subnets'][subnet]['subnet']['ipv6_prefix']
-    except KeyError as exc:
+    except KeyError:
         # XXX: remove this backward compatibility fallback after some time
         try:
             addr = _context.dict['subnets'][subnet]['subnet']['ipv6_address']
-            print('warning: subnets[].subnet.ipv6_address is deprecated and must be replaced by subnets[].subnet.ipv6_prefix')
+            print('warning: subnets[].subnet.ipv6_address is deprecated',
+                'and must be replaced by subnets[].subnet.ipv6_prefix')
         except KeyError as exc:
             raise(TemplateError(f'Unknown ipv6 subnet: {subnet}')) from exc
     return addr
@@ -446,14 +522,14 @@ def ipv6_prefix(name: str, subnet: str, _context: _Context) -> str:
     return addr
 
 @j2_function(output='json')
-def container(name: str, image: str, _context: _Context, enable_ipv6: typing.Optional[bool] = False, # pylint: disable=too-many-arguments, disable=too-many-branches, disable=too-many-locals
+def container(name: str, service: str, # pylint: disable=too-many-arguments, disable=too-many-branches, disable=too-many-locals
+              _context: _Context, enable_ipv6: typing.Optional[bool] = False,
               srv6: typing.Optional[bool] = False, iface_tun: typing.Optional[bool] = False,
               command: typing.Optional[str|bool] = None, init: typing.Optional[bool] = False,
               cap_net_admin: typing.Optional[bool] = False, restart: typing.Optional[str] = None,
               ipv4_forward: typing.Optional[bool] = False,
               debug: typing.Optional[str] = 'never',
               debug_volume: typing.Optional[bool] = False,
-              image_build: typing.Optional[str] = None,
               ) -> str:
     '''Add a container'''
     containers = {}
@@ -462,11 +538,13 @@ def container(name: str, image: str, _context: _Context, enable_ipv6: typing.Opt
         containers[f'{name}-debug'] = {
             "container_name": f'{name}-debug',
             "network_mode": f'service:{name}',
-            "image": 'louisroyer/network-debug',
-            "build": 'https://github.com/louisroyer-docker/network-debug.git#master:network-debug',
             "cap_add": ['NET_ADMIN',],
             "profiles": ['debug',],
         }
+        containers[f'{name}-debug']['image'] = images_list['services']['debug']['image']
+        if 'build' in images_list['services']['debug']:
+            containers[f'{name}-debug']['build'] = images_list['services']['debug']['build']
+
         if debug_volume:
             containers[f'{name}-debug']['volumes'] = [f'./volumes/{name}:/volume']
             build, _ = build_and_template_dir()
@@ -489,10 +567,10 @@ def container(name: str, image: str, _context: _Context, enable_ipv6: typing.Opt
     containers[name] = {
         "container_name": name,
         "hostname": name,
-        "image": image,
+        "image": images_list['services'][service]['image'],
     }
-    if image_build:
-        containers[name]['build'] = image_build
+    if 'build' in images_list['services'][service]:
+        containers[name]["build"] = images_list['services'][service]['build']
     if command:
         containers[name]['command'] = command
     elif command is None:
@@ -523,15 +601,38 @@ def container(name: str, image: str, _context: _Context, enable_ipv6: typing.Opt
     return json.dumps(containers)
 
 @j2_function(output='json')
+def depends_on_healthy(*args: str) -> str:
+    '''Depends on this service (healthy)'''
+    ret = {}
+    for i in args:
+        ret[i] = {'condition': 'service_healthy'}
+    return json.dumps(ret)
+
+@j2_function(output='json')
+def depends_on_started(*args: str) -> str:
+    '''Depends on this service (started)'''
+    ret = {}
+    for i in args:
+        ret[i] = {'condition': 'service_started'}
+    return json.dumps(ret)
+
+@j2_function(output='json')
 def container_setup(name: str) -> str:
     '''Add a setup container'''
     containers = {}
     containers[f'{name}-setup'] = {
         "container_name": f'{name}-setup',
         "network_mode": f'service:{name}',
-        "image": 'louisroyer/docker-setup',
-        "build": 'https://github.com/louisroyer-docker/docker-setup#master:.',
+        "image": images_list['services']['docker-setup']['image'],
+        "build": images_list['services']['docker-setup']['build'],
         "cap_add": ['NET_ADMIN',],
         "restart": "no",
     }
     return json.dumps(containers)
+
+@j2_function(output="txt")
+def post_handover_rebinding(_context: _Context) -> str:
+    '''Is post-handover rebinding set'''
+    if _context.dict['config']['topology']['ran']['post_handover_rebinding']:
+        return "true"
+    return "false"

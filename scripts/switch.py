@@ -19,7 +19,7 @@ if __name__ == '__main__':
     args = parser.parse_args()
     with open(args.config, 'r', encoding='utf-8') as f:
         c = yaml.safe_load(f)
-        srgw = f'http://[{c["subnets"]["control"]["srgw0"]["ipv6_address"]}]:8080'
+        srgw = f'http://[{c["subnets"]["rest"]["srgw0"]["ipv6_address"]}]:8080'
         r = requests.get(f'{srgw}/rules', timeout=1)
         rules = [None, None]
         for ruleid, rule in r.json().items():

@@ -38,20 +38,40 @@ services:
     image: docker.io/louisroyer/dev-nextmn-upf
     build: https://github.com/louisroyer-docker/nextmn.git#master:upf
   nextmn-srv6:
-    image: docker.io/louisroyer/dev-nextmn-srv6
-    build: https://github.com/louisroyer-docker/nextmn.git#master:srv6
+    image: ghcr.io/nextmn/srv6:0.0.27
+    build:
+      context: https://github.com/nextmn/srv6.git#v0.0.27
+      args:
+        SOURCE_DATE_EPOCH: 0
+        BUILDKIT_CONTEXT_KEEP_GIT_DIR: true
   nextmn-srv6-ctrl:
-    image: docker.io/louisroyer/dev-nextmn-srv6-ctrl
-    build: https://github.com/louisroyer-docker/nextmn.git#master:srv6-ctrl
+    image: ghcr.io/nextmn/srv6-ctrl:0.0.25
+    build:
+      context: https://github.com/nextmn/srv6-ctrl.git#v0.0.25
+      args:
+        SOURCE_DATE_EPOCH: 0
+        BUILDKIT_CONTEXT_KEEP_GIT_DIR: true
   nextmn-ue-lite:
-    image: docker.io/louisroyer/dev-nextmn-ue-lite
-    build: https://github.com/louisroyer-docker/nextmn.git#master:ue-lite
+    image: ghcr.io/nextmn/ue-lite:0.2.0
+    build:
+      context: https://github.com/nextmn/ue-lite.git#v0.2.0
+      args:
+        SOURCE_DATE_EPOCH: 0
+        BUILDKIT_CONTEXT_KEEP_GIT_DIR: true
   nextmn-gnb-lite:
-    image: docker.io/louisroyer/dev-nextmn-gnb-lite
-    build: https://github.com/louisroyer-docker/nextmn.git#master:gnb-lite
+    image: ghcr.io/nextmn/gnb-lite:0.1.0
+    build:
+      context: https://github.com/nextmn/gnb-lite.git#v0.1.0
+      args:
+        SOURCE_DATE_EPOCH: 0
+        BUILDKIT_CONTEXT_KEEP_GIT_DIR: true
   nextmn-cp-lite:
-    image: docker.io/louisroyer/dev-nextmn-cp-lite
-    build: https://github.com/louisroyer-docker/nextmn.git#master:cp-lite
+    image: ghcr.io/nextmn/cp-lite:0.1.0
+    build:
+      context: https://github.com/nextmn/cp-lite.git#v0.1.0
+      args:
+        SOURCE_DATE_EPOCH: 0
+        BUILDKIT_CONTEXT_KEEP_GIT_DIR: true
   amf:
     image: docker.io/louisroyer/dev-free5gc-amf
     build: https://github.com/louisroyer-docker/free5gc.git#master:amf

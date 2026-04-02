@@ -31,7 +31,10 @@ if __name__ == '__main__':
     parser.add_argument('--full-debug')
     parser.add_argument('--ran')
     parser.add_argument('--handover')
+    parser.add_argument('--post-handover-rebinding')
+    parser.add_argument('--initial-ue-dn')
     args = parser.parse_args()
+    dn = ('central', 'edge')
     ran = ('stable', 'dev')
     controlplane = ('free5gc', 'nextmn-lite')
     dataplane = ('free5gc', 'nextmn-upf', 'nextmn-srv6')
@@ -55,10 +58,15 @@ if __name__ == '__main__':
             raise ConfigException('Invalid value for full debug: must be a boolean')
         if args.handover and (args.handover.lower() not in ('true', 'false')):
             raise ConfigException('Invalid value for handover: must be a boolean')
+        if args.post_handover_rebinding and (args.post_handover_rebinding.lower() not in ('true', 'false')):
+            raise ConfigException('Invalid value for post-handover-rebinding: must be a boolean')
         if args.ran and (args.ran not in ran):
             raise ConfigException(f'Invalid ran config: use one from {ran}')
         if args.controlplane and (args.controlplane not in controlplane):
             raise ConfigException(f'Invalid controlplane config: use one from {controlplane}')
+        if args.initial_ue_dn and args.initial_ue_dn not in dn:
+            raise ConfigException(f'Invalid initial-ue-dn config: use one from {dn}')
+
     except ConfigException as e:
         print(f'Error: {e}', file=sys.stderr)
         sys.exit(1)
@@ -82,7 +90,11 @@ if __name__ == '__main__':
             c['config']['topology']['full_debug'] = args.full_debug.lower() == 'true'
         if args.handover is not None:
             c['config']['topology']['ran']['handover'] = args.handover.lower() == 'true'
+        if args.post_handover_rebinding is not None:
+            c['config']['topology']['ran']['post_handover_rebinding'] = args.post_handover_rebinding.lower() == 'true'
         if args.ran:
             c['config']['topology']['ran']['version'] = args.ran
+        if args.initial_ue_dn:
+            c['config']['topology']['ran']['initial_ue_dn'] = args.initial_ue_dn
         with open(args.buildconfig, 'w', encoding='utf-8') as f2:
             yaml.dump(c, f2, Dumper, default_flow_style=False)
